@@ -1,0 +1,75 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Skills");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_VOLUNTEER_SKILL)}">
+                    <h:form>
+                        <table align="center" border="1" width="100%">
+                            <th class="tableHeader">#{volunteerSkillsBean.title}</th>
+                            <tr height="20%" align="center">
+                                <td align="center">
+                                    {% if test="#{volunteerSkillsBean.haveAvailable()}">
+                                        <label for="skillSelector" 
+                                                       value="Available Skills"/>&nbsp; 
+                                        <h:selectOneMenu 
+                                            id="skillSelector"
+                                            value="#{volunteerSkillsBean.skillID}">
+                                            <f:selectItems 
+                                                value="#{volunteerSkillsBean.availableSkills}" 
+                                                var="s"
+                                                itemLabel="#{s.skillName}" 
+                                                itemValue="#{s.skillID}" />
+                                        </h:selectOneMenu>&nbsp;                                       
+                                        <label for="expertSelect" value="Expert"/>
+                                        <h:selectBooleanCheckbox
+                                            id="expertSelect"
+                                            value="#{volunteerSkillsBean.expert}"/>&nbsp;
+                                        <p:commandButton 
+                                            styleClass="reset-style" 
+                                           
+                                            value="Add Skill"
+                                            action="#{volunteerSkillsBean.addSkill()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="Cancel"
+                                        action="#{volunteerSkillsBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            {% if test="#{volunteerSkillsBean.hasSkills()}">
+                            <tr>
+                                <td>
+                                    <h:outputText
+                                        escape="false"
+                                        value="#{volunteerSkillsBean.skillsTable}"/>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if test="#{volunteerSkillsBean.error}">
+                                <vscomp.updateError
+                                    bean ="volunteerSkillsBean"
+                                    colspan ="1"/>
+                            {% endif %}
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

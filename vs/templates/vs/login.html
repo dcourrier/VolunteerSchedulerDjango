@@ -1,0 +1,84 @@
+{% load static %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Volunteer Scheduler</title>
+        <link rel="stylesheet" href="{% static 'vs/css/volsched.css' %}"/>
+    </head>
+    <body>
+        <table align="center">
+            <tr><td class="header" align="center">
+                    <h4 class="Header">Volunteer Scheduler</h4></td></tr>
+            <tr><td class="body">
+                    <h3>Login</h3>
+                    <table cellpadding="5" width="100%">
+                        <form action="/vs/login/"method="post">
+                        	{% csrf_token %}
+                            <tr>
+                                <td class="label">
+                                <label 
+                                	for="name
+                                    value="Login:"/></td>
+                                <td>
+                                    <input type='text' 
+                                    	id="name"
+                                    	name='login'
+                                        size="30"
+                                        maxlength="255"
+                                        placeholder='Enter your login id'
+                                        required="true"/>
+                                </td></tr>
+                            <tr>
+                                <td class="label">
+                                	<label 
+                                		for="password"
+                                		value="Password:"/></td>
+                                <td>
+                                    <input type="password" 
+                                    	id="password"
+                                    	name="password"
+                                        size="30"
+                                        maxlength="255"
+                                        required="true"/>
+                                </td></tr>
+                            <tr><td colspan="2">
+                            	<button
+                            		type="submit"
+	                                 value="Login">Login</button>
+                               </td></tr>
+                        </form>
+
+                        <tr>
+                            <td colspan="2">
+                            {% if messages %}
+							    <div 
+							    	class="text-red-500 text-sm mt-1">
+								  <ul class="messages">
+								    {% for message in messages %}
+								      <li class="{{ message.tags }}">{{ message }}</li>
+								    {% endfor %}
+								  </ul>
+						    	</div>
+							{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="40%">
+                                <a class="centered"
+                                   href = "vs/forgotPassword">Forgot my password</a>
+                            </td>
+                            <td align="right">
+                                <a 
+                                	href="vs/help/login.xhtml" 
+                                	title="Login page help">Help</a>
+                            </td>
+                        </tr>
+                    </table></td></tr>
+            <tr><td class="footer">
+                    <hr/>
+                </td></tr>
+        </table>
+    <body>
+</html>
+

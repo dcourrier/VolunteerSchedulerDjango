@@ -1,0 +1,72 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Organization Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_ORGANIZATION)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr>
+                                <td class="label"><label for="name"
+                                                                 rendered="true"
+                                                                 value="Name:"/></td>
+                                <td>
+                                    <input type='text' id="name"
+                                                 size="30"
+                                                 maxlength="#{organizationDetailsBean.organizationNameMaxLength}"
+                                                 value="#{organizationDetailsBean.name}"
+                                                 required="true"
+                                                 requiredMessage="You must supply a name"/>
+                                </td></tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td>
+                                    <p:commandButton 
+                                        value="Save"
+                                            styleClass="reset-style"
+                                        action="#{organizationDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_ORGANIZATION)}">
+                                         &nbsp;<p:commandButton 
+                                            value="Delete"
+                                            styleClass="reset-style" 
+                                            rendered="#{organizationDetailsBean.canDelete()}"
+                                            action="#{organizationDetailsBean.delete}">
+                                            <p:confirm 
+                                                header="Confirmation" 
+                                                message="Are you sure you want to delete this item?" 
+                                                icon="pi pi-exclamation-triangle" />
+                                        </p:commandButton>&nbsp;
+                                    {% endif %}
+                                    &nbsp;<p:commandButton 
+                                        id='cancel'
+                                        value="Cancel"
+                                            styleClass="reset-style"
+                                        action="#{organizationDetailsBean.cancel()}"/>
+                                </td></tr>
+                            {% if test="organizationDetailsBean.error">
+                                <vscomp:updateError 
+                                    bean="#{organizationDetailsBean}"
+                                    colspan="2"/>
+                            {% endif %}
+                        </h:form>
+                    </table>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

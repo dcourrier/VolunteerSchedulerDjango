@@ -1,0 +1,89 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Availabilities");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_AVAILABILITY)}">
+                    <h:form>
+                        <table align="center" border="1">
+                            <th colspan="4"><h4>Add an Availability</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="startDate" value="Start Date"/>&nbsp;
+                                    <input type='text'
+                                        id="startDate"
+                                        value="#{volunteerAvailabilitiesBean.startDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="20"
+                                        required="false">
+                                    </input type='text'>
+                                </td><td>
+                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select a start date"/></a>
+                                </td>
+                                <td>
+                                    <label for="endDate" value="End Date"/>&nbsp;
+                                    <input type='text'
+                                        id="endDate"
+                                        styleClass="forJSF"
+                                        value="#{volunteerAvailabilitiesBean.endDateStr}"
+                                        size="10"
+                                        maxlength="20"
+                                        required="false">
+                                    </input type='text'>
+                                </td><td>
+                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select an end date"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" colspan="4">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add"
+                                        action="#{volunteerAvailabilitiesBean.add()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{volunteerAvailabilitiesBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{volunteerAvailabilitiesBean}"
+                                colspan="4"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_AVAILABILITY)}">
+                            <h:outputText
+                                escape="false"
+                                value="#{volunteerAvailabilitiesBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

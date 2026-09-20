@@ -1,0 +1,189 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xht ml"
+      
+      
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:vscomp="http://xmlns.jcp.org/jsf/composite/vscomp">
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Project Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_PROJECT)}">
+                    <h:form id="form1">
+                        <table class="centered">
+                            <tr>
+                                <td colspan="2">
+                                    <table class="centered">
+                                        <tr>
+                                            <td class="label"><label for="name"
+                                                                             rendered="true"
+                                                                             value="Project Name:"/></td>
+                                            <td>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text' id="name"
+                                                                 size="30"
+                                                                 maxlength="#{projectDetailsBean.nameMaxLength}"
+                                                                 value="#{projectDetailsBean.name}"
+                                                                 required="true"
+                                                                 requiredMessage="You must supply a name"/>
+                                                    <h:message for="name" errorClass="errorMsg"/>
+                                                </h:panelGrid>
+                                            </td>
+                                            <td class="label"><label for="startDate"
+                                                                             rendered="true"
+                                                                             value="Start Date:"/></td>
+                                            <td>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text' id="startDate"
+                                                                 size="10"
+                                                                 maxlength="10"
+                                                                 value="#{projectDetailsBean.startDate}"
+                                                                 required="true"
+                                                                 requiredMessage="You must supply a start date"/>
+                                                    <h:message for="startDate" errorClass="errorMsg"/>
+                                                </h:panelGrid>
+                                            </td>
+                                            <td class="label"><label for="finishDate"
+                                                                             rendered="true"
+                                                                             value="Finish Date:"/></td>
+                                            <td>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text' id="finishDate"
+                                                                 size="10"
+                                                                 maxlength="10"
+                                                                 value="#{projectDetailsBean.finishDate}"
+                                                                 required="false"/>
+                                                    <h:message for="finishDate" errorClass="errorMsg"/>
+                                                </h:panelGrid>
+                                            </td>
+                                            <td class="label"><label for="projectStatus"
+                                                                             rendered="true"
+                                                                             value="Project Status:"/>
+                                            </td>
+                                            <td> 
+                                                <p:selectOneMenu value="#{projectDetailsBean.projectStatus}">
+                                                    <f:selectItems value="#{projectDetailsBean.projectStatuses}"/>
+                                                </p:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        {% if test="#{projectDetailsBean.projectError}">
+                                            <vscomp:updateError 
+                                                bean="#{projectDetailsBean}"
+                                                colspan="6"/>
+                                        {% endif %}
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center">
+                                    <p:commandButton 
+                                        value="Save"
+                                        styleClass="reset-style" 
+                                        action="#{projectDetailsBean.submitProject}"/>
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_PROJECT)}">
+                                        &nbsp;<p:commandButton 
+                                            value="Delete"
+                                            styleClass="reset-style" 
+                                            action="#{projectDetailsBean.delete()}">
+                                            <p:confirm 
+                                                header="Confirmation" 
+                                                message="Are you sure you want to delete this item?" 
+                                                icon="pi pi-exclamation-triangle" />
+                                        </p:commandButton>
+                                    {% endif %}
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_TASKS)}">
+                                        &nbsp;<p:commandButton 
+                                            value="Manage Tasks"
+                                            styleClass="reset-style"
+                                            action="#{projectDetailsBean.manageTasks()}"/>
+                                    {% endif %}
+                                    &nbsp;<p:commandButton 
+                                        value="Cancel"
+                                        styleClass="reset-style"
+                                        action="#{projectDetailsBean.cancel()}"/>
+                                </td></tr>
+                        </table>
+                        <table class="centered">
+                            <tr>
+                                <td class="label"><label for="teamName"
+                                                                 rendered="true"
+                                                                 value="Team Name:"/></td>
+                                <td align="left">
+                                    <input type='text' id="teamName"
+                                                 size="30"
+                                                 maxlength="#{projectDetailsBean.teamNameMaxLength}"
+                                                 value="#{projectDetailsBean.teamName}"/>
+                                </td>
+                                <td rowspan="4">
+                                    <h:outputText
+                                        escape="false"
+                                        value="#{projectDetailsBean.getSubprojectsTable()}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td >
+                                    <p:commandButton 
+                                        value="Save Team"
+                                        styleClass="reset-style"
+                                        action="#{projectDetailsBean.submitTeam()}"/>
+                                </td></tr>
+                            {% if test="#{projectDetailsBean.teamError}">
+                                <vscomp:updateError 
+                                    bean="#{projectDetailsBean}"
+                                    colspan="2"/>
+                            {% endif %}
+                            <tr>
+                                <td class="label"><label for="subName"
+                                                                 rendered="true"
+                                                                 value="Subproject Name:"/></td>
+                                <td align="left">
+                                    <input type='text' id="subName"
+                                                 size="30"
+                                                 maxlength="#{projectDetailsBean.teamNameMaxLength}"
+                                                 value="#{projectDetailsBean.subProjectName}"/>
+                                </td></tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td >
+                                    <p:commandButton 
+                                        value="Add Subproject"
+                                        styleClass="reset-style"
+                                        action="#{projectDetailsBean.submitSubproject}"/>
+                                </td></tr>
+                            {% if test="#{projectDetailsBean.subProjectError}">
+                                <vscomp:updateError 
+                                    bean="#{projectDetailsBean}"
+                                    colspan="2"/>
+                            {% endif %}
+                        </table>
+                    </h:form>
+                    <table class="centered">
+                        <tr>
+                            <td width='49%'>
+                                <h:outputText
+                                    escape="false"
+                                    value="#{projectDetailsBean.getAvailableTeamTable()}"/>
+                            </td>
+                            <td width='2%'>&nbsp;</td>
+                            <td width='49%'>
+                                <h:outputText
+                                    escape="false"
+                                    value="#{projectDetailsBean.getAssignedTeamTable()}"/>
+                            </td>
+                        </tr> 
+                    </table> 
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

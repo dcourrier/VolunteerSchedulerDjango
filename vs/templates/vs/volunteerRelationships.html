@@ -1,0 +1,86 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Relationships");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_RELATIONSHIP)}">
+                    <table align="center">
+                        <th><h3>#{volunteerReltionshipsBean.title()}</h3></th>
+                    </table>
+
+                    <h:form>
+                        <table align="center">
+                            <th>Add A Relationship</th>
+                            {% if test="#{volunteerReltionshipsBean.hasAvailable()}">
+                                <tr>
+                                    <td>
+                                        <label for="typeSelector" value="Type"/>&nbsp; 
+                                        <h:selectOneMenu 
+                                            id="typeSelector"
+                                            value="#{volunteerReltionshipsBean.relationshipTypeId}">
+                                            <f:selectItems 
+                                                value="#{volunteerReltionshipsBean.types}" 
+                                                var="s"
+                                                itemLabel="#{s.displayString}" 
+                                                itemValue="#{s.ID}" />
+                                        </h:selectOneMenu>&nbsp;
+                                        <label for="volSelector" value="Volunteer"/>&nbsp; 
+                                        <h:selectOneMenu 
+                                            id="volSelector"
+                                            value="#{volunteerReltionshipsBean.vol2Id}">
+                                            <f:selectItems 
+                                                value="#{volunteerReltionshipsBean.availableVolunteers}" 
+                                                var="v"
+                                                itemLabel="#{v.displayString}" 
+                                                itemValue="#{v.ID}" />
+                                        </h:selectOneMenu>  
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <td align="center">
+                                    {% if test="#{volunteerReltionshipsBean.hasAvailable()}">
+                                        <p:commandButton 
+                                        styleClass="reset-style"
+                                            value="Add"
+                                            action="#{volunteerReltionshipsBean.add()}"/>&nbsp; 
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Find Volunteers"
+                                        action="#{volunteerReltionshipsBean.find()}"/>&nbsp; 
+                                    <p:commandButton 
+                                        value="Cancel"
+                                        styleClass="reset-style"
+                                        action="#{volunteerReltionshipsBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{volunteerReltionshipsBean}"
+                                colspan="1"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_RELATIONSHIP)}">
+                    <h:outputText 
+                        value="#{volunteerReltionshipsBean.table}"
+                        escape="false"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,76 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Relationship Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_RELATIONSHIP)}">
+                    <table align="center">
+                        <th><h3>#{volunteerReltionshipBean.title()}</h3></th>
+                    </table>
+                    <h:form>
+                        <table align="center">
+                            <th>Change the Relationship</th>
+                            <tr>
+                                <td align="center">
+                                    <label for="typeSelector" value="Type"/>&nbsp; 
+                                    <h:selectOneMenu 
+                                        id="typeSelector"
+                                        value="#{volunteerReltionshipBean.relationshipTypeId}">
+                                        <f:selectItems 
+                                            value="#{volunteerReltionshipBean.types}" 
+                                            var="s"
+                                            itemLabel="#{s.displayString}" 
+                                            itemValue="#{s.ID}" />
+                                    </h:selectOneMenu>&nbsp;
+                                    <label for="volSelector" value="Volunteer"/>&nbsp; 
+                                    <h:selectOneMenu 
+                                        id="volSelector"
+                                        value="#{volunteerReltionshipBean.vol2Id}">
+                                        <f:selectItems 
+                                            value="#{volunteerReltionshipBean.volunteers}" 
+                                            var="v"
+                                            itemLabel="#{v.displayString}" 
+                                            itemValue="#{v.ID}" />
+                                    </h:selectOneMenu>  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{volunteerReltionshipBean.update()}"/> &nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{volunteerReltionshipBean.delete()}"/> &nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{volunteerReltionshipBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{volunteerReltionshipBean}"
+                                colspan="1"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Remove Volunteer Relationship");
+                          doLoadProcessing();
+                    }
+                </script>
+                <h:outputText
+                    value="#{volunteerReltionshipDeleteBean.loadScript()}"
+                    escape="false"/>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RELATIONSHIP)}">
+                    <h:form>
+                        <h:commandButton 
+                            value="Delete"
+                            id="autoClickButton"
+                            styleClass="forJSF"
+                            style="visibility: hidden;"
+                            action="#{volunteerReltionshipDeleteBean.autoDelete()}"/>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

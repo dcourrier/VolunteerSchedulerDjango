@@ -1,0 +1,281 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Projects");
+                    }
+                </script>
+                <h:outputText value="#{projectsBean.clearVolunteerBean()}"/>
+                <table align="center" width="100%">
+                    <tr><td colspan="2">
+                            {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_PROJECT)}"> 
+                                <h:form id="form1">
+                                    <table cellpadding="5" class="centered">
+                                        <th colspan="2"><h3>Add Project</h3></th>
+                                        <tr>
+                                            <td>
+                                                <table class="centered">
+                                                    <tr>
+                                                        <td width="32%" align="right">
+                                                            <label for="name"
+                                                                           rendered="true"
+                                                                           value="Name:"/>&nbsp;
+                                                            <h:panelGrid columns="1">
+                                                                <input type='text' id="name"
+                                                                             size="30"
+                                                                             maxlength="#{projectsBean.projectNameMaxLength}"
+                                                                             value="#{projectsBean.name}"/>
+                                                                <h:message for="name" styleClass="errorMsg"/>
+                                                            </h:panelGrid>
+                                                        </td>
+                                                        <td width="2%"/>
+                                                        <td width="32%" align="center">
+                                                            <label for="startDate"
+                                                                           rendered="true"
+                                                                           value="Start Date:"/>&nbsp;
+                                                            <h:panelGrid columns="1">
+                                                                <input type='text' id="startDate"
+                                                                             size="10"
+                                                                             maxlength="10"
+                                                                             value="#{projectsBean.startDate}"/>
+                                                                <h:message for="startDate" styleClass="errorMsg"/>
+                                                            </h:panelGrid>
+                                                        </td>
+                                                        <td width="2%"/>
+                                                        <td width="32%" align="left">
+                                                            <label for="finishDate"
+                                                                           rendered="true"
+                                                                           value="Finish Date:"/>&nbsp;
+                                                            <h:panelGrid columns="1">
+                                                                <input type='text' id="finishDate"
+                                                                             size="10"
+                                                                             maxlength="10"
+                                                                             value="#{projectsBean.finishDate}"/>
+                                                                <h:message for="finishDate" styleClass="errorMsg"/>
+                                                            </h:panelGrid>
+                                                        </td>
+                                                    </tr>
+                                                </table> 
+                                            </td>
+                                        </tr>             
+                                        <tr>
+                                            <td>   
+                                                <table class="centered">
+                                                    <tr>
+                                                        <td class="label">&nbsp;</td>
+                                                        <td class="label">
+                                                            <p:commandButton 
+                                                                styleClass="reset-style"
+                                                                value="Add Project"
+                                                                action="#{projectsBean.submitProject}"/>&nbsp;
+                                                        </td>
+                                                        <td class="label">&nbsp;</td>
+                                                        <td class="labelLeft">
+                                                            <p:commandButton 
+                                                                styleClass="reset-style"
+                                                                value="Cancel"
+                                                                action="/volsched/pages/home?faces-redirect=true"/>
+                                                        </td>
+                                                    </tr>
+                                                    {% if test="#{projectsBean.projectError}">
+                                                        <vscomp:updateError 
+                                                            bean="#{projectsBean}"
+                                                            colspan="2"/>
+                                                    {% endif %}
+                                                </table> 
+                                            </td>
+                                        </tr> 
+                                    </table>
+                                </h:form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_TEAM)}">
+                                <h:form>
+                                    <table cellpadding="5" class="centered">
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="5" class="centered">
+                                                    <th colspan="2"><h3>Add Team</h3></th>
+                                                    <tr>
+                                                        <td>               
+                                                            <table class="centered">
+                                                                <tr>
+                                                                    <td class="label">
+                                                                        <label for="teamName"
+                                                                                       rendered="true"
+                                                                                       value="Name:"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type='text' id="teamName"
+                                                                                     size="30"
+                                                                                     maxlength="#{projectsBean.teamNameMaxLength}"
+                                                                                     value="#{projectsBean.teamName}"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <BR/>
+                                    <table class="centered">
+                                        <tr>
+                                            <td>
+                                                <table class="centered">              
+                                                    <tr>
+                                                        <td> 
+                                                            <table class="centered">
+                                                                <tr>
+                                                                    <td/> 
+                                                                    <td class="label">&nbsp;</td>
+                                                                    <td class="label">
+                                                                        <p:commandButton 
+                                                                            styleClass="reset-style"
+                                                                            value="Add Team"
+                                                                            action="#{projectsBean.submitTeam}"/>&nbsp;
+                                                                    </td>
+                                                                    <td class="label">&nbsp;</td>
+                                                                    <td class="labelLeft">
+                                                                    </td>
+                                                                    <td/> 
+                                                                </tr>
+                                                                {% if test="#{projectsBean.teamError}">
+                                                                    <vscomp:updateError 
+                                                                        bean="#{projectsBean}"
+                                                                        colspan="2"/>
+                                                                {% endif %}
+                                                            </table> 
+                                                        </td> 
+                                                    </tr>
+                                                </table> 
+                                            </td>
+                                        </tr> 
+                                    </table>
+                                </h:form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_RESOURCE)}">
+                                <h:form>
+                                    <table cellpadding="5" class="centered">
+                                        <tr>
+                                            <td>
+                                                <table cellpadding="5" class="centered">
+                                                    <th colspan="2"><h3>Add Resource</h3></th>
+                                                    <tr>
+                                                        <td>               
+                                                            <table class="centered">
+                                                                <tr>
+                                                                    <td class="label">
+                                                                        <label for="resourceName"
+                                                                                       rendered="true"
+                                                                                       value="Name:"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type='text' id="resourceName"
+                                                                                     size="30"
+                                                                                     maxlength="#{projectsBean.resourceNameMaxLength}"
+                                                                                     value="#{projectsBean.resourceName}"/>
+                                                                    </td>
+                                                                    <td class="label">
+                                                                        <label for="resourceCount"
+                                                                                       rendered="true"
+                                                                                       value="Count:"/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type='text' id="resourceCount"
+                                                                                     size="5"
+                                                                                     maxlength="7"
+                                                                                     value="#{projectsBean.resourceCount}"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <BR/>
+                                    <table class="centered">
+                                        <tr>
+                                            <td>
+                                                <table class="centered">              
+                                                    <tr>
+                                                        <td> 
+                                                            <table class="centered">
+                                                                <tr>
+                                                                    <td/> 
+                                                                    <td class="label">&nbsp;</td>
+                                                                    <td class="label">
+                                                                        <p:commandButton 
+                                                                            styleClass="reset-style"
+                                                                            value="Add Resource"
+                                                                            action="#{projectsBean.submitResource()}"/>&nbsp;
+                                                                    </td>
+                                                                    <td class="label">&nbsp;</td>
+                                                                    <td class="labelLeft">
+                                                                    </td>
+                                                                    <td/> 
+                                                                </tr>
+                                                                {% if test="#{projectsBean.resourceError}">
+                                                                    <vscomp:updateError 
+                                                                        bean="#{projectsBean}"
+                                                                        colspan="4"/>
+                                                                {% endif %}
+                                                            </table> 
+                                                        </td> 
+                                                    </tr>
+                                                </table> 
+                                            </td>
+                                        </tr> 
+                                    </table>
+                                </h:form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <table align="center">
+                                <tr>
+                                    <td align="right">
+                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_PROJECTS)}">
+                                            <h:outputText
+                                                escape="false"
+                                                value="#{projectsBean.projectTable}"/>
+                                        {% endif %}
+                                    </td>
+                                    <td align="center">
+                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_TEAMS)}">
+                                            <h:outputText
+                                                escape="false"
+                                                value="#{projectsBean.teamTable}"/>   
+                                        {% endif %}
+                                    </td>
+                                    <td align="left">
+                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_RESOURCES)}">
+                                            <h:outputText
+                                                escape="false"
+                                                value="#{projectsBean.resourceTable}"/>   
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

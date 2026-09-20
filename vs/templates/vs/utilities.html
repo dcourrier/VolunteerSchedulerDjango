@@ -1,0 +1,74 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Utilities");
+                    }
+                </script>
+                <h:outputText value="#{AuthorizerclearVolunteerBean()}"/>
+                <table>
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_LOGINS)}">
+                        <tr><td>
+                                <h:outputLink
+                                    id="loginListLink"
+                                    styleClass="mainMenu" 
+                                    value="loginList.xhtml">
+                                    Maintain Logins
+                                </h:outputLink>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_CONFIGURABLE_PROPERTIES)}">
+                        <tr><td>
+                                <h:outputLink
+                                    id="configurabeOptionsListLink"
+                                    styleClass="mainMenu" 
+                                    value="configurableOptionsList.xhtml">
+                                    Manage Configurable Options
+                                </h:outputLink>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_SECURITY_GROUPS)}">
+                        <tr><td>
+                                <h:outputLink
+                                    id="securityGroupListLink"
+                                    styleClass="mainMenu" 
+                                    value="securityGroupList.xhtml">
+                                    Maintain Security Groups
+                                </h:outputLink>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_PRIVILEGES)}">
+                        <tr><td>
+                                <h:outputLink
+                                    id="privilegeListLink"
+                                    styleClass="mainMenu" 
+                                    value="privilegeList.xhtml">
+                                    View Privileges
+                                </h:outputLink>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VALIDATE_RELATIONSHIP)}">
+                        <tr><td>
+                                <h:outputLink
+                                    id="relationshipValidationLink"
+                                    styleClass="mainMenu" 
+                                    value="relationshipValidation.xhtml">
+                                    Validate Relationships
+                                </h:outputLink>
+                            </td></tr>
+                    {% endif %}
+                </table>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

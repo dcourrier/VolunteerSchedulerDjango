@@ -1,0 +1,178 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      xmlns:vscomp="http://xmlns.jcp.org/jsf/composite/vscomp"
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Details Edit");
+                    }
+                </script>
+                <table align="center" cellspacing="5" border="1">
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_VOLUNTEER)}">
+                        <tr><td>
+                                <table align="center">
+                                    <th colspan="6" class="tableHeader">
+                                        Volunteer &nbsp;
+                                        <h:outputText 
+                                            value="#{volunteerBean.title()}"/>
+                                    </th>
+                                    <tr>
+                                        <td colspan="6">
+                                            <table align="center">
+                                                <tr>
+                                                    <td>
+                                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_VOLUNTEER_SKILL)}">
+                                                            <h:outputLink
+                                                                id="volSkillsLink"
+                                                                styleClass="inText" 
+                                                                value="#{volunteerBean.skillsURL()}">
+                                                                Skills
+                                                            </h:outputLink>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_AVAILABILITY)}">
+                                                            <h:outputLink
+                                                                id="volAvailabilityLink"
+                                                                styleClass="inText" 
+                                                                value="#{volunteerBean.availabilityURL()}">
+                                                                Availability
+                                                            </h:outputLink>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_RELATIONSHIP)}">
+                                                            <h:outputLink
+                                                                id="volRelationshipsLink"
+                                                                styleClass="inText" 
+                                                                value="#{volunteerBean.relationshipsURL()}">
+                                                                Relationships
+                                                            </h:outputLink>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_EVENT_PREFERENCE)}">
+                                                            <h:outputLink
+                                                                id="volEventPreferencesLink"
+                                                                styleClass="inText" 
+                                                                value="#{volunteerBean.eventPreferenceURL()}">
+                                                                Event Preference
+                                                            </h:outputLink>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_VOLUNTEER)}">
+                                                            {% if test="#{volunteerBean.hasAssignments()}">
+                                                                <h:outputLink
+                                                                    id="volJobAssignmentsLink"
+                                                                    styleClass="inText" 
+                                                                    value="#{volunteerBean.jobAssignmentsURL()}">
+                                                                    Job Assignments
+                                                                </h:outputLink>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan="6" align="center">
+                                            <vscomp:autoClickStaff 
+                                                bean="#{volunteerBean}"
+                                                label="Staff:"/>
+                                            <vscomp:autoClick 
+                                                bean="#{volunteerBean}"
+                                                label="Use household address:"/>
+                                        </td>
+                                    </tr>
+                                    <h:form>
+                                        <tr>
+                                            <td width="10%">
+                                                <label for="first" value="First Name"/>
+                                            </td>
+                                            <td>        
+                                                <input type='text' id="first" 
+                                                             size="#{volunteerBean.firstLength()}"
+                                                             maxlength="#{volunteerBean.firstLength()}"
+                                                             value="#{volunteerBean.first}" 
+                                                             required="false"/>
+                                            </td>
+                                            <td width="2%"/>
+                                            <td width="10%">
+                                                <label for="last" value="Last Name"/>
+                                            </td> 
+                                            <td>             
+                                                <input type='text' id="last" 
+                                                             size="#{volunteerBean.lastLength()}"
+                                                             maxlength="#{volunteerBean.lastLength()}"
+                                                             value="#{volunteerBean.last}" 
+                                                             required="false"/>
+                                            </td>
+                                            <td/>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" class="headerCenter">
+                                                Home Address
+                                            </td>
+                                        </tr>
+                                        {% if test="#{volunteerBean.householdAddressUser}">
+                                            <vscomp:noEditAddress bean="#{volunteerBean}"/>
+                                        {% endif %}
+                                        {% if test="#{volunteerBean.notHouseholdAddressUser}">
+                                            <vscomp:address bean="#{volunteerBean}"/>
+                                        {% endif %}
+                                        <tr>
+                                            <td colspan="6">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="6" class="headerCenter">
+                                                Work Address
+                                            </td>
+                                        </tr>
+                                        <vscomp:workAddress bean="#{workAddressBean}"/>
+                                        <tr><td colspan="6" align="center">
+                                                <p:commandButton 
+                                                    styleClass="reset-style"
+                                                    value="Save"
+                                                    action="#{volunteerBean.submit()}"/>&nbsp;
+                                                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_VOLUNTEER)}">
+                                                    <p:commandButton 
+                                                        styleClass="reset-style"
+                                                        value="Delete"
+                                                        action="#{volunteerBean.delete()}"/>&nbsp;
+                                                {% endif %}
+                                                <p:commandButton 
+                                                    styleClass="reset-style"
+                                                    value="Cancel"
+                                                    action="#{volunteerBean.cancel()}"/>
+                                            </td></tr>
+                                    </h:form>
+                                    <vscomp:updateError 
+                                        bean="#{volunteerBean}"
+                                        colspan="6"/>
+                                </table>
+                                <tr><td colspan="6"/></tr>
+                            </td></tr>
+                    {% endif %}
+                </table>
+                <!--h:outputText
+                    value="#{volunteerBean.loadScript()}"
+                    escape="false"/-->
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

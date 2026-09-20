@@ -1,0 +1,133 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Household Edit");
+                    }
+                </script>
+                <table align="center" cellspacing="5">
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_HOUSEHOLD)}">
+                        <tr><td>                               
+                                <table align="center">
+                                    <th colspan="6"><h3>Household&nbsp;
+                                            <h:outputText value="#{householdBean.title()}"/>
+                                        </h3></th>
+                                    <h:form>
+                                        <tr>
+                                            <td width="10%">
+                                                <label for="first" value="First Name"/>
+                                            </td>
+                                            <td>        
+                                                <input type='text' id="first" 
+                                                             size="#{householdBean.firstLength()}"
+                                                             maxlength="#{householdBean.firstLength()}"
+                                                             value="#{householdBean.first}" 
+                                                             required="false"/>
+                                            </td>
+                                            <td width="2%"/>
+                                            <td width="10%">
+                                                <label for="last" value="Last Name"/>
+                                            </td> 
+                                            <td>             
+                                                <input type='text' id="last" 
+                                                             size="#{householdBean.lastLength()}"
+                                                             maxlength="#{householdBean.lastLength()}"
+                                                             value="#{householdBean.last}" 
+                                                             required="false"/>
+                                            </td>
+                                        </tr>
+                                        <vscomp:address bean="#{householdBean}"/>
+                                        <tr><td colspan="5" align="center">
+                                                <p:commandButton 
+                                                    styleClass="reset-style"
+                                                    value="Save"
+                                                    action="#{householdBean.submit()}"/>&nbsp;
+                                                <p:commandButton 
+                                                    styleClass="reset-style"
+                                                    value="Delete"
+                                                    action="#{householdBean.delete()}"/>&nbsp;
+                                                <p:commandButton 
+                                                    styleClass="reset-style"
+                                                    value="Cancel"
+                                                    action="#{householdBean.cancel()}"/>
+                                            </td><td colspan="2"/></tr>
+                                    </h:form>
+                                    <vscomp:updateError 
+                                        bean="#{householdBean}"
+                                        colspan="6"/>
+                                    <tr><td colspan="6"/></tr>
+                                </table>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_HOUSEHOLD)}">
+                        <tr><td>
+                                <table align="center">
+                                    <th colspan="5"><h3>Add a Volunteer</h3></th>
+                                    <h:form>
+                                        <tr>
+                                            <td width="10%">
+                                                <label for="volFirst" value="First Name"/>
+                                            </td>
+                                            <td>        
+                                                <input type='text' id="volFirst" 
+                                                             size="#{householdBean.volFirstLength()}"
+                                                             maxlength="#{householdBean.volFirstLength()}"
+                                                             value="#{householdBean.volFirst}" 
+                                                             required="false"/>
+                                            </td>
+                                            <td width="2%"/>
+                                            <td width="10%">
+                                                <label for="volLast" value="Last Name"/>
+                                            </td> 
+                                            <td>             
+                                                <input type='text' id="volLast" 
+                                                             size="#{householdBean.volLastLength()}"
+                                                             maxlength="#{householdBean.volLastLength()}"
+                                                             value="#{householdBean.volLast}" 
+                                                             required="false"/>
+                                            </td>
+                                        </tr>
+                                        <tr><td colspan="5" align="center">
+                                                <p:commandButton 
+                                        styleClass="reset-style"
+                                                    value="Add"
+                                                    action="#{householdBean.addVolunteer()}"/>
+                                            </td><td colspan="2"/></tr>
+                                    </h:form>
+                                    {% if test="#{householdBean.errorVol}">
+                                        <tr>
+                                            <td colspan="6" class="error">
+                                                <h:outputText 
+                                                    rendered="#{householdBean.errorVol}"
+                                                    value="#{householdBean.errorMessage}"
+                                                    escape="false"/>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr><td colspan="6"/></tr>
+                                </table>
+                            </td></tr>
+                    {% endif %}
+                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_VOLUNTEER)}">
+                        <tr><td>
+                                <h:outputText
+                                    escape="false"
+                                    value="#{householdBean.table}"/>
+                            </td></tr>
+                    {% endif %}
+                </table>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

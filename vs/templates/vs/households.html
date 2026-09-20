@@ -1,0 +1,68 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Housholds");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_HOUSEHOLD)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Add Household</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="firstName" 
+                                                   value="First Name"/>
+                                    <input type='text' id="firstName" 
+                                                 size="#{householdsBean.firstLength()}"
+                                                 value="#{householdsBean.first}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="lastName" 
+                                                   value="Last Name"/>
+                                    <input type='text' id="lastName" 
+                                                 size="#{householdsBean.lastLength()}"
+                                                 value="#{householdsBean.last}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{householdsBean.submit()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{householdsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{householdsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_HOUSEHOLD)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{householdsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

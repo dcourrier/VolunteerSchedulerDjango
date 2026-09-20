@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!-- INTERFACE -->
+    <h:head>
+        <title>This will not be present in rendered output</title>
+        <h:outputStylesheet library="css" name="default.css"/>
+    </h:head>
+    <cc:interface>
+        <cc:attribute name="bean" type="com.courrier.volunteer.web.backing.AddressBean"/>
+    </cc:interface>
+    <cc:implementation>
+        <tr>
+            <td> 
+                <h:outputLabel for="street" value="Street"/>
+            </td>
+            <td>        
+                <h:inputText id="street" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.streetLength}"
+                             value="#{cc.attrs.bean.street}" 
+                             required="false"/>
+            </td>
+            <td/>
+            <td> 
+                <h:outputLabel for="addressLineTwo" value="Address Line Two"/>
+            </td>
+            <td colspan="2">     
+                <h:inputText id="addressLineTwo" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.addressLineTwoLength}"
+                             value="#{cc.attrs.bean.addressLineTwo}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="city" value="City"/>
+            </td>
+            <td>       
+                <h:inputText id="city" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.cityLength}"
+                             value="#{cc.attrs.bean.city}" 
+                             required="false"/>
+            </td>
+            <td width="5"/>
+            <td colspan="2"> 
+                <h:outputLabel for="state" value="State"/>&nbsp;
+                <h:inputText id="state" 
+                             size="2"
+                             maxlength="#{cc.attrs.bean.stateLength}"
+                             value="#{cc.attrs.bean.state}" 
+                             required="false"/>&nbsp;&nbsp;&nbsp;
+                <h:outputLabel for="postalCode" value="PostalCode"/>&nbsp;   
+                <h:inputText id="postalCode" 
+                             size="#{cc.attrs.bean.postalCodeLength}"
+                             maxlength="#{cc.attrs.bean.postalCodeLength}"
+                             value="#{cc.attrs.bean.postalCode}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="phone" value="Home Phone"/>
+            </td>
+            <td>   
+                <h:inputText id="phone" 
+                             size="#{cc.attrs.bean.phoneLength}"
+                             maxlength="#{cc.attrs.bean.phoneLength}"
+                             value="#{cc.attrs.bean.phone}" 
+                             required="false"/>
+            </td>
+            <td>
+                <h:outputLabel for="mobilePhone" value="Cell"/>
+            </td>
+            <td>
+                <h:inputText id="mobilePhone" 
+                             size="#{cc.attrs.bean.mobilePhoneLength}"
+                             maxlength="#{cc.attrs.bean.mobilePhoneLength}"
+                             value="#{cc.attrs.bean.mobilePhone}" 
+                             required="false"/>
+            </td>
+            <td/>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="pager" value="Pager"/>
+            </td>
+            <td>
+                <h:inputText id="pager" 
+                             size="#{cc.attrs.bean.pagerLength}"
+                             maxlength="#{cc.attrs.bean.pagerLength}"
+                             value="#{cc.attrs.bean.pager}" 
+                             required="false"/>
+            </td>
+            <td>
+                <h:outputLabel for="fax" value="Fax"/>
+            </td>
+            <td>
+                <h:inputText id="fax" 
+                             size="#{cc.attrs.bean.faxLength}"
+                             maxlength="#{cc.attrs.bean.faxLength}"
+                             value="#{cc.attrs.bean.fax}" 
+                             required="false"/>
+            </td>
+            <td/>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="email" value="Email"/>
+            </td>
+            <td colspan="4">
+                <h:panelGrid columns="1">
+                <h:inputText id="email" 
+                             size="30"
+                             maxlength="#{cc.attrs.bean.emailLength}"
+                             value="#{cc.attrs.bean.email}" 
+                             required="false"/>
+                <h:message for="email" class="errorMsg"/>
+                </h:panelGrid>                
+            </td>
+        </tr>
+    </cc:implementation>
+</html>

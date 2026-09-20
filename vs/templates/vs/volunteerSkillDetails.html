@@ -1,0 +1,71 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Skill");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_VOLUNTEER_SKILL)}">
+                    <h:form>
+                        <table align="center">
+                            <th class="tableHeader"><h:outputText value="#{volunteerSkillBean.title()}"/></th>
+                            <tr>
+                                <td>                  
+                                    <label for="expertSelect" value="Expert"/>&nbsp;
+                                    <h:selectBooleanCheckbox
+                                        id="expertSelect"
+                                        value="#{volunteerSkillBean.expert}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>                  
+                                    <label for="lastAssignmentDate" value="Last Assignment Date"/>&nbsp;
+                                    <input type='text'
+                                        id="lastAssignmentDate"
+                                        value="#{volunteerSkillBean.lastAssignmentDate}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="20"
+                                        required="false"/>
+                                    <a href="javascript:showCalendarForJSF('lastAssignmentDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select a start date"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>   
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{volunteerSkillBean.save()}"/>&nbsp;
+                                    <p:commandButton 
+                                        value="Delete"
+                                        styleClass="reset-style"
+                                        action="#{volunteerSkillBean.delete()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{volunteerSkillBean.cancel()}"/>&nbsp;
+                                </td>
+                            </tr>
+                        </table>                        
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

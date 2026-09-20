@@ -1,0 +1,200 @@
+{% load VSAuthorizer %}
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <meta http-equiv="Expires" content="0"/>
+        <link rel="stylesheet" href="css/volsched.css"/>
+        <script src="scripts/volsched.js" defer/>
+        <script src="scripts/"ts_picker.js" defer/>
+        <script src="scripts/"date.js" defer/>
+        <title>{{ title }}</title>
+    <:head>
+
+    <body onload="loaded();">
+        <table width="100%" height="100%" border="5">
+            <tr height="5%">
+                <td class="header" colspan="2" align="center">
+                    {{ title }}
+                    <table class="max">
+                        <tr class="max">
+                            <td class="headerLeft"> 
+                                <form action='/logout' method=''>
+                                {% csrf_token %}
+                                    <input type="submit">Logout</input>>
+                                </form>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td class="headerCenterLeftAligned">
+                                <h:outputText
+                                    value="#{defaultBean.breadCrumbs()}"
+                                    escape="false"/>
+                            </td>
+                            <td class="headerRight">
+                                <a href={{help}}
+                                    value="#{defaultBean.help}"
+                                    escape="false"/>
+                            </td>
+                        </tr></table>
+                </td></tr>
+            <tr height="85%" valign="top">
+            	<td class="menu">
+                    <h1>Menu</h1>
+                        <table>
+                            {% if LOGGEDIN %}
+                                {% if RESOURCE_HOME %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="homeLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.home}">
+                                                Home
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_ORGANIZATIONS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="organizationLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.organizations}">
+                                                Organizations
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_PROJECTS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="projectsListink"
+                                                styleClass="mainMenu" 
+                                                value="projects.xhtml">
+                                                Projects
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_SCHEDULES %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="schedulesLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.schedules}">
+                                                Schedules
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_LOCATIONS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="locationsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.locations}">
+                                                Locations
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_RESOURCES %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="resourcesLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.resources}">
+                                                Resources
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_EVENTS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="eventsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.events}">
+                                                Events
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_HOUSEHOLDS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="householdsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.householdsLink}">
+                                                Households
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_VOLUNTEERS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="volunteersLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.volunteers}">
+                                                Volunteers
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_SKILLS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="skillsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.skills}">
+                                                Skills
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_REPORTS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="reportsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.reports}">
+                                                Reports
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_VIEW_JOB_ASSIGNMENTS %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="assignmentsLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.assignments}">
+                                                Assignments
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                                {% if RESOURCE_UTILITIES %}
+                                    <tr><td>
+                                            <h:outputLink
+                                                id="utilitiesLink"
+                                                styleClass="mainMenu" 
+                                                value="#{defaultBean.utilities}">
+                                                Utilities
+                                            </h:outputLink>
+                                        </td></tr>
+                                {% endif %}
+                            {% endif %}                     
+                            <tr height="5px;"><td>&nbsp;</td></tr>
+                            {% if RESOURCE_HOME %}
+                                <tr><td>
+                                        <h:outputLink
+                                            id="passwordChangeLink"
+                                            styleClass="mainMenuSmall" 
+                                            value="#{defaultBean.passwordChange}">
+                                            Change Password
+                                        </h:outputLink>
+                                    </td></tr>
+                            {% endif %}
+                        </table>
+                    </h:form>
+                </td>
+                <td class="body">{{ slot }}</td></tr>
+            <tr height="5%"><td class="footer" colspan="2">
+                    <hr/>
+                </td></tr>
+        </table>
+    </body>
+
+</html>

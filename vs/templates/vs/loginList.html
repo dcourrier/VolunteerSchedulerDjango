@@ -1,0 +1,108 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Logins");
+                    }
+                </script>
+                <h:outputText value="#{loginDetailsBean.reset()}"/>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_LOGIN)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Add Login</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="login" 
+                                                   value="Login"/>&nbsp;
+                                    <input type='text' id="login" 
+                                                 size="30"
+                                                 maxlength="#{loginsBean.loginLength()}"
+                                                 value="#{loginsBean.login}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="name" 
+                                                   value="Name"/>&nbsp;
+                                    <input type='text' id="name" 
+                                                 size="30"
+                                                 maxlength="#{loginsBean.loginNameLength()}"
+                                                 value="#{loginsBean.loginName}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="secret" 
+                                                   value="Secret"/>&nbsp;
+                                    <input type='text' id="secret" 
+                                                 size="20"
+                                                 maxlength="#{loginsBean.secretLength()}"
+                                                 value="#{loginsBean.secret}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="securityGroups" 
+                                                   value="Security Group"/>&nbsp; 
+                                    <p:selectCheckboxMenu id="securityGroups"
+                                                          dynamic="true"
+                                                          filter="true" 
+                                                          filterMatchMode="startsWith"
+                                                          label="Security Groups" 
+                                                          updateLabel="true" 
+                                                          style="width: 15rem" 
+                                                          panelStyle="width: 15rem" 
+                                                          scrollHeight="250"
+                                                          value="#{loginsBean.securityGroupIDs}">
+                                            <f:selectItem
+                                                noSelectionOption="true"/>                                   
+                                            <f:selectItems 
+                                                value="#{loginsBean.getSecurityGroups()}" 
+                                                var="s"
+                                                itemLabel="#{s.displayString}" 
+                                                itemValue="#{s.securityGroupID}" />
+                                    </p:selectCheckboxMenu>                       
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{loginsBean.addLogin()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{loginsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{loginsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_LOGIN)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{loginsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

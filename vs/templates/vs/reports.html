@@ -1,0 +1,61 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Reports");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_REPORT)}">
+                    <h:outputText value="#{reportsBean.clearVolunteerBean()}"/>
+                    <h:form>
+                        <table align="center">
+                            <th><h3>Reports That Can Be Generated</h3></th>
+                            <tr>
+                                <td>
+                                    <h:selectOneRadio
+                                        value="${reportsBean.selected}"
+                                        layout="pageDirection">
+                                        <f:selectItems 
+                                            value="#{reportsBean.getNoReportSchedules()}" 
+                                            var="e"
+                                            itemLabel="#{e.displayString}" 
+                                            itemValue="#{e.ID}" />
+                                    </h:selectOneRadio>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Generate Report"
+                                        rendered="${reportsBean.getNoReportSchedules().size() > 0}"
+                                        action="${reportsBean.addReport()}"/>
+                               &nbsp;&nbsp;
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        rendered="true"
+                                        action="${reportsBean.cancel()}"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                    <h:outputText
+                        escape="false"
+                        value="${reportsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

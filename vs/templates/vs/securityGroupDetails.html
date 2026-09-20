@@ -1,0 +1,93 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Security Group Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SECURITY_GROUP)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Security Group #{securityGroupDetailsBean.name}</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="name" 
+                                                   value="Name"/>&nbsp;
+                                    <input type='text' id="name" 
+                                                 size="30"
+                                                 maxlength="#{securityGroupDetailsBean.nameLength()}"
+                                                 value="#{securityGroupDetailsBean.name}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="description" 
+                                                   value="Description"/>&nbsp;
+                                    <input type='text' id="description" 
+                                                 size="50"
+                                                 maxlength="#{securityGroupDetailsBean.descriptionLength()}"
+                                                 value="#{securityGroupDetailsBean.description}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{securityGroupDetailsBean.save()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{securityGroupDetailsBean.delete()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{securityGroupDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{securityGroupDetailsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SECURITY_GROUP_PRIVILEGE)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <tr>
+                                {% if test="#{securityGroupDetailsBean.hasAvailable()}">
+                                    <td>
+                                        <h:outputText
+                                            escape="false"
+                                            value="#{securityGroupDetailsBean.availableTable}"/>
+                                    </td>
+                                {% endif %}
+                                {% if test="#{securityGroupDetailsBean.hasAssigned()}">
+                                    <td>
+                                        <h:outputText
+                                            escape="false"
+                                            value="#{securityGroupDetailsBean.table}"/>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

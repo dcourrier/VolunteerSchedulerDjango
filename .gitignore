@@ -1,0 +1,66 @@
+# ==========================================
+# 1. System and OS-specific Files
+# ==========================================
+# macOS hidden files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows hidden files
+Thumbs.db
+Ehthumbs.db
+Desktop.ini
+
+# ==========================================
+# 2. Local Environment & Sensitive Secrets
+# ==========================================
+# API keys, passwords, and environment configuration
+.env
+.env.local
+.env.production
+*.secret
+
+# ==========================================
+# 3. Log files and Caches
+# ==========================================
+# Server logs, debug summaries, and crash reports
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# ==========================================
+# 4. Node.js & Dependency Directories
+# ==========================================
+# Installed libraries (never commit these; download via package managers)
+node_modules/
+jspm_packages/
+.pnpm-store/
+
+
+# ==========================================
+# 5. Build, Output, and Distribution Folders
+# ==========================================
+/venv/
+# Compiled production code and build artifacts
+/dist/
+/build/
+/out/
+*.exe
+*.dll
+*.so
+
+# ==========================================
+# 6. IDEs and Code Editors
+# ==========================================
+# Visual Studio Code settings
+.vscode/
+!.vscode/extensions.json
+
+# JetBrains IDEs (IntelliJ, WebStorm, PyCharm, etc.)
+.idea/
+
+# Local text editor swaps
+*.swp
+*~

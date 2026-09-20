@@ -1,0 +1,43 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      >
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Teams");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_TEAMS)}">
+                        <h:outputText
+                            escape="false"
+                            value="#{privilegesBean.table}"/>
+                        <table align="center">
+                            <tr>
+                                <td>
+                                    <h:form>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="/volsched/pages/utilities?faces-redirect=true"/>
+                                    </h:form>
+                                </td>
+                            </tr>
+                        </table>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_TEAM)} == false">
+                    not authorized
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

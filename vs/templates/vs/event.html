@@ -1,0 +1,391 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">       
+                <!-- loaded() is built by beam --> 
+                <h:outputText
+                    escape="false"
+                    value="#{eventBean.javascript()}"/>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_EVENT)}">
+                    <h:outputText value="#{eventBean.clearVolunteerBean()}"/>
+                    <table class="title">
+                        <th>#{eventBean.title()}</th>
+                    </table>
+                    <h:form id="form1">
+                        <table align="center">
+                            <th colspan="9"><h2>Event Details</h2></th>
+                            <tr>
+                                <td width="20%">
+                                    <label 
+                                        for="eventName" 
+                                        value="Event Name"
+                                        styleClass="xtopLabel"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text'
+                                            id="eventName"
+                                            value="#{eventBean.name}"
+                                            size="30"
+                                            maxlength="#{eventBean.nameLength()}"
+                                            required="true"
+                                            requiredMessage="Event Name is required">
+                                        </input type='text'>
+                                        <h:message for="eventName" styleClass="errorMessage" />
+                                    </h:panelGrid>
+                                </td>
+                                <td width="2%"/>
+                                <td width="25%">
+                                    <label 
+                                        for="startDate" 
+                                        value="Start Date"
+                                        styleClass="topLabel"/>&nbsp;
+                                    <input type='text'
+                                        id="startDate"
+                                        value="#{eventBean.startDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="10"
+                                        validator="#{eventBean.validateStartDate}">
+                                    </input type='text'>
+                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select a start date"/></a>
+                                    <h:message for="startDate"  styleClass="errorMessage" />
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label 
+                                        for="startTime" 
+                                        value="Start Time (hh:mm)"
+                                        styleClass="xtopLabel"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text'
+                                            id="startTime"
+                                            value="#{eventBean.startTime}"
+                                            size="5"
+                                            maxlength="5"
+                                            required="true"
+                                            requiredMessage="Start Time is required fmt: HH:mm."
+                                            validator="#{eventBean.validateStartTime}">
+                                        </input type='text'>
+                                        <h:message for="startTime" styleClass="errorMessage" />
+                                    </h:panelGrid>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label 
+                                        for="duration" 
+                                        value="Duration (minutes)"
+                                        styleClass="xtopLabel"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text'
+                                            id="duration"
+                                            value="#{eventBean.duration}"
+                                            size="5"
+                                            maxlength="5"
+                                            required="true"
+                                            requiredMessage="Duration must be a positive integer.">
+                                            <f:convertNumber integerOnly="true"/>
+                                        </input type='text'>
+                                        <h:message for="duration" styleClass="errorMessage" />
+                                    </h:panelGrid>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label 
+                                        for="locationSelector" 
+                                        value="Location"
+                                        styleClass="topLabel"/>&nbsp;
+                                    <h:selectOneMenu 
+                                        id="locationSelector"
+                                        value="#{eventBean.locationId}">
+                                        <f:selectItems 
+                                            value="#{eventBean.locations}" 
+                                            var="l"
+                                            itemLabel="#{l.displayString}" 
+                                            itemValue="#{l.ID}" />
+                                    </h:selectOneMenu>  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"/>
+                                <td>
+                                    <label 
+                                        for="recurs" 
+                                        value="recurs"
+                                        styleClass="topLabel"/>&nbsp;
+                                    <h:selectOneMenu 
+                                        id="recurs"
+                                        immediate="true"
+                                        value="#{eventBean.typeId}">
+                                        <f:selectItem itemValue = "-1" itemLabel = " " /> 
+                                        <f:selectItems 
+                                            value="#{eventBean.types}" 
+                                            var="t"
+                                            itemLabel="#{t.displayString}" 
+                                            itemValue="#{t.recurrenceTypeID}" />
+                                    </h:selectOneMenu>  
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label 
+                                        for="endDate" 
+                                        value="Recurrence End Date"
+                                        styleClass="topLabel"/>&nbsp;
+                                    <input type='text'
+                                        id="endDate"
+                                        value="#{eventBean.endDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="20"
+                                        required="false"
+                                        validator="#{eventBean.validateEndDate}">
+                                    </input type='text'>
+                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select an end date"/></a>
+                                    <h:message for="endDate" styleClass="errorMessage" />
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label 
+                                        for="interval" 
+                                        value="Interval"
+                                        styleClass="topLabel"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text'
+                                            id="interval"
+                                            value="#{eventBean.interval}"
+                                            size="5"
+                                            maxlength="5"
+                                            required="false"
+                                            validator="#{eventBean.validateInterval}">
+                                        </input type='text'>
+                                        <h:message for="interval" styleClass="errorMessage" />
+                                    </h:panelGrid>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="9" align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="Save"
+                                        action="#{eventBean.update()}"/>&nbsp; 
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="Delete"
+                                        action="#{eventBean.delete()}"/>&nbsp; 
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="Cancel"
+                                        action="#{eventBean.cancel2()}"
+                                        onclick="return resetEventFields();"/> 
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{eventBean}"
+                                colspan="9"/>
+                        </table>
+                        <table align="center">
+                            <tr>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr align="center">
+                                <td colspan="9" align="center">
+                                    <table border="1" width="100%" align="center">
+                                        <tr align="center">
+                                            <td colspan="2" class="centeredAqua">
+                                                <h2>Event Jobs</h2> 
+                                            </td>
+                                            <td colspan="2" class="centeredAqua">
+                                                <h2>Event Resources</h2> 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <h3>Add New Job</h3> 
+                                            </td>
+                                            <td>
+                                                <h3>Existing Jobs</h3> 
+                                            </td>
+                                            <td>
+                                                <h3>Add a New Resource</h3> 
+                                            </td>
+                                            <td>
+                                                <h3>Assigned Resources</h3> 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="skills" value="New Job"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectOneMenu 
+                                                                id="skills"
+                                                                value="#{eventBean.skillId}">
+                                                                <f:selectItems 
+                                                                    value="#{eventBean.skills}" 
+                                                                    var="sk"
+                                                                    itemLabel="#{sk.displayString}" 
+                                                                    itemValue="#{sk.skillID}" />
+                                                            </h:selectOneMenu>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="expert" value="Expert"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectBooleanCheckbox
+                                                                id="expert"
+                                                                value="#{eventBean.expert}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="optional" value="Optional"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectBooleanCheckbox
+                                                                id="optional"
+                                                                value="#{eventBean.optional}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="numJobs" value="Number"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectOneMenu 
+                                                                id="numJobs"
+                                                                value="#{eventBean.numJobs}">
+                                                                <f:selectItems 
+                                                                    value="#{eventBean.skillCounts}" 
+                                                                    var="sc"
+                                                                    itemLabel="#{sc.displayString}" 
+                                                                    itemValue="#{sc.num}" />
+                                                            </h:selectOneMenu>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p:commandButton 
+                                                                styleClass="reset-style"
+                                                                value="Add Job"
+                                                                action="#{eventBean.addJob()}"/>
+                                                        </td>
+                                                    </tr>
+                                                    {% if test="#{eventBean.error2}">
+                                                        <tr>
+                                                            <td colspan="9" align="center">
+                                                                <h:outputText 
+                                                                    rendered="#{eventBean.error2}"
+                                                                    escape="false"
+                                                                    value="#{eventBean.errorMessage2}"/>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}        
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{eventBean.jobsTable}"/>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="resources" value="Available Resources"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectOneMenu 
+                                                                id="resources"
+                                                                onchange="setCounts(this);"
+                                                                value="#{eventBean.resourceId}"
+                                                                styleClass="forJSF">
+                                                                <f:selectItems 
+                                                                    value="#{eventBean.getResourceAvailabilities()}" 
+                                                                    var="r"
+                                                                    itemLabel="#{r.toString()}" 
+                                                                    itemValue="#{r.resource.ID}" />
+                                                            </h:selectOneMenu>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <label for="resourceNum" value="Number"/>
+                                                        </td>
+                                                        <td>
+                                                            <h:selectOneMenu 
+                                                                id="resourceNum"                               
+                                                                value="#{eventBean.resourceNum}"
+                                                                styleClass="forJSF">
+                                                                <f:selectItems 
+                                                                    value="#{eventBean.skillCounts}" 
+                                                                    var="sc"
+                                                                    itemLabel="#{sc.displayString}" 
+                                                                    itemValue="#{sc.num}" />
+                                                            </h:selectOneMenu>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p:commandButton 
+                                                                styleClass="reset-style"
+                                                                value="Add Resource"
+                                                                action="#{eventBean.addResource()}"/>
+                                                        </td>
+                                                    </tr>
+                                                    {% if test="#{eventBean.error3}">
+                                                        <tr>
+                                                            <td colspan="9" align="center">
+                                                                <h:outputText 
+                                                                    rendered="#{eventBean.error3}"
+                                                                    escape="false"
+                                                                    value="#{eventBean.errorMessage3}"/>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}        
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{eventBean.resourcesTable}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

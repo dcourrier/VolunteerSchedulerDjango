@@ -1,0 +1,93 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Schedules");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SCHEDULE)}">
+                    <h:form>
+                        <table align="center">
+                            <th><h3>Add a Schedule</h3></th>
+                            <tr>
+                                <td align="center">
+                                    <label for="startDate" value="Start Date"/>&nbsp;
+                                    <input type='text'
+                                        id="startDate"
+                                        value="#{schedulesBean.startDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="10"
+                                        required="false">
+                                    </input type='text'>
+                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select a start date"/></a>&nbsp;
+                                    <label for="endDate" value="End Date"/>&nbsp;
+                                    <input type='text'
+                                        id="endDate"
+                                        value="#{schedulesBean.endDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="10"
+                                        required="false">
+                                    </input type='text'>
+                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select an end date"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add"
+                                        action="#{schedulesBean.add()}"/>
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_REPORTS)}"> 
+                                        &nbsp;&nbsp;
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            value="Reports"
+                                            action="#{schedulesBean.reports()}"/>
+                                    {% endif %}
+                                    &nbsp;&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="home?faces-redirect=true"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{schedulesBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SCHEDULE)}">
+                    <h:outputText
+                        value="#{schedulesBean.getTable()}"
+                        escape="false"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,72 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      >
+    <h:head>
+        <title>Volunteer Scheduler</title>
+        <h:outputStylesheet library="css" name="volsched.css"/>
+    </h:head>
+    <body>
+        <table align="center">
+            <tr><td class="header" align="center">
+                    <h4 class="Header">Volunteer Scheduler</h4></td></tr>
+            <tr><td class="body">
+                    <h3>Password Reset</h3>
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr>
+                                <td class="label"><label for="loginID"
+                                                                 rendered="true"
+                                                                 value="Login ID"/></td>
+                                <td>
+                                    <input type='text' id="loginID"
+                                                 size="30"
+                                                 maxlength="#{loginBean.maxNameLength}"
+                                                 value="#{loginBean.loginID}"/>
+                                </td></tr>
+                            <tr>
+                                <td class="label"><label for="secret"
+                                                                 rendered="true"
+                                                                 value="Secret Text"/></td>
+                                <td>
+                                    <h:inputSecret id="secret"
+                                                   size="10"
+                                                   maxlength="#{loginBean.maxSecretLength}"
+                                                   value="#{loginBean.secret}"/>
+                                </td></tr>
+                            <tr>
+                                <td colspan="2">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Reset" 
+                                        action="#{loginBean.reset()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel" 
+                                        action="#{loginBean.cancel()}"/>
+                                </td>
+                            </tr>
+                        </h:form>
+
+                        <tr>
+                            <td colspan="2">
+                                <h:outputText 
+                                    rendered="#{loginBean.error}"
+                                    escape="false"
+                                    value="#{loginBean.errorMessage}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" colspan="2">
+                                <a href="#{helpBean.webapp}/volsched/help/login.xhtml" title="Login page help">Help</a>
+                            </td>
+                        </tr>
+                    </table></td></tr>
+            <tr><td class="footer">
+                    <hr/>
+                </td></tr>
+        </table>
+    </h:body>
+</html>

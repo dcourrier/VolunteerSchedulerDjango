@@ -1,0 +1,75 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Resource Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_RESOURCE)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr align="center">
+                                <td><label for="name"
+                                                   rendered="true"
+                                                   value="Name:"/>
+                                    &nbsp;&nbsp;
+                                    <input type='text' id="name"
+                                                 size="30"
+                                                 maxlength="#{resourceDetailsBean.nameMaxLength}"
+                                                 value="#{resourceDetailsBean.name}"/>
+                                </td></tr>
+                            <tr align="center">
+                                <td><label for="count"
+                                                   rendered="true"
+                                                   value="Number Available:"/>
+                                    &nbsp;&nbsp;
+                                    <input type='text' id="count"
+                                                 size="4"
+                                                 maxlength="4"
+                                                 value="#{resourceDetailsBean.countStr}"/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td></tr>
+                            <tr align="center">
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{resourceDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RESOURCE)}">
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            value="Delete"
+                                            action="#{resourceDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{resourceDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{resourceDetailsBean}"
+                                colspan="1"/>
+                        </h:form>
+                    </table>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

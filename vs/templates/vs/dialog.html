@@ -1,0 +1,58 @@
+{% csrf_token %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      >
+    <h:head>
+        <title>PrimeFaces Popup Example</title>
+    </h:head>
+    <body>
+        <h:form>
+            <p:commandButton 
+                styleClass="reset-style"
+                value="Open Dialog"
+                type="button" 
+                onclick="PF('myDialogVar').show();" />
+
+            <p:dialog header="My Popup Dialog" widgetVar="myDialogVar" modal="true" resizable="false">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <label for="name" value="Name:" />
+                    <p:inputText id="name" value="#{dialogBean.name}" />
+
+                    <label for="email" value="Email:" />
+                    <p:inputText id="email" value="#{dialogBean.email}" />
+                </h:panelGrid>
+                <p:commandButton 
+                    styleClass="reset-style"
+                    value="Submit"
+                    action="#{dialogBean.submit}" 
+                    oncomplete="PF('myDialogVar').hide();" 
+                    update="@form" />
+                <p:commandButton 
+                    styleClass="reset-style"
+                    value="Close" 
+                    type="button" 
+                    onclick="PF('myDialogVar').hide();" />
+                <p:commandButton 
+                    styleClass="reset-style"
+                    id ="x"
+                    value="reload" 
+                    type="button" 
+                    onclick="reopenWindow();" />
+                <button id="refreshButton">Refresh Page</button>
+
+                <script>
+                    const refreshBtn = document.getElementById("refreshButton");
+                    refreshBtn.addEventListener("click", () => {
+                        window.location.reload();
+                    });
+                    const refreshxBtn = document.getElementById("j_idt5:x");
+                    refreshxBtn.addEventListener("click", () => {
+                        window.location.reload();
+                    });
+                </script>
+            </p:dialog>
+
+        </h:form>
+    </h:body>
+</html>

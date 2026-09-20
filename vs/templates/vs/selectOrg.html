@@ -1,0 +1,46 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Volunteer Scheduler</title>
+        <h:outputStylesheet library="css" name="volsched.css"/>
+    </head>
+    <body>
+        <table align="center">
+            <tr><td class="headerCenter">
+                    <h4 class="Header">Volunteer Scheduler</h4>
+                </td></tr>
+            <tr><td class="body" align="center">
+                    <h3>Select Your Organization</h3>
+                </td></tr>
+            <tr><td class="body" align="center">
+                    <h:form>
+                        <h:selectOneMenu 
+                            id="org"
+                            value="#{loginBean.organizationId}"> 
+                            <f:selectItems 
+                                value="#{loginBean.orgs}" 
+                                var="oi"
+                                itemLabel="#{oi.organizationName}" 
+                                itemValue="#{oi.organizationID}"/>
+                        </h:selectOneMenu>
+                        <tr><td class="body" align="center">
+                                <p:commandButton 
+                                    styleClass="reset-style"
+                                    value="Submit"
+                                    action="#{loginBean.selectOrganization()}"/>
+                            </td></tr>
+                    </h:form>
+                </td></tr>
+            <tr>
+                <td class="body" align="right">
+                    <a href="#{helpBean.webapp}/volsched/help/selectOrganization.xhtml" title="Select Organization page help">Help</a>
+                </td>
+            </tr>
+            <tr><td class="footer">
+                    <hr/>
+                </td></tr>
+        </table>
+    </h:body>
+</html>

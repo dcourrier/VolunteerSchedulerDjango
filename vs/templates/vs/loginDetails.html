@@ -1,0 +1,128 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Login Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_LOGIN)}">
+                    <h:outputText value="#{loginSecurityGroupBean.reset()}"/>
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Login #{loginDetailsBean.loginName}</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="login" 
+                                                   value="Login"/>&nbsp;
+                                    <input type='text' id="login" 
+                                                 size="30"
+                                                 maxlength="#{loginDetailsBean.loginLength()}"
+                                                 value="#{loginDetailsBean.login}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="name" 
+                                                   value="Name"/>&nbsp;
+                                    <input type='text' id="name" 
+                                                 size="30"
+                                                 maxlength="#{loginDetailsBean.loginNameLength()}"
+                                                 value="#{loginDetailsBean.loginName}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="password" 
+                                                   value="Password"/>&nbsp;
+                                    <input type='text' id="password" 
+                                                 size="20"
+                                                 maxlength="#{loginDetailsBean.passwordLength()}"
+                                                 value="#{loginDetailsBean.password}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="secret" 
+                                                   value="Secret"/>&nbsp;
+                                    <input type='text' id="secret" 
+                                                 size="20"
+                                                 maxlength="#{loginDetailsBean.secretLength()}"
+                                                 value="#{loginDetailsBean.secret}" 
+                                                 required="false"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="status" 
+                                                   value="Status"/>&nbsp; 
+                                    <h:selectOneMenu 
+                                        id="status"
+                                        value="#{loginDetailsBean.loginStatusID}">
+                                        <f:selectItems 
+                                            value="#{loginDetailsBean.loginStatuses}" 
+                                            var="s"
+                                            itemLabel="#{s.displayString}" 
+                                            itemValue="#{s.loginStatusID}" />
+                                    </h:selectOneMenu>                                
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton
+                                        styleClass="reset-style" 
+                                        
+                                        value="Save"
+                                        action="#{loginDetailsBean.save()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="delete"
+                                        rendered="#{loginDetailsBean.hasNoVolunteer()}"
+                                        action="#{loginDetailsBean.delete()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style" 
+                                       
+                                        value="Cancel"
+                                        action="#{loginDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{loginDetailsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SECURITY_GROUP)}">
+                    <table align="center" cellpadding="5">
+                        <tr>
+                            <td>
+                                <h:outputText 
+                                    escape="false"
+                                    value="#{loginDetailsBean.availableTable()}"/>
+                            </td>
+                            <td>  
+                                <h:outputText 
+                                    escape="false"
+                                    value="#{loginDetailsBean.assignedTable()}"/>   
+                            </td>
+                        </tr>
+                    </table>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

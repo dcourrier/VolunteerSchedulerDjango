@@ -1,0 +1,57 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      xmlns:vscomp="http://xmlns.jcp.org/jsf/composite/vscomp"
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Job Assignments");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_JOB_ASSIGNMENTS)}">
+                    <table align="center">
+                        {% if test="#{volunteerBean.jobAssignmentsTable.length() > 0}">
+                            <tr>
+                                <td>
+                                    <vscomp:autoClick 
+                                        bean="#{assignmentBean}"
+                                        label="Future only"/>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>
+                                <h:outputText 
+                                    value="#{volunteerBean.jobAssignmentsTableFuture}"
+                                    escape="false"
+                                    rendered="#{assignmentBean.futureOnly}"/>
+                                <h:outputText 
+                                    value="#{volunteerBean.jobAssignmentsTable}"
+                                    escape="false"
+                                    rendered="#{not assignmentBean.futureOnly}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h:form>
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{volunteerBean.cancel2()}"/>
+                                </h:form>
+                            </td>
+                        </tr>    
+                    </table>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

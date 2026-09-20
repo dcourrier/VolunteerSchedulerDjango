@@ -1,0 +1,61 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Schedule Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SCHEDULE)}">
+                    <h:form>
+                        <table align="center">
+                            <th><h3>#{scheduleBean.title}</h3></th>
+                            <tr>
+                                <td>
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{scheduleBean.delete()}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_REPORT)}">
+                                        <p:commandButton
+                                            styleClass="reset-style"
+                                            value="Generate Report"
+                                            rendered="#{scheduleBean.noReport()}"
+                                            action="#{scheduleBean.addReport()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{scheduleBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{scheduleBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_REPORT)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{scheduleBean.reportTable}"/>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_EVENT)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{scheduleBean.eventTable}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

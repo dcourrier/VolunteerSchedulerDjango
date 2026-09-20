@@ -1,0 +1,54 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      xmlns:vscomp="http://xmlns.jcp.org/jsf/composite/vscomp"
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Household Job Assignments");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_JOB)}">
+                    <table align="center">
+                        <tr>
+                            <td>
+                                <vscomp:autoClick 
+                                    bean="#{assignmentBean}"
+                                    label="Future Events Only"/>
+                            </td>
+                        </tr>
+                    </table>
+                    <h:form>
+                        <table align="center">
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{assignmentBean.cancel2()}"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                    <h:outputText 
+                        value="#{assignmentBean.getHouseholdTableFuture()}"
+                        escape="false"
+                        rendered="#{assignmentBean.futureOnly}"/>
+                    <h:outputText 
+                        value="#{assignmentBean.getHouseholdTableAll()}"
+                        escape="false"
+                        rendered="#{not assignmentBean.futureOnly}"/>
+
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,84 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Team Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_TEAM)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr>
+                                <td class="center">
+                                    <label for="name"
+                                                                 rendered="true"
+                                                                 value="Name:"/>
+                                    &nbsp;&nbsp;
+                                    <input type='text' id="name"
+                                                 size="30"
+                                                 maxlength="#{teamDetailsBean.teamNameMaxLength}"
+                                                 value="#{teamDetailsBean.name}"
+                                                 required="true"
+                                                 requiredMessage="You must supply a name"/>
+                                </td></tr>
+                            <tr>
+                                <td align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{teamDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_TEAM)}">
+                                        <p:commandButton 
+                                        styleClass="reset-style"
+                                            value="Delete"
+                                            action="#{teamDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{teamDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{teamDetailsBean}"
+                                colspan="2"/>
+                        </h:form>
+                    </table>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_TEAM)}">
+                   
+                    <table class="centeredMax">
+                        <th colspan="3" align="center">
+                            <h2>Volunteers</h2>
+                        </th>
+                        <tr>
+                            <td width='49%'>
+                                <h:outputText
+                                    escape="false"
+                                    value="#{teamDetailsBean.getAvailableVolunteersTable()}"/>
+                            </td>
+                            <td width='2%'>&nbsp;</td>
+                            <td width='49%'>
+                                <h:outputText
+                                    escape="false"
+                                    value="#{teamDetailsBean.getAssignedVolunteersTable()}"/>
+                            </td>
+                        </tr> 
+                    </table> 
+                {% endif %}                                
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

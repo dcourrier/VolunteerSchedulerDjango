@@ -1,0 +1,88 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Availability Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_AVAILABILITY)}">
+                    <h:form>
+                        <table align="center" border="1">
+                            <th colspan="4"><h4>#{volunteerAvailabilityBean.title()}</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="startDate" value="Start Date"/>&nbsp;
+                                    <input type='text'
+                                        id="startDate"
+                                        value="#{volunteerAvailabilityBean.startDateStr}"
+                                        size="10"
+                                        styleClass="forJSF"
+                                        maxlength="20"
+                                        required="false">
+                                    </input type='text'>
+                                </td><td>
+                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select a start date"/></a>
+                                </td>
+                                <td>
+                                    <label for="endDate" value="End Date"/>&nbsp;
+                                    <input type='text'
+                                        id="endDate"
+                                        styleClass="forJSF"
+                                        value="#{volunteerAvailabilityBean.endDateStr}"
+                                        size="10"
+                                        maxlength="20"
+                                        required="false">
+                                    </input type='text'>
+                                </td><td>
+                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                        <h:graphicImage 
+                                            library="images"
+                                            name="cal.gif"
+                                            width="16"
+                                            height="16"
+                                            alt="Click here to select an end date"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" colspan="4">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{volunteerAvailabilityBean.update()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{volunteerAvailabilityBean.delete()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{volunteerAvailabilityBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{volunteerAvailabilityBean}"
+                                colspan="4"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

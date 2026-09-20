@@ -1,0 +1,83 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Project Resource Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_RESOURCE)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr>
+                                <td class="label"><label for="name"
+                                                                 rendered="true"
+                                                                 value="Name:"/></td>
+                                <td>
+                                    <h:panelGrid columns="1">
+                                        <p:inputText id="name"
+                                                     size="30"
+                                                     maxlength="#{projectResourceDetailsBean.nameMaxLength}"
+                                                     value="#{projectResourceDetailsBean.name}"
+                                                     required="true"
+                                                     requiredMessage="You must supply a name"/>
+                                        <h:message errorClass="errorMsg" for="name"/>
+                                    </h:panelGrid>
+                                </td></tr>
+                            <tr>
+                                <td class="label"><label for="count"
+                                                                 rendered="true"
+                                                                 value="Number Available:"/></td>
+                                <td>
+                                    <h:panelGrid columns="1">
+                                        <p:inputNumber id="count"
+                                                       size="4"
+                                                       maxlength="5"
+                                                       minValue="0"
+                                                       maxValue="10000"
+                                                       decimalPlaces="0"
+                                                       value="#{projectResourceDetailsBean.count}"
+                                                       required="true"
+                                                       requiredMessage="You must supply a positive count or 0"/>
+                                        <h:message errorClass="errorMsg" for="count"/>
+                                    </h:panelGrid>
+                                </td></tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{projectResourceDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RESOURCE)}">
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            value="Delete"
+                                            action="#{projectResourceDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{projectResourceDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{projectResourceDetailsBean}"
+                                colspan="2"/>
+                        </h:form>
+                    </table>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

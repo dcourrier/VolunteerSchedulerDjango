@@ -1,0 +1,41 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Login ecurity Groups");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SECURITY_GROUP)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Security Group #{loginSecurityGroupBean.securityGroupName}</h4></th>
+                            <tr>
+                                <td> 
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{loginSecurityGroupBean.deleteSecurityGroup()}"/> &nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="/volsched/pages/loginDetails?faces-redirect=true"/>  
+                                </td>
+                            </tr>
+
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

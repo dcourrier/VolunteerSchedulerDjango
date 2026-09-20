@@ -1,0 +1,68 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Event Preference");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_HOME)}">
+                    <h:form>
+                        <table align="center">
+                            <th><h3>#{volunteerBean.preferenceTitle()}</h3></th>
+                            <tr>
+                                <td>
+                                    <label 
+                                        for="eventSelector" 
+                                        value="Recurring Events"/>&nbsp; 
+                                    <h:selectOneMenu
+                                        id="eventSelector"
+                                        value="#{volunteerBean.preferenceEventId}">
+                                        <f:selectItems 
+                                            value="#{volunteerBean.recurringEvents}" 
+                                            var="e"
+                                            itemLabel="#{e.eventName}" 
+                                            itemValue="#{e.ID}" />
+                                    </h:selectOneMenu>&nbsp;
+                                    <label 
+                                        for="required" 
+                                        value="Required"/>&nbsp;
+                                    <h:selectBooleanCheckbox
+                                        id="required"
+                                        value="#{volunteerBean.required}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{volunteerBean.savePreference()}"/>&nbsp;
+                                    <p:commandButton
+                                        value="Delete"
+                                        styleClass="reset-style"
+                                        rendered="#{volunteerBean.hasPreference()}"
+                                        action="#{volunteerBean.deletePreference()}"/>&nbsp; 
+                                    <p:commandButton
+                                        value="cancel"
+                                        styleClass="reset-style"
+                                        action="volunteerDetails?faces-redirect=true"/>&nbsp;
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

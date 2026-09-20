@@ -1,0 +1,65 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Assignments");
+                    }
+                </script>
+                <h:outputText value="#{assignmentBean.clearVolunteerBean()}"/>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_JOB)}">
+                    <h:outputText 
+                        value="#{assignmentBean.table}"
+                        escape="false"/>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_JOB) == false}">
+                    <h:form id="myForm">
+                        <table align="center">
+                            <tr>
+                                <td>
+                                    <label 
+                                        for="futureOnly" 
+                                        value="Future Events Only"/>&nbsp;
+                                    <h:selectBooleanCheckbox
+                                        id ="futureOnly"
+                                        value="#{assignmentBean.futureOnly}"
+                                        onchange="clickButton('changeButton')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h:commandButton 
+                                        id="changeButton"
+                                        styleClass="forJSF"
+                                        action="#{assignmentBean.changeView()}" 
+                                        value="Change View"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                    <h:outputText 
+                        value="#{assignmentBean.getVolunteerTableFuture()}"
+                        escape="false"
+                        rendered="#{assignmentBean.futureOnly}"/>
+                    <h:outputText 
+                        value="#{assignmentBean.getVolunteerTableAll()}"
+                        escape="false"
+                        rendered="#{not assignmentBean.futureOnly}"/>
+                    <h:outputText 
+                        value="#{assignmentBean.loadScript()}"
+                        escape="false"
+                        rendered="true"/>
+
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

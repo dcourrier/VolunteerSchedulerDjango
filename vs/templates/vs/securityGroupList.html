@@ -1,0 +1,94 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Security Groups");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SECURITY_GROUP)}">
+                    <h:form id="form1">
+                        <table align="center" cellpadding="5">
+                            <th><h4>Add Security Group</h4></th>
+                            <tr>
+                                <td>
+                                    <label for="name" 
+                                                   value="Name"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="name" 
+                                                     size="30"
+                                                     maxlength="#{securityGroupsBean.nameLength()}"
+                                                     value="#{securityGroupsBean.name}" 
+                                                     required="false"/>
+                                        <h:message for="name" styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="level" 
+                                                   value="Level"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="level" 
+                                                     size="3"
+                                                     maxlength="3"
+                                                     value="#{securityGroupsBean.level}" 
+                                                     required="false"/>
+                                        <h:message for="level" styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="description" 
+                                                   value="Description"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="description" 
+                                                     size="30"
+                                                     maxlength="#{securityGroupsBean.descriptionLength()}"
+                                                     value="#{securityGroupsBean.description}" 
+                                                     required="false"/>
+                                        <h:message for="description" styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add"
+                                        action="#{securityGroupsBean.add()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{securityGroupsBean.cancel()}"/>
+                                </td></tr>
+                            {% if test="#{securityGroupsBean.error}">
+                                <vscomp:updateError 
+                                    bean="#{securityGroupsBean}"
+                                    colspan="2"/>
+                            {% endif %}
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_LOGIN)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{securityGroupsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+
+    </body>
+</html>

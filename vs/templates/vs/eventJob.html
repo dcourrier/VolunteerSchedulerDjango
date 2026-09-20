@@ -1,0 +1,95 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Event Job Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_JOB)}">
+                    <h:form>
+                        <table align="center">
+                            <th colspan="2" align="center">${eventJobBean.title()}</th>
+                            <tr>
+                                <td>
+                                    <label for="skill" value="Skill"/>
+                                </td>
+                                <td>
+                                    <h:outputText 
+                                        id="skill"
+                                        value="${eventJobBean.job.skill.skillName}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="vols" value="Available Volunteers"/>
+                                </td>
+                                <td>
+                                    <h:selectOneMenu 
+                                        id="vols"
+                                        value="#{eventJobBean.volId}">
+                                        <f:selectItems 
+                                            value="#{eventJobBean.unasssignedVolunteers}" 
+                                            var="v"
+                                            itemLabel="#{v.displayString}" 
+                                            itemValue="#{v.ID}" />
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="expert" value="Expert"/>
+                                </td>
+                                <td>
+                                    <h:selectBooleanCheckbox
+                                        id="expert"
+                                        value="#{eventJobBean.expert}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="optional" value="Optional"/>
+                                </td>
+                                <td>
+                                    <h:selectBooleanCheckbox
+                                        id="optional"
+                                        value="#{eventJobBean.optional}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{eventJobBean.update()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Delete"
+                                        action="#{eventJobBean.delete()}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{eventJobBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{eventJobBean}"
+                                colspan="9"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

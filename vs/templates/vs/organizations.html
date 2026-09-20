@@ -1,0 +1,60 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Organizations");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_ORGANIZATION)}">
+                    <h:outputText value="#{organizationsBean.clearVolunteerBean()}"/>
+                    <table cellpadding="5" align="center">
+                        <th colspan="2"><h3>Add Organization</h3></th>
+                        <h:form>
+                            <tr>
+                                <td class="label"><label for="name"
+                                                                 rendered="true"
+                                                                 value="Name:"/></td>
+                                <td>
+                                    <input type='text' id="name"
+                                                 size="30"
+                                                 maxlength="#{organizationsBean.organizationNameMaxLength}"
+                                                 value="#{organizationsBean.name}"/>
+                                </td></tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{organizationsBean.submit}"/>&nbsp;
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="/volsched/pages/home?faces-redirect=true"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{organizationsBean}"
+                                colspan="2"/>
+                        </h:form>
+                    </table>
+                {% endif %}               
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_LOCATION)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{organizationsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

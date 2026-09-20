@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!-- INTERFACE -->
+    <h:head>
+        <title>This will not be present in rendered output</title>
+        <h:outputStylesheet library="css" name="default.css"/>
+    </h:head>
+    <cc:interface>
+        <cc:attribute name="bean" type="com.courrier.volunteer.web.backing.AddressBean"/>
+    </cc:interface>
+    <cc:implementation>
+        <tr>
+            <td> 
+                <h:outputLabel for="nestreet" value="Street"/>
+            </td>
+            <td>        
+                <h:outputText id="nestreet" value="#{cc.attrs.bean.street}"/>
+            </td>
+            <td/>
+            <td> 
+                <h:outputLabel for="neaddressLineTwo" value="Address Line Two"/>
+            </td>
+            <td colspan="2">     
+                <h:outputText id="neaddressLineTwo" value="#{cc.attrs.bean.addressLineTwo}"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="necity" value="City"/>
+            </td>
+            <td>       
+                <h:outputText id="necity" value="#{cc.attrs.bean.city}"/>
+            </td>
+            <td width="5"/>
+            <td> 
+                <h:outputLabel for="nestate" value="State"/>
+            </td>
+            <td colspan="2">    
+                <h:outputText id="nestate" value="#{cc.attrs.bean.state}"/>&nbsp;&nbsp;&nbsp;
+                <h:outputLabel for="nepostalCode" value="PostalCode"/>&nbsp;   
+                <h:outputText id="nepostalCode" value="#{cc.attrs.bean.postalCode}"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="nephone" value="Phone"/>
+            </td>
+            <td>   
+                <h:outputText id="nephone" value="#{cc.attrs.bean.phone}"/>&nbsp;
+                <h:outputLabel for="nemobilePhone" value="Cell"/>&nbsp;
+                <h:outputText id="nemobilePhone" value="#{cc.attrs.bean.mobilePhone}"/>
+            </td>
+            <td/>
+            <td> 
+                <h:outputLabel for="nepager" value="Pager"/>
+            </td>
+            <td colspan="2">
+                <h:outputText id="nepager" value="#{cc.attrs.bean.pager}"/>
+                &nbsp;
+                <h:outputLabel for="nefax" value="Fax"/>
+                <h:outputText id="nefax" value="#{cc.attrs.bean.fax}"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="neemail" value="Email"/>
+            </td>
+            <td>
+                <h:outputText id="neemail" value="#{cc.attrs.bean.email}"/>
+            </td>
+            <td colspan="3"/>
+        </tr>
+    </cc:implementation>
+</html>

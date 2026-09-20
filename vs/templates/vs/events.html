@@ -1,0 +1,209 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    function loaded() {
+                        setHeader("Events");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_EVENT)}">
+                    <table class="title">
+                        <th>Schedule Events</th>
+                    </table>
+                    <h:form id="form1">
+                        <table align="center">
+                            <th colspan="9"><h3>Add an Event</h3></th>
+                            <tr>
+                                <td width="20%">
+                                    <label>
+                                        Event Name    
+                                        <h:panelGrid columns="1">
+                                            <input type='text'
+                                                id="eventName"
+                                                value="#{eventsBean.name}"
+                                                size="30"
+                                                maxlength="#{eventsBean.nameLength()}"
+                                                required="false">
+                                            </input type='text'>
+                                            <h:message for="eventName" styleClass="errorMessage" />
+                                        </h:panelGrid>
+                                    </label>
+                                </td>
+                                <td width="2%"/>
+                                <td width="25%">
+                                    <table align="center">
+                                        <tr><td>
+                                                Start Date
+                                            </td></tr><tr><td>
+                                                <input type='text'
+                                                    id="startDate"
+                                                    value="#{eventsBean.startDateStr}"
+                                                    size="10"
+                                                    styleClass="forJSF"
+                                                    maxlength="20"
+                                                    required="false"
+                                                    validator="#{eventsBean.validateEventsStartDate}">
+                                                </input type='text'>
+                                                <a href="javascript:showCalendarForJSF('startDate');">
+                                                    <h:graphicImage 
+                                                        library="images"
+                                                        name="cal.gif"
+                                                        width="16"
+                                                        height="16"
+                                                        alt="Click here to select a start date"/></a>
+                                                <h:message for="startDate"  styleClass="errorMessage" />
+                                            </td></tr></table>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <table align="center">
+                                        <tr><td>
+                                                Start Time
+                                            </td></tr><tr><td>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text'
+                                                        id="startTime"
+                                                        value="#{eventsBean.startTime}"
+                                                        size="8"
+                                                        maxlength="8"
+                                                        validator="#{eventsBean.validateEventsStartTime}">
+                                                        required="false">
+                                                    </input type='text'>
+                                                    <h:message for="startTime" styleClass="errorMessage" />
+                                                </h:panelGrid>
+                                            </td></tr></table>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label for="duration" value="Duration (minutes)"/>&nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text'
+                                            id="duration"
+                                            value="#{eventsBean.duration}"
+                                            size="5"
+                                            maxlength="5"
+                                            required="false"
+                                            validator="#{eventsBean.validateEventsDuration}">
+                                            <f:convertNumber integerOnly="true"/>
+                                        </input type='text'>
+                                        <h:message for="duration" styleClass="errorMessage" />
+                                    </h:panelGrid>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <label for="locationSelector" value="Location"/>&nbsp;
+                                    <h:selectOneMenu 
+                                        id="locationSelector"
+                                        value="#{eventsBean.locationId}">
+                                        <f:selectItems 
+                                            value="#{eventsBean.locations}" 
+                                            var="l"
+                                            itemLabel="#{l.displayString}" 
+                                            itemValue="#{l.ID}" />
+                                    </h:selectOneMenu>  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"/>
+                                <td>
+                                    <table align="center">
+                                        <tr><td>
+                                                Recurs
+                                            </td></tr><tr><td>
+                                                <h:selectOneMenu 
+                                                    id="recurs"
+                                                    value="#{eventsBean.typeId}">
+                                                    <f:selectItem itemValue = "-1" itemLabel = " " /> 
+                                                    <f:selectItems 
+                                                        value="#{eventsBean.types}" 
+                                                        var="t"
+                                                        itemLabel="#{t.displayString}" 
+                                                        itemValue="#{t.recurrenceTypeID}" />
+                                                </h:selectOneMenu>
+                                            </td></tr></table>  
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <table>
+                                        <tr><td>Recurrence End Date
+                                            </td></tr>
+                                        <tr><td>
+                                                <input type='text'
+                                                    id="endDate"
+                                                    value="#{eventsBean.endDateStr}"
+                                                    size="10"
+                                                    styleClass="forJSF"
+                                                    maxlength="20"
+                                                    required="false"
+                                                    validator="#{eventsBean.validateEndDate}">
+                                                </input type='text'>
+                                                <a href="javascript:showCalendarForJSF('endDate');">
+                                                    <h:graphicImage 
+                                                        library="images"
+                                                        name="cal.gif"
+                                                        width="16"
+                                                        height="16"
+                                                        alt="Click here to select an end date"/></a>
+                                                <h:message for="endDate" styleClass="errorMessage" />
+                                            </td></tr></table>
+                                </td>
+                                <td width="2%"/>
+                                <td>
+                                    <table align="center">
+                                        <tr><td>
+                                                Interval
+                                            </td></tr><tr><td>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text'
+                                                        id="interval"
+                                                        value="#{eventsBean.interval}"
+                                                        size="5"
+                                                        maxlength="5"
+                                                        required="false"
+                                                        validator="#{eventsBean.validateInterval}">
+                                                        <f:convertNumber integerOnly="true"/>
+                                                    </input type='text'>
+                                                    <h:message for="interval" styleClass="errorMessage" />
+                                                </h:panelGrid>
+                                            </td></tr></table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="9" align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add"
+                                        action="#{eventsBean.add()}"/>&nbsp; 
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{eventsBean.cancel()}"
+                                        onclick="return resetEventFields();"/> 
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{eventsBean}"
+                                colspan="9"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_EVENT)}">
+                    <h:outputText
+                        escape="false"
+                        value="#{eventsBean.table}"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="bean" type="com.courrier.volunteer.web.backing.VolschedBeanBase"/>
+        <cc:attribute name="label" type="java.lang.String"/>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <h:form>                                                
+            <h:outputLabel for="autoClickSelect" value="#{cc.attrs.label}"/>
+            <h:selectBooleanCheckbox
+                id="autoClickSelect"
+                value="#{cc.attrs.bean.autoclicked}"
+                onchange="clickComponentButton('autoClickButton', 'autoClickButton')"/>
+            &nbsp;
+            <h:commandButton 
+                id="autoClickButton"
+                styleClass="autoClickButton"
+                value="address"
+                action="#{cc.attrs.bean.autoClick()}"/>
+        </h:form>
+    </cc:implementation>
+</html>

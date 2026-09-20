@@ -1,0 +1,99 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <body>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_ACTIVITY)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr height="20%">
+                                <td>
+                                    <table width="100%" align="center">
+                                        <tr>
+                                            <td align="center">
+                                                <label for="name"
+                                                               rendered="true"
+                                                               value="Name: "/>
+                                                <h:panelGrid columns="1">
+                                                    <input type='text'
+                                                        id="name"
+                                                        value="#{activityDetailsBean.name}"
+                                                        required="true"
+                                                        requiredMessage="You must supply a name"/>
+                                                    <h:message for="name" errorClass="errorMsg"/>
+                                                </h:panelGrid>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <label for="teams"
+                                                               rendered="true"
+                                                               value="Team: "/>
+                                                <p:selectOneMenu  
+                                                    id="teams"
+                                                    value="#{activityDetailsBean.teamID}"> 
+                                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                                    <f:selectItems 
+                                                        value="#{activityDetailsBean.teams}" 
+                                                        var="team" 
+                                                        itemLabel="#{team.teamName}" 
+                                                        itemValue="#{team.teamID}" />
+                                                </p:selectOneMenu>
+                                                &nbsp;&nbsp;&nbsp;
+                                                <label for="vols"
+                                                               rendered="true"
+                                                               value="Name: "/>
+                                                <p:selectOneMenu 
+                                                    id="vols"
+                                                    value="#{activityDetailsBean.volunteerID}" >
+                                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                                    <f:selectItems 
+                                                        value="#{activityDetailsBean.volunteers}" 
+                                                        var="vol" 
+                                                        itemLabel="#{vol.displayString}" 
+                                                        itemValue="#{vol.volunteerID}" />
+                                                </p:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" align="center">
+                                    <label for="activity"
+                                                   rendered="true"
+                                                   style="display: block; text-align: center; width: 100%;"
+                                                   value="Description: "/>
+                                    <p:inputTextarea 
+                                        id="description"
+                                        rows="12" 
+                                        cols="130"
+                                        value="#{activityDetailsBean.description}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="100%" align="center">
+                                    <p:commandButton 
+                                        value="Save"
+                                        styleClass="reset-style"
+                                        action="#{activityDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_ACTIVITY)}">
+                                        <p:commandButton 
+                                            value="Delete"
+                                            styleClass="reset-style"
+                                            action="#{activityDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        value="Cancel"
+                                        styleClass="reset-style"
+                                        action="#{activityDetailsBean.cancel()}"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{activityDetailsBean}"
+                                colspan="2"/>
+                        </h:form>
+                    </table>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

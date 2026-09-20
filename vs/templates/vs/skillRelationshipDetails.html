@@ -1,0 +1,64 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Skill Relationship Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SKILL_RELATIONSHIP)}">
+                    <h:form>
+                        <table align="center">
+                            <th><h3>#{skillRelationshipDetailsBean.title}</h3></th>
+                            <tr>
+                                <td>
+                                    <label for="relationshipType"
+                                                   rendered="true"
+                                                   value="Type"/>&nbsp;
+                                    <h:selectOneMenu id="relationshipType"
+                                                     value="#{skillRelationshipDetailsBean.relationshipTypeID}">
+                                        <f:selectItems 
+                                            value="#{skillRelationshipDetailsBean.relationshipTypes}" 
+                                            var="t"
+                                            itemLabel="#{t.displayString}" 
+                                            itemValue="#{t.skillRelationshipTypeID}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        action="#{skillRelationshipDetailsBean.updateRelationship()}"
+                                        value="Save"/>&nbsp;
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        action="#{skillRelationshipDetailsBean.deleteRelationship()}"
+                                        value="Delete"/>&nbsp;
+                                    <p:commandButton
+                                        styleClass="reset-style"
+                                        action="#{skillRelationshipDetailsBean.cancel()}"
+                                        value="Cancel"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{skillDetailsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

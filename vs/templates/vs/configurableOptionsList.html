@@ -1,0 +1,61 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Configurable Options");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_CONFIGURABLE_PROPERTY)}">
+                    <h:form>
+                        <table align="center" cellpadding="5">
+                            <th><h4>Configurable Options</h4></th>
+                            <ui:repeat 
+                                var="co" 
+                                value="#{configurableOptionsBean.options}" 
+                                varStatus="status">
+                                <tr>
+                                    <td>
+                                        <input type='text' id="a#{status.index}" 
+                                                     size="2"
+                                                     maxlength="255"
+                                                     value="#{co.propertyValue}" 
+                                                     required="false"/>&nbsp;
+                                        <label for="a#{status.index}" 
+                                                       value="#{co.propertyDescription}"/>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                            <tr>
+                                <td>
+                                    <p:commandButton 
+                                            styleClass="reset-style"
+                                        value="Save"
+                                        action="#{configurableOptionsBean.save()}"/>&nbsp;
+                                    <p:commandButton 
+                                            styleClass="reset-style"
+                                        value="Cancel"
+                                        action="/volsched/pages/utilities?faces-redirect=true"/>
+                                </td></tr>
+                            <vscomp:updateError 
+                                bean="#{configurableOptionsBean}"
+                                colspan="2"/>
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

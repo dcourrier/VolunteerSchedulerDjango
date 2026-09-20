@@ -1,0 +1,519 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      
+      
+      >
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Task Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_TASK)}">
+                    <table cellpadding="5" class="centered">
+                        <h:form id="form1">
+                            <tr>
+                                <td>
+                                    <label for="sequence"
+                                                   rendered="true"
+                                                   value="Sequence number:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="sequence"
+                                                     size="4"
+                                                     maxlength="4"
+                                                     value="#{taskDetailsBean.taskSequence}"
+                                                     required="true"
+                                                     requiredMessage="You must supply a sequence number"/>
+                                        <h:message styleClass="errorMsg" for="sequence"/>
+                                    </h:panelGrid>
+                                </td>
+                                <td>
+                                    <label for="name"
+                                                   rendered="true"
+                                                   value="Name:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="name"
+                                                     size="30" 
+                                                     maxlength="#{taskDetailsBean.nameMaxLength}"
+                                                     value="#{taskDetailsBean.taskName}"
+                                                     required="true"
+                                                     requiredMessage="You must supply a name"/>
+                                        <h:message styleClass="errorMsg" for="name"/>
+                                    </h:panelGrid>
+                                </td>
+                                <td><label for="taskStatus"
+                                                   rendered="true"
+                                                   value="Task Status:"/>
+                                    &nbsp;
+                                    <p:selectOneMenu id="taskStatus"
+                                                     value="#{taskDetailsBean.taskStatus}">
+                                        <f:selectItems value="#{taskDetailsBean.taskStatuses}"/>
+                                    </p:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="plannedTaskStart"
+                                                   rendered="true"
+                                                   value="Planned Start:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="plannedTaskStart"
+                                                     size="10"
+                                                     maxlength="10"
+                                                     value="#{taskDetailsBean.plannedTaskStart}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="plannedTaskStart"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td>
+                                    <label for="estimatedEffort"
+                                                   rendered="true"
+                                                   value="Estimated Effort:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="estimatedEffort"
+                                                     size="3"
+                                                     maxlength="5"
+                                                     value="#{taskDetailsBean.estimatedTaskEffort}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="estimatedEffort"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td>
+                                    <label for="plannedTaskFinish"
+                                                   rendered="true"
+                                                   value="Planned Finish:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="plannedTaskFinish"
+                                                     size="10"
+                                                     maxlength="11"
+                                                     value="#{taskDetailsBean.plannedTaskFinish}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="plannedTaskFinish"/>
+                                    </h:panelGrid>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="actualTaskStart"
+                                                   rendered="true"
+                                                   value="Actual Start:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="actualTaskStart"
+                                                     size="10"
+                                                     maxlength="10"
+                                                     value="#{taskDetailsBean.actualTaskStart}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="actualTaskStart"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td>
+                                    <label for="actualTaskEffort"
+                                                   rendered="true"
+                                                   value="Actual Effort:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="actualTaskEffort"
+                                                     size="3"
+                                                     maxlength="5"
+                                                     value="#{taskDetailsBean.actualTaskEffort}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="actualTaskEffort"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td>
+                                    <label for="actualTaskFinish"
+                                                   rendered="true"
+                                                   value="Actual Finish:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="actualTaskFinish"
+                                                     size="10"
+                                                     maxlength="10"
+                                                     value="#{taskDetailsBean.actualTaskFinish}"
+                                                     required="false"/>
+                                        <h:message styleClass="errorMsg" for="actualTaskFinish"/>
+                                    </h:panelGrid>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="taskSkills"
+                                                   rendered="true" 
+                                                   style="display: block;margin-bottom: 5px;"
+                                                   value="Skills:"/>
+                                    &nbsp;
+                                    <p:selectManyMenu 
+                                        id="taskSkills"
+                                        value="#{taskDetailsBean.selectedSkills}"
+                                        scrollHeight="60"
+                                        showCheckbox="true" >
+                                        <f:selectItems value="#{taskDetailsBean.getSkills()}" />
+                                    </p:selectManyMenu>
+                                </td>
+                                <td>
+                                    <label for="teams"
+                                                   style="display: block;margin-bottom: 5px;"
+                                                   rendered="true"
+                                                   value="Teams:"/>
+                                    &nbsp;
+                                    <p:selectManyMenu 
+                                        id="teams"
+                                        value="#{taskDetailsBean.selectedTeams}"
+                                        scrollHeight="60"
+                                        showCheckbox="true" >
+                                        <f:selectItems value="#{taskDetailsBean.getTeams()}"/>
+                                    </p:selectManyMenu>
+                                </td>
+                                <td>
+                                    <label for="volunteers"
+                                                   style="display: block;margin-bottom: 5px;"
+                                                   rendered="true"
+                                                   value="Volunteers:"/>
+                                    &nbsp;
+                                    <p:selectManyMenu 
+                                        id="volunteers"
+                                        value="#{taskDetailsBean.selectedVolunteers}"
+                                        scrollHeight="60"
+                                        showCheckbox="true" >
+                                        <f:selectItems value="#{taskDetailsBean.getVols()}"/>
+                                    </p:selectManyMenu>
+                                </td>
+                                <td/>
+                            </tr>
+                            <tr>
+                                <td/>
+                                <td align="center">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{taskDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RESOURCE)}">
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            value="Delete"
+                                            action="#{taskDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{taskDetailsBean.cancel()}"/>
+                                </td>
+                                <td/>
+                            </tr>
+                        </h:form>
+                    </table>
+                    <h:form id="form2">
+                        <table align="center" width="100%">
+                            <tr align="center" width="100%">
+                                <td align="right"  width="32%">
+                                    <label for="newResource"
+                                                   rendered="true"
+                                                   value="Resource:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                    <input type='text' id="newResource"
+                                                 size="20"
+                                                 maxlength="255"
+                                                 value="#{taskDetailsBean.resource}"
+                                                 required="false"/>
+                                    <h:message for="newResource"  styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td align="right" width="2%"/>
+                                <td align="center" width="32%">
+                                    <label for="activity"
+                                                   rendered="true"
+                                                   value="Activity:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                    <input type='text' id="activity"
+                                                 size="20"
+                                                 maxlength="255"
+                                                 value="#{taskDetailsBean.activityName}"
+                                                 required="false"/>
+                                    <h:message for="activity"  styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td> 
+                                <td align="right" width="2%"/>
+                                <td align="left" width="32%">
+                                    <label for="subtask"
+                                                   rendered="true"
+                                                   value="Subtask:"/>
+                                    &nbsp;
+                                    <h:panelGrid columns="1">
+                                        <input type='text' id="subtask"
+                                                 size="20"
+                                                 maxlength="255"
+                                                 value="#{taskDetailsBean.subtask}"
+                                                 required="false"/>
+                                    <h:message for="subtask"  styleClass="errorMsg"/>
+                                    </h:panelGrid>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td align="right" >
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add Resource"
+                                        action="#{taskDetailsBean.submitResource}"/>
+                                </td>
+                                <td align="right" width="2%"/>
+                                <td align="center" width="32%">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add Activity"
+                                        action="#{taskDetailsBean.submitActivity}"/>
+                                </td>
+                                <td align="right" width="2%"/>
+                                <td align="left" width="32%">
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Add Subtask"
+                                        action="#{taskDetailsBean.submitSubtask}"/>
+                                </td> 
+                            </tr> 
+                            {% if test="#{taskDetailsBean.activityError}">
+                                <vscomp:updateError 
+                                    bean="#{taskDetailsBean}"
+                                    colspan="3"/>
+                            {% endif %}
+                            {% if test="#{taskDetailsBean.subTaskError}">
+                                <vscomp:updateError 
+                                    bean="#{taskDetailsBean}"
+                                    colspan="3"/>
+                            {% endif %}
+                            <tr width="100%">
+                                <td colspan="5">
+                                    <table class="centeredMax">
+                                        <tr>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{taskDetailsBean.getAvailableResourcesTable()}"/>
+                                            </td>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{taskDetailsBean.getAssignedResourcesTable()}"/>
+                                            </td>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{taskDetailsBean.getActivitiesTable()}"/>
+                                            </td>
+                                            <td>
+                                                <h:outputText
+                                                    escape="false"
+                                                    value="#{taskDetailsBean.getSubtasksTable()}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td> 
+                            </tr>
+                        </table>
+                        <p:dialog header="Manage Resource"
+                                  id="myAddDialogVar"
+                                  widgetVar="myAddDialogVar" 
+                                  modal="true" 
+                                  resizable="false">
+                            <p:inputText
+                                type="hidden"
+                                id="resourceID"
+                                widgetVar="resourceID"
+                                value="#{taskDetailsBean.resourceID}"/>
+                            <table
+                                cellpadding="5">
+                                <tr><td>
+                                        <p>Name: <ins>red</ins></p></td></tr>
+                                <tr><td>
+                                        <label 
+                                            for="resourceAmt" 
+                                            value="Quantity: " />
+                                        <p:inputText 
+                                            id="resourceAmt" 
+                                            widgetVar="resourceAmt" 
+                                            value="#{taskDetailsBean.resourceAmt}">
+                                        </p:inputText>
+                                    </td></tr>
+                            </table>
+                            <p:commandButton 
+                                styleClass="reset-style"
+                                value="Submit"
+                                action="#{taskDetailsBean.addResourceAssignment}" 
+                                onclick="return checkTaskDetailInput(true);"
+                                type="submit"
+                                update="@form" />
+                            <p:commandButton 
+                                styleClass="reset-style"
+                                id="x1"
+                                value="Cancel" 
+                                action="#{taskDetailsBean.init}" 
+                                oncomplete="PF('myAddDialogVar').hide();" />        
+                        </p:dialog>
+                        <p:dialog header="Manage Resource"
+                                  id="myRemoveDialogVar"
+                                  widgetVar="myRemoveDialogVar" 
+                                  modal="true" 
+                                  resizable="false">
+                            <p:inputText
+                                type="hidden"
+                                id="resourceRemoveID"
+                                widgetVar="resourceRemoveID"
+                                value="#{taskDetailsBean.resourceRemoveID}"/>
+                            <table
+                                cellpadding="5">
+                                <tr><td>
+                                        <p>Name: <ins>$blue</ins></p></td></tr>
+                                <tr><td>
+                                        <label 
+                                            for="resourceRemoveAmt" 
+                                            value="Quantity: " />
+                                        <p:inputText 
+                                            id="resourceRemoveAmt" 
+                                            widgetVar="resourceRemoveAmt" 
+                                            value="#{taskDetailsBean.resourceRemoveAmt}">
+                                        </p:inputText>
+                                    </td></tr>
+                            </table>
+                            <p:commandButton 
+                                styleClass="reset-style"
+                                value="Submit"
+                                action="#{taskDetailsBean.removeResourceAssignment()}" 
+                                onclick="return checkTaskDetailInput(false);"
+                                type="submit"
+                                update="@form" />
+                            <p:commandButton 
+                                styleClass="reset-style"
+                                id="x2"
+                                value="Cancel" 
+                                action="#{taskDetailsBean.init}" 
+                                oncomplete="PF('myRemoveDialogVar').hide();" />        
+                        </p:dialog>
+                    </h:form>
+                {% endif %}
+                <script>
+                    function checkTaskDetailInput(isAdd) {
+                        var result = true;
+                        var msg = "";
+                        var rqdWidget = "";
+                        var available = "";
+                        if (isAdd) {
+                            rqdWidget = document.getElementById("form2:resourceAmt");
+                            available = document.volschedAmt;
+                        } else {
+                            rqdWidget = document.getElementById("form2:resourceRemoveAmt");
+                            available = document.volschedRemoveAmt;
+                        }
+                        var rqd = rqdWidget.value;
+                        if (isNumber(rqd) === false) {
+                            result = false;
+                        } else {
+                            result = checkRange(rqd, 0, available);
+                            if (result === false) {
+                                msg = "You must supply a quantity between 0 and " + available;
+                            }
+                        }
+                        if (result) {
+                            if (isAdd) {
+                                PF('resourceAmt').jq.val(rqd).trigger('change');
+                                PF('myAddDialogVar').hide();
+                            } else {
+                                PF('resourceRemoveAmt').jq.val(rqd).trigger('change');
+                                PF('myRemoceDialogVar').hide();
+                            }
+                        } else {
+                            msg = "Quantity must be a number between 0 and"
+                                    + available
+                                    + "\n You entered \"" + rqd + '"';
+                            alert(msg);
+                        }
+                        return result;
+                    }
+
+                    function prepareAddForPF(link) {
+                        var allInsTags = document.querySelectorAll('ins');
+                        allInsTags.forEach(insTag => {
+                            var tagContent = insTag.textContent;
+                            if (tagContent === "red") {
+                                var name = link.innerHTML;
+                                var idx = name.indexOf(':');
+                                name = name.substring(0, idx);
+                                insTag.textContent = name;
+                            }
+                        });
+                        var href = link.href;
+                        var args = href.split('&amp;');
+                        var amt = "";
+                        var resourceID = "";
+                        args.forEach(arg => {
+                            pair = arg.split("=");
+                            if (pair[0] === "qty") {
+                                amt = pair[1];
+                            }
+                            if (pair[0] === "id") {
+                                resourceID = pair[1];
+                            }
+                        });
+                        PF('resourceAmt').jq.val(amt);
+                        document.volschedAmt = amt;
+                        if (parseInt(amt) > 1) {
+                            PF('resourceID').jq.val(resourceID);
+                            PF('myAddDialogVar').show();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+
+                    function prepareRemoveForPF(link) {
+                        var allInsTags = document.querySelectorAll('ins');
+                        allInsTags.forEach(insTag => {
+                            var tagContent = insTag.textContent;
+                            if (tagContent === "$blue") {
+                                var name = link.innerHTML;
+                                var idx = name.indexOf(':');
+                                name = name.substring(0, idx);
+                                insTag.textContent = name;
+                            }
+                        });
+                        var href = link.href;
+                        var args = href.split('&amp;');
+                        var amt = "";
+                        var resourceID = "";
+                        args.forEach(arg => {
+                            pair = arg.split("=");
+                            if (pair[0] === "qty") {
+                                amt = pair[1];
+                            }
+                            if (pair[0] === "id") {
+                                resourceID = pair[1];
+                            }
+                        });
+                        PF('resourceRemoveAmt').jq.val(amt);
+                        document.volschedRemoveAmt = amt;
+                        if (parseInt(amt) > 1) {
+                            PF('resourceRemoveID').jq.val(resourceID);
+                            PF('myRemoveDialogVar').show();
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    }
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,57 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+
+    <body>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Volunteer Job Assignment");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_JOB_ASSIGNMENTS)}">
+                    <h:form id="myForm">
+                        <table align="center">
+                            <th>#{assignmentBean.title()}</th>
+                            <tr>
+                                <td>
+                                    <vscomp:autoClick 
+                                        bean="#{volunteerJobAssignmentBean}"
+                                        label="Accept Assignment"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_JOB_ASSIGNMENTS)}">
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            action="#{assignmentBean.delete()}" 
+                                            value="Delete"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        action="#{assignmentBean.cancel2()}" 
+                                        value="Cancel"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{assignmentBean}"
+                                colspan="1"/>
+                        </table>
+                    </h:form>
+                    <h:outputText 
+                        value="#{assignmentBean.loadScript()}"
+                        escape="false"
+                        rendered="true"/>
+                {% endif %}
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

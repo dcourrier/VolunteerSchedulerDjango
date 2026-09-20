@@ -1,0 +1,105 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      
+      
+      >
+    <body>
+        <script>
+            function validateInput(regexString) {
+                var theEvent = window.event || event;
+                var key = theEvent.keyCode || theEvent.which;
+                if (key >= 46) {
+                    key = String.fromCharCode(key);
+                    var regex = new RegExp("^" + regexString + "$");
+                    if (!regex.test(key)) {
+                        theEvent.returnValue = false;
+                        if (theEvent.preventDefault) {
+                            theEvent.preventDefault();
+                        }
+                    }
+                }
+            }
+        </script>
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Tasks");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_TASK)}">
+
+                    <h:form>
+                        <table cellpadding="5" class="centered">
+                            <th colspan="2"><h3>Add Task</h3></th>
+                            <tr>
+                                <td>
+                                    <table class="centered">
+                                        <tr>
+                                            <td class="label">
+                                                <label for="taskSequence"
+                                                               rendered="true"
+                                                               value="Sequence Number:"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' id="taskSequence"
+                                                             size="4"
+                                                             maxlength="5"
+                                                             value="#{tasksBean.sequence}"/>
+                                            </td>
+                                            <td width="2%"/>
+                                            <td class="label">
+                                                <label for="taskName"
+                                                               rendered="true"
+                                                               value="Task Name:"/>
+                                            </td>
+                                            <td>
+                                                <input type='text' id="taskName"
+                                                             size="30"
+                                                             maxlength="#{tasksBean.taskNameMaxLength}"
+                                                             value="#{tasksBean.name}"/>
+                                            </td>
+                                        </tr>
+                                        {% if test="#{tasksBean.error}">
+                                            <vscomp:updateError 
+                                                bean="#{tasksBean}"
+                                                colspan="5"/>
+                                        {% endif %}
+                                    </table> 
+                                </td>
+                            </tr>             
+                            <tr>
+                                <td>   
+                                    <table class="centered">
+                                        <tr>
+                                            <td align="center">
+                                                <p:commandButton 
+                                        styleClass="reset-style"
+                                                    value="Add Task"
+                                                    action="#{tasksBean.submit}"/>
+                                                &nbsp;&nbsp;
+                                                <p:commandButton 
+                                        styleClass="reset-style"
+                                                    value="Cancel"
+                                                    action="#{tasksBean.cancel}"/>
+                                            </td>
+                                        </tr>
+                                        <h:outputText
+                                            escape="false"
+                                            value="#{tasksBean.table}"/>   
+                                    </table> 
+                                </td>
+                            </tr> 
+                        </table>
+                    </h:form>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

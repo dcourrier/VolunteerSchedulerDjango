@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!-- INTERFACE -->
+    <h:head>
+        <title>This will not be present in rendered output</title>
+        <h:outputStylesheet library="css" name="default.css"/>
+    </h:head>
+    <cc:interface>
+        <cc:attribute name="bean" type="com.courrier.volunteer.web.backing.AddressBean"/>
+    </cc:interface>
+    <cc:implementation>
+        <tr>
+            <td> 
+                <h:outputLabel for="employer" value="Employer"/>
+            </td>
+            <td>        
+                <h:inputText id="employer" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.employerLength}"
+                             value="#{cc.attrs.bean.employer}" 
+                             required="false"/>
+            </td>
+            <td/>
+            <td> 
+                <h:outputLabel for="job" value="Job Title"/>
+            </td>
+            <td colspan="2">     
+                <h:inputText id="job" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.jobLength}"
+                             value="#{cc.attrs.bean.job}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="wastreet" value="Street"/>
+            </td>
+            <td>        
+                <h:inputText id="wastreet" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.streetLength}"
+                             value="#{cc.attrs.bean.street}" 
+                             required="false"/>
+            </td>
+            <td/>
+            <td> 
+                <h:outputLabel for="waaddressLineTwo" value="Address Line Two"/>
+            </td>
+            <td colspan="2">     
+                <h:inputText id="waaddressLineTwo" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.addressLineTwoLength}"
+                             value="#{cc.attrs.bean.addressLineTwo}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="wacity" value="City"/>
+            </td>
+            <td>       
+                <h:inputText id="wacity" 
+                             size="25"
+                             maxlength="#{cc.attrs.bean.cityLength}"
+                             value="#{cc.attrs.bean.city}" 
+                             required="false"/>
+            </td>
+            <td width="5"/>
+            <td> 
+                <h:outputLabel for="wastate" value="State"/>
+            </td>
+            <td colspan="2">    
+                <h:inputText id="wastate" 
+                             size="2"
+                             maxlength="#{cc.attrs.bean.stateLength}"
+                             value="#{cc.attrs.bean.state}" 
+                             required="false"/>&nbsp;&nbsp;&nbsp;
+                <h:outputLabel for="wapostalCode" value="Postal Code"/>&nbsp;   
+                <h:inputText id="wapostalCode" 
+                             size="#{cc.attrs.bean.postalCodeLength}"
+                             maxlength="#{cc.attrs.bean.postalCodeLength}"
+                             value="#{cc.attrs.bean.postalCode}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"> 
+                <h:outputLabel for="waphone" value="Phone"/>>&nbsp;
+                <h:inputText id="waphone" 
+                             size="#{cc.attrs.bean.phoneLength}"
+                             maxlength="#{cc.attrs.bean.phoneLength}"
+                             value="#{cc.attrs.bean.phone}" 
+                             required="false"/>&nbsp;
+                <h:outputLabel for="wamobilePhone" value="Cell"/>&nbsp;
+                <h:inputText id="wamobilePhone" 
+                             size="#{cc.attrs.bean.mobilePhoneLength}"
+                             maxlength="#{cc.attrs.bean.mobilePhoneLength}"
+                             value="#{cc.attrs.bean.mobilePhone}" 
+                             required="false"/>
+            </td>
+            <td colspan="3"> 
+                <h:outputLabel for="wapager" value="Pager"/>
+                &nbsp;
+                <h:inputText id="wapager" 
+                             size="#{cc.attrs.bean.pagerLength}"
+                             maxlength="#{cc.attrs.bean.pagerLength}"
+                             value="#{cc.attrs.bean.pager}" 
+                             required="false"/>
+                &nbsp;
+                <h:outputLabel for="wafax" value="Fax"/>
+                &nbsp;
+                <h:inputText id="wafax" 
+                             size="#{cc.attrs.bean.faxLength}"
+                             maxlength="#{cc.attrs.bean.faxLength}"
+                             value="#{cc.attrs.bean.fax}" 
+                             required="false"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 
+                <h:outputLabel for="waemail" value="Email"/>
+            </td>
+            <td colspan="4">
+                <h:inputText id="waemail" 
+                             size="30"
+                             maxlength="#{cc.attrs.bean.emailLength}"
+                             value="#{cc.attrs.bean.email}" 
+                             required="false"/>
+            </td>
+        </tr>
+    </cc:implementation>
+</html>

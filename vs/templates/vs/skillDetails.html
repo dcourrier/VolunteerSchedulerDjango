@@ -1,0 +1,105 @@
+{% csrf_token %}
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      
+      
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      
+      
+      >
+
+    <body>
+
+        <ui:composition template="./../template/default.xhtml">
+            <ui:define name="content">
+                <script>
+                    function loaded() {
+                        setHeader("Skill Edit");
+                    }
+                </script>
+                {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SKILL)}">
+                    <table cellpadding="5" width="100%">
+                        <h:form>
+                            <tr>
+                                <td class="label"><label for="name"
+                                                                 rendered="true"
+                                                                 value="Name:"/></td>
+                                <td>
+                                    <input type='text' id="name"
+                                                 size="30"
+                                                 maxlength="#{skillDetailsBean.skillNameMaxLength}"
+                                                 value="#{skillDetailsBean.name}"
+                                                 required="true"
+                                                 requiredMessage="You must supply a name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label for="relationship"
+                                                   rendered="true"
+                                                   value="Unrelated skills"/>&nbsp;
+                                    <h:selectOneMenu id="relationship"
+                                                     hideNoSelectionOption="true"
+                                                     value="#{skillDetailsBean.relatedSkillID}">
+                                        <f:selectItem 
+                                            noSelectionOption="true"
+                                            itemValue="#{null}"/>
+                                        <f:selectItems 
+                                            value="#{skillDetailsBean.availableSkills}" 
+                                            var="s"
+                                            itemLabel="#{s.skillName}" 
+                                            itemValue="#{s.ID}"/>
+                                    </h:selectOneMenu>&nbsp;
+                                    <label for="relationshipType"
+                                                   rendered="true"
+                                                   value="Type"/>&nbsp;
+                                    <h:selectOneMenu id="relationshipType"
+                                                     value="#{skillDetailsBean.relationshipTypeID}">
+                                        <f:selectItems 
+                                            value="#{skillDetailsBean.relationshipTypes}" 
+                                            var="t"
+                                            itemLabel="#{t.displayString}" 
+                                            itemValue="#{t.skillRelationshipTypeID}"/>
+                                    </h:selectOneMenu>&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">&nbsp;</td>
+                                <td>
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Save"
+                                        action="#{skillDetailsBean.submit}"/>&nbsp;
+                                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_SKILL)}">
+                                        <p:commandButton 
+                                            styleClass="reset-style"
+                                            value="Delete"
+                                            rendered="#{skillDetailsBean.canDelete()}"
+                                            action="#{skillDetailsBean.delete()}"/>&nbsp;
+                                    {% endif %}
+                                    <p:commandButton 
+                                        styleClass="reset-style"
+                                        value="Cancel"
+                                        action="#{skillDetailsBean.cancel()}"/>
+                                </td>
+                            </tr>
+                            <vscomp:updateError 
+                                bean="#{skillDetailsBean}"
+                                colspan="2"/>
+                        </h:form>
+                        <tr>
+                            <td colspan="2">
+                                <h:outputText 
+                                    escape="false"
+                                    value="#{skillDetailsBean.relationshipsTable}"/>
+                            </td>
+                        </tr>
+                    </table>
+                {% endif %}
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
