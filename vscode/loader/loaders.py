@@ -445,7 +445,7 @@ class PrivilegeLoader:
             fields = code.split(",")
             privID = int(fields[0])
             p = DbPrivilege()
-            p.privilegeID = privId
+            p.privilegeID = privID
             p.privilegeName = fields[1]
             p.privilegeCreateUser = login
             p.privilegeUpdateUser = login
@@ -543,10 +543,10 @@ class SecurityGroupLoader:
             fields = code.split(",")
             objID = (int(fields[0]) + loop)
             try:
-                sg = DbSecurityGroup.objects.get(pk=objId)
+                sg = DbSecurityGroup.objects.get(pk=objID)
             except :
                 sg = DbSecurityGroup()
-                sg.securityGroupID = objId
+                sg.securityGroupID = objID
                 sg.level = int(fields[1])
                 sg.securityGroupName = fields[2]
                 sg.securityGroupDescription = fields[3]

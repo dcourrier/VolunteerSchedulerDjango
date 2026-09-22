@@ -950,7 +950,7 @@ class StateCode(ValueTable):
     def __init__(self, myDb=None):
         super().__init__()
         self.myDb = myDb
-        self.sc_ID = IntegerAttribute("sc_id")
+        self.sc_id = IntegerAttribute("sc_id")
         self.sc_name = StringAttribute("sc_name")
         self.sc_code = StringAttribute("sc_code")
         self.deleteFlag = BooleanAttribute('deleteFlag')
@@ -977,6 +977,8 @@ class StateCode(ValueTable):
         self.sc_code.setMinimumLength(2)
         
         self.deleteFlag.value = False
+        if myDb:
+            self.fromDb()
 
     def load(self):
         result = {}
@@ -991,21 +993,22 @@ class StateCode(ValueTable):
     def getDisplayString(self):
         result = 'StateCode{sc_id='
         if not self.sc_id.value:
-            result += None
+            result += 'None'
         else:
             result += str(self.sc_id.value)
             
         result += ', sc_code='    
         if not self.sc_code.value:
-            result += None
+            result += 'None'
         else:
             result += str(self.sc_code.value)
             
         result += ', sc_name=' 
         if not self.sc_name.value:
-            result += None
+            result += 'None'
         else:
             result += str(self.sc_name.value)
+        result += (', deleteFlag=' + str(self.deleteFlag) + '}')
         return result   
     
     def getSc_code(self):
@@ -1049,6 +1052,8 @@ class StateCode(ValueTable):
                 else:
                     myAtt = att
                 self.__dict__[name] = myAtt
+            #print(name + ':' + str(myAtt))
+            #self.sc_id = myDb.stateCode_id
 
     def validate(self):
         atts = self.getAttributeList()

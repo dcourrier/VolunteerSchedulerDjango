@@ -10,7 +10,7 @@ class DbProjectStatus(models.Model):
         return self.projectStatusDescription    
 
 class DbStateCode(models.Model):
-    sc_ID = models.AutoField(primary_key=True)
+    sc_id = models.AutoField(primary_key=True)
     sc_code = models.CharField(max_length=2, null=True, blank=True)
     sc_name = models.CharField(max_length=255, null=True, blank=True)
     deleteFlag = models.BooleanField(default=False)

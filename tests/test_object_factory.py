@@ -36,7 +36,7 @@ class ObjectFactoryTests(VSTestBase):
                     count += 1
         if count:
             print('\nThere are ' + str(count) + ' unfinished ObjectFactory tests in ' +str(lines) + ' lines of code')          
-                                         
+                                                 
     def test_createLogin(self):
         LoaderManager().load()
         err = None
@@ -454,7 +454,28 @@ class ObjectFactoryTests(VSTestBase):
         assert len(result1) == 11, "expected 11 logins, got " + str(len(result1))
         assert result2, "no output for org"
         assert len(result2) == 3, "expected 3 logins, got " + str(len(result2))
- 
+       
+    def test_getCurrentUsersPrivileges(self):
+        LoaderManager().load()
+        of = ObjectFactory()
+        err = None
+        result = None
+        try:
+            org = of.createOrganization('test_getLogins', 1)
+            org.save()
+            li = of.createLogin('vjfetzer', 'Veeble Fetzer', org,1)
+            for sg in of.getSecurityGroups():
+                li.addSecurityGroup(sg)
+            li.save()
+            result = of.getCurrentUsersPrivileges(li)
+        except Exception as e:
+            err = e
+            super().handleException(e)
+        assert not err, "got an exception"
+        assert li, 'got no Login'
+        assert result, 'got no privilege list'
+        assert len(result)  == 24, 'Wrong count expected 24 got ' + str(len(result))
+    
     def test_getNewConfigurationSet(self):
         LoaderManager().load()
         of = ObjectFactory()
@@ -1802,6 +1823,7 @@ class ObjectFactoryTests(VSTestBase):
             org.save()
             sc = of.getNewStateCode('ab', name)
             sc.delete()
+            #print(sc)
             result = DbStateCode.objects.filter(deleteFlag=True).filter(pk=sc.getSc_id())
         except Exception as e:
             err = e
@@ -2994,7 +3016,7 @@ class ObjectFactoryTests(VSTestBase):
             super().handleException(e)
         assert not err, "got an exception"
         assert result, "no output"
- 
+    
     def test_getObject(self):
         LoaderManager().load()
         of = ObjectFactory()
@@ -3004,7 +3026,7 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             org.save()
-            result = of.getObject(StateCode,1)
+            result = of.getObject(Organization,org.getOrganizationID())
         except Exception as e:
             err = e
             super().handleException(e)
@@ -3030,7 +3052,7 @@ class ObjectFactoryTests(VSTestBase):
         assert len(result) > 0, 'nothing returned using class'
         assert result2, "no output"
         assert len(result2) > 0, 'nothing returned using string'
- 
+    
     def test_getOpenDatesBefore(self):
         LoaderManager().load()
         of = ObjectFactory()
@@ -3040,7 +3062,7 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             org.save()
-            evt = of.getNewEvent(name, 1, org)
+            of.getNewEvent(name, 1, org)
             end = DT.strptime('2100-01-01', '%Y-%m-%d')
             result = of.getOpenDatesBefore(end, org)
         except Exception as e:
@@ -3060,7 +3082,7 @@ class ObjectFactoryTests(VSTestBase):
             org.save()
             loc = of.getNewLocation(name,1,org)
             evt1 = of.getNewEvent(name, 1, org)
-            e1ID = evt1.getEventID()
+            e1id = evt1.getEventID()
             evt1.setLocation(loc)
             evt1.save()
             evt2 = of.getNewEvent('evt2', 1, org)
@@ -3084,9 +3106,9 @@ class ObjectFactoryTests(VSTestBase):
             org = of.createOrganization(name, 1)
             org.save()
             hh = of.getNewHousehold('1',name,1,org)
-            hID = hh.getHouseholdID()
+            hid = hh.getHouseholdID()
             vol1 = of.getNewVolunteer(hh,1,org)
-            vID = vol1.getVolunteerID()
+            vid = vol1.getVolunteerID()
             vol1.setVolunteerFirstName('1')
             vol1.save()
             vol2 = of.getNewVolunteer(hh,1,org)
@@ -3394,7 +3416,7 @@ class ObjectFactoryTests(VSTestBase):
             res.setCount(10)
             res.save()
             evt = of.getNewEvent(name,1,org)
-            result =of.getResourceAvailabilities(evt)
+            result = of.getResourceAvailabilities(evt)
         except Exception as e:
             err = e
             super().handleException(e)
@@ -3658,7 +3680,8 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             org.save()
-            result = of.getStateCode(1)
+            sc = of.getStateCodes()[0]
+            result = of.getStateCode(sc.getSc_id())
         except Exception as e:
             err = e
             super().handleException(e)
@@ -4509,7 +4532,7 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             org.save()
-            sc = of.getStateCode(1)
+            sc = of.getStateCodes()[0]
             sc.delete()
             result = of.getDeletedStateCodes()
         except Exception as e:
@@ -4734,7 +4757,8 @@ class ObjectFactoryTests(VSTestBase):
         elif name[-1] == 'y':
             result = name[:-1] + 'ies'
         return result
-          
+    '''
+    '''      
     def test_getRequiredTests(self):
         #print('running')
         needed = []

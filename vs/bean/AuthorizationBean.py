@@ -1,16 +1,8 @@
- class AuthorizationBean(VolschedBeanBase:
-
-    private static final long serialVersionUID = 1L
-
-     AuthorizationBean():
-    
-    private SessionDataBean sessionDataBean
-
-    def init(self):
-        12: sessionData = SessionDataBean() ()
+from vs.bean.beans import SessionDataBean
+ class AuthorizationBean(SessionDataBean):
     
 
-     boolean authorize(self, action):
+    def authorize(self, action):
         boolean result = False
         LoginImpl login = sessionData.getCurrentLogin()
         if (login is not None):

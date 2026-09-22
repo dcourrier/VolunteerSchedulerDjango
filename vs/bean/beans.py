@@ -56,6 +56,34 @@ class RequestType(Enum):
     volunteer = 17
     volunteerSkill = 18
 
+
+class AuthorizationManager():
+
+    @staticmethod
+    def isAuthorized(request, login):
+        result = False
+        if request is not None and login:
+            securityGroups = login.getSecurityGroups()
+            for sg in securityGroups:
+                for priv in sg.getPrivileges():
+                    if request == priv.getPrivilegeName():
+                        result = True
+                        break
+                if result:
+                    break
+        return result
+    
+    @staticmethod
+    def isVolunteerUser(login):
+        result = False
+        if login:
+            securityGroups = login.getSecurityGroups()
+            if len(securityGroups) == 1:
+                sg = securityGroups[0]
+                if 'SECURITY_GROUP_VOLUNTEER'.lower() == sg.getSecurityGroupName().lower():
+                    result = True
+        return result;
+    
     
 class RequestParametersHolder():
 
@@ -330,6 +358,7 @@ class SessionData(VSBaseBean):
         self.cameFromHousehold = False
         self.cameFromHouseholds = False
         self.currentLogin = None
+        self.currentLoginPrivileses = []
         self.loginLevel = 10000
         self.initialized = False
         self.skillCounts = []
@@ -1591,7 +1620,8 @@ class LoginBean(SessionDataBean):
                         login.succeed()
                         self.sessionData.errorMessage = None
                         self.sessionData.setCurrentLogin(login)
-                        result = Menu.HOME
+                        self.currentLoginPrivileges = ObjectFactory().getCurrentUsersPrivileges(login)
+                        result = Menu.HOME                        
         return result
 
     def getOrgname(self, val):

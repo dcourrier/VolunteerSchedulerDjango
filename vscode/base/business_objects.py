@@ -1608,16 +1608,19 @@ class Login(BusinessObject):
         #   print(str(type(key)) +   + str(key))
         keyVal = int(LoginStatus.STATUS_RESET)
         ls = vt.getValue(table='LoginStatus', key=keyVal)
+        #print(ls)
         if ls:
             self.setLoginStatus(ls)
-            self.loginStatusID = LoginStatus.STATUS_RESET
+            self.loginStatusID.value = LoginStatus.STATUS_RESET
             self.save()
         else:
             raise Exception("didnt get login status for " + str(keyVal))
             
     def isReset(self):
-        # print(str(self.loginStatus.loginStatusID) +  :  + str(self.loginStatusID))
-        return int(self.loginStatusID.value) == int(LoginStatusLoader.RESET)
+        #print(str(LoginStatusLoader.RESET) + ' : ' + str(self.getLoginStatusID()))
+        result = str(self.getLoginStatusID()) == str(LoginStatusLoader.RESET)
+        #print(result)
+        return result
 
     def getLoginStatusID(self):
         return self.loginStatusID.getValue()
@@ -1697,7 +1700,7 @@ class Login(BusinessObject):
             secGrp = secGrp.myDb
         elif not isinstance(secGrp, DbSecurityGroup):
             raise InvalidArgumentException(str(type(secGrp)) + 'is not a security group')
-        self.securityGroups.add(secGrp)
+        self.securityGroups.append(secGrp)
             
     def removeSecurityGroup(self, sg):
         result = False
@@ -1858,7 +1861,10 @@ class Login(BusinessObject):
             if self.securityGroups and self.loginID.value:
                 self.myDb.securityGroups.clear()
                 for secGrp in self.securityGroups:
-                    self.myDb.securityGroups.add(secGrp.myDb)
+                    if isinstance(secGrp,DbSecurityGroup):
+                        self.myDb.securityGroups.add(secGrp)
+                    else:
+                        self.myDb.securityGroups.add(secGrp.myDb)
         self.myDb.organization = None
         if self.organization:
             if isinstance(self.organization, Organization): 
@@ -3622,9 +3628,9 @@ class Location(BusinessObject):
     def setOrganization(self, oi):
         self.organization = oi
         if not oi or not oi.getOrganizationID(): 
-            oID = None
+            oid = None
         else:
-            oID = oi.getOrganizationID()
+            oid = oi.getOrganizationID()
         try:
             self.setLocationOrganizationID(oid)
         except:
@@ -4400,9 +4406,9 @@ class Project(BusinessObject):
     
     def setStatus(self, status):
         self.status = status
-        sID = None
+        sid = None
         if status:
-            sID = status.getProjectStatusID()
+            sid = status.getProjectStatusID()
         self.setProjectStatusID(sid)
         #print(str(status) + ' sid= ' + str(sid))
     
@@ -6489,9 +6495,9 @@ class Household(BusinessObject):
         if not add:
             add = ObjectFactory().getNewAddress(self.getAddressUpdateUser())
             self.setAddress(add)
-        uID = self.myDb.householdUpdateUser
+        uid = self.myDb.householdUpdateUser
         if not uid:
-            uID = 1
+            uid = 1
         if not add.getAddressCreateUser():
             add.setAddressCreateUser(uid)
         if not add.getAddressUpdateUser():
@@ -7511,14 +7517,14 @@ class Job(BusinessObject):
     def setAssignment(self, newJobAssignment):
         self.assignment = newJobAssignment
         if newJobAssignment:
-            oID = self.assignment.getJobAssignmentID()
+            oid = self.assignment.getJobAssignmentID()
             self.setJobAssignmentID(oid)
         
     def setSkill(self, newSkill):
         self.skill = newSkill
-        oID = 0 
+        oid = 0 
         if newSkill:
-            oID = newSkill.getSkillID()
+            oid = newSkill.getSkillID()
         self.setJobSkillID(oid)
 
     def getSkill(self):
@@ -7693,7 +7699,7 @@ class Job(BusinessObject):
                 else:
                     myAtt = att
                 self.__dict__[name] = myAtt
-        dbID = self.myDb.skill_id
+        dbid = self.myDb.skill_id
         if dbid:
             self.setSkill(of.getSkill(dbid))
         try:
@@ -9183,7 +9189,7 @@ class Schedule(BusinessObject):
         #print('enter delete() ' + self.__class__.__name__)
         loginID = self.getLastUpdateUser()
         #print('after getLastUpdateUser() ' + self.__class__.__name__)
-        EventRejecter(self, loginId).rejectEvents()
+        EventRejecter(self, loginID).rejectEvents()
         #print('after EventRejecter() ' + self.__class__.__name__)
         self.flagDeleted()
         #print('after flagDeleted() ' + self.__class__.__name__)
@@ -10384,13 +10390,13 @@ class ObjectFactory(VSBase):
                                 projectName=name,
                                 projectCreateUser=uid,
                                 projectUpdateUser=uid,
-                                organization_ID = org.getOrganizationID(),
+                                organization_id = org.getOrganizationID(),
                                 projectStatus_id=1)
         if parent:
             if isinstance(parent, Project):
-                dbo.parent_ID = parent.getProjectID()
+                dbo.parent_id = parent.getProjectID()
             else:
-                dbo.parent_ID = parent.projectID
+                dbo.parent_id = parent.projectID
             dbo.save()
         return Project(dbo)
     
@@ -10651,6 +10657,14 @@ class ObjectFactory(VSBase):
         if len(result) > 1:
             Collections.sort(result)
         return result
+    
+    def getCurrentUsersPrivileges(self, login):
+        privs = {}
+        dblog = DbLogin.objects.filter(pk=login.getLoginID()).first()
+        for sg in dblog.securityGroups.all():
+            for priv in sg.privileges.all():
+                privs[priv.privilegeName] = priv.privilegeName
+        return [*privs.values()]
     
     def getDeletedLogins(self):
         result = []
@@ -11027,7 +11041,7 @@ class ObjectFactory(VSBase):
                                                securityGroupCreateUser = uid,
                                                securityGroupUpdateUser = uid,
                                                securityGroupDescription = desc,
-                                               organization_ID = org.getOrganizationID())
+                                               organization_id = org.getOrganizationID())
                                                
         return SecurityGroup(dbo)
     
@@ -11398,17 +11412,15 @@ class ObjectFactory(VSBase):
             Collections.sort(result)        
         return result
     
-    def getNewEvent(self,name=None, uid=None, org=None, sei=None, dbo=False):
+    def getNewEvent(self,name, uid, org, sei=None, dbo=False):
         dbo1 = DbScheduleEvent.objects.create(
                             eventDate=DT.now(),
                             eventDuration=1,
                             eventStartTime='00:00',
                             eventName=name,
                             eventCreateUser=uid,
-                            eventUpdateUser=uid)
-        if org:
-            dbo1.organization_ID = org.getOrganizationID()
-            dbo1.save()
+                            eventUpdateUser=uid,
+                            organization_id=org.getOrganizationID())
         
         result = ScheduleEvent(dbo1)
         if sei:
@@ -11767,9 +11779,9 @@ class ObjectFactory(VSBase):
     
     def getNewJob(self,  skill, uid, event, dbo=False):
         if dbo:
-            eID = event.eventID
+            eid = event.eventID
         else:
-            eID =  event.getEventID()
+            eid =  event.getEventID()
         dbo = DbJob.objects.create(
             jobCreateUser=uid,
             jobUpdateUser=uid,
@@ -11977,6 +11989,7 @@ class ObjectFactory(VSBase):
         .filter(organization_id=org.getOrganizationID())\
         .filter(eventDate__lte=start)
         for dbo in dbos:
+            #print(dbo)
             if dbo.schedule_id:
                 continue
             result.append(ScheduleEvent(dbo))
@@ -12045,6 +12058,7 @@ class ObjectFactory(VSBase):
     
     def getNewStateCode(self, code, name):
         dbo = DbStateCode.objects.create(sc_code=code,sc_name=name)
+        dbo.save()
         return StateCode(dbo)
 
     def getStateCode(self, oid):
