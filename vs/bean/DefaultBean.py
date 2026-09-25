@@ -1,28 +1,13 @@
- class DefaultBean(VolschedBeanBase:
+ class DefaultBean(SessionDataBean):
 
-    private static final long serialVersionUID = 1L
-
-    private LoginImpl login
-    private String page = ""
-    
-    private SessionDataBean sessionDataBean
-
-     DefaultBean():
-    
-
-    def init(self):
-        12: sessionData = SessionDataBean() ()
-        LoginImpl li = sessionData.getCurrentLogin()
-        if (li is not None && self.login == None):
-            self.login = li
+    def __init__(self):
+        super().__init__()
         
-    
-
     def getPage(self):
-        return page
+        return self.page
     
 
-    def setPage(selfString page):
+    def setPage(selfS, page):
         self.page = page
     
 
@@ -31,14 +16,13 @@
     
     
     def getHelp(self):
-a>"
+        pass
     
     
-    private String getPageName():
-        String uri = getRequest().getRequestURI()
-")
-        String result = uri.substring(index + 1)
-        index = StringUtils.indexOf(result, ".")
+    def getPageName(self):
+        uri = self.getRequest().getRequestURI()
+        result = uri.substring(index + 1)
+        index = Utils.indexOf(result, ".")
         if (index > 0):
             result = result.substring(0, index)
         

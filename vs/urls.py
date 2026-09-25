@@ -9,6 +9,7 @@ urlpatterns = [
     path("vs/assignments", views.DummyView.as_view(), name="assignments"),
     path("vs/events", views.DummyView.as_view(), name="events"),
     path("vs/forgotPassword", views.DummyView.as_view(), name="forgotPassword"),
+    path("vs/help", views.HelpView.as_view(), name="help"),
     path("vs/home/", views.Home.as_view(), name="home"),
     path("vs/households", views.DummyView.as_view(), name="households"),
     path("vs/login/", views.LoginView.as_view(), name="tryLogin"),

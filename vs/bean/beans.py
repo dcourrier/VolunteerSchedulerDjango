@@ -358,7 +358,7 @@ class SessionData(VSBaseBean):
         self.cameFromHousehold = False
         self.cameFromHouseholds = False
         self.currentLogin = None
-        self.currentLoginPrivileses = []
+        self.currentLoginPrivileges = []
         self.loginLevel = 10000
         self.initialized = False
         self.skillCounts = []
@@ -1382,6 +1382,220 @@ class  SessionDataBean(VSBaseBean):
                 Collections.sort(self.sessionData.volunteers, VolunteerComparator())
         except Exception as e: 
             super().handleException(e)
+
+
+class BreadCrumb(SessionDataBean):
+    
+    def __init__(self, name, url):
+        self.name = name;
+        self.url = url
+        
+    def getName(self):
+        return self.name
+
+    def getUrl(self):
+        return self.url
+
+
+class BreadCrumbManager(SessionDataBean):
+
+    breadcrumbs = []
+
+    @staticmethod
+    def getBreadcrumbs():
+        return BreadCrumbManager.breadcrumbs
+
+    @staticmethod
+    def getLastBreadcrumb():
+        result = None;
+        if BreadCrumbManager.breadcrumbs:
+            result = BreadCrumbManager.breadcrumbs[-1]
+        return result
+    
+    @staticmethod
+    def removeLastBreadcrumb():
+        result = None
+        if BreadCrumbManager.breadcrumbs:
+            result = BreadCrumbManager.breadcrumbs.pop()
+        return result
+
+    @staticmethod
+    def add(breadcrumb):
+        if ("home" in breadcrumb.getName() and "/help/" not in breadcrumb.getUrl().lower())\
+        or (breadcrumb.getName().endswith("login") and "/help/" not in breadcrumb.getUrl().lower()):
+            BreadCrumbManager.breadcrumbs = []
+        else:
+            if "/help/" not in breadcrumb.getUrl().lower() and \
+            'passwordchange' not in breadcrumb.getUrl().lower():
+                found = False;
+                idx = 0
+                for b in BreadCrumbManager.breadcrumbs:
+                    if breadcrumb.getUrl() == b.getUrl():
+                        found = True;
+                        break
+                    idx += 1
+                if found:
+                    try:
+                        BreadCrumbManager.breadcrumbs.pop(idx)
+                    except:
+                        pass
+                else:
+                    BreadCrumbManager.breadcrumbs.append(breadcrumb)
+
+
+class HelpBean(SessionDataBean):
+    HELP_FOOTER_VOLUNTEER_ENTRIES = [
+        "<BR/>",
+        "<table class=\"helpMenuTable\" width=\"100%\">",
+        "    <thead class=\"helpMenuTable\">Click below for help on:</thead>",
+        "    <tr>",
+        "        <!--td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/volunteerOverview.html\" title=\"overview\">",
+        "                Volunteer Scheduler overview</A>",
+        "        </td-->",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/menuVolunteer.html\" title=\"Menu help\">",
+        "                Menu</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/volunteerUpdateLimited.html\" title=\"Home Page help\">",
+        "                Home Page</A>",
+        "        </td>",
+        "    </tr>",
+        "</table>"
+    ]
+
+    HELP_FOOTER_ENTRIES = [
+        "<BR/>",
+        "<table class=\"helpMenuTable\" width=\"100%\">",
+        "    <thead class=\"helpMenuTable\">Click below for help on:</thead>",
+        "    <tr>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/overview.html\" title=\"Overview\">",
+        "                Volunteer Scheduler overview</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/menu.html\" title=\"Menu help\">",
+        "                Menu</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/home.html\" title=\"Home Page help\">",
+        "                Home Page</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/organizations.html\" title=\"Organizationss List Page help\">",
+        "               Organizations</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/projects.html\" title=\"Projects List Page help\">",
+        "               Projects</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/schedules.html\" title=\"Schedules List Page help\">",
+        "               Schedules</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/locations.html\" title=\"Locations List Page help\">",
+        "               Locations</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/resources.html\" title=\"Resources List Page help\">Resources</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/events.html\" title=\"Events List Page help\">Events</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/households.html\" title=\"Households List Page help\">",
+        "               Households</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/volunteerDetails.html\" title=\"Volunteer Edit Page help\">",
+        "               Volunteers</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/skills.html\" title=\"Skills List Page help\">Skills</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/reports.html\" title=\"Reports Page help\">Reports</A>",
+        "        </td>",
+        "        <td class=\"helpMenuTable\">",
+        "            <A class='inText' href=\"$$WEBAPP$$/volsched/help/utilities.html\" title=\"Utilities Page help\">",
+        "               Utilities</A>",
+        "        </td>",
+        "    </tr>",
+        "</table>"
+    ]
+
+    def __init__(self, arg):
+        self.arg = arg
+        print(arg)
+        self.menuName = 'menu'
+        
+    def setup(self):
+        pass
+    
+    def getWebapp(self):
+        return self.getRequestServletPath()
+
+    def getHelpHeader(self):
+        if self.isVolunteer():
+            self.menuName = "menuVolunteer"
+        result = "\n<script>\n"
+        result += "function loaded() {\n"
+        result += "setHeader(\"Help\")\n"
+        result += "}\n"
+        result += "</script>"
+        result += "From this page you can:\n"
+        result += "<ol>\n"
+        result += "<li><div class=\"helpItem\">Logout</div>Click on the hyperlink in the title bar.</li>\n"
+        result += "<li><div class=\"helpItem\">Get help</div>Click on the hyperlink in the title bar.</li>\n"
+        result += "<li><div class=\"helpItem\">Select one of the options from the <A  href=\""
+        result += self.getRequestServletPath()
+        result += ("/volsched/help/" + self.menuName + ".html\"")
+        result += " title=\"Menu Page help\">Menu</A></div> on the left side of the page.</li>\n"
+        result += "<li>If you have visited more than one page, you can return to sny "
+        result += "of those pages by clicking on the appropriate hyperlink in the title bar.</li>\n"
+        return result
+
+    def getMenuHeader(self):
+        if self.isVolunteer():
+            self.menuName = "menuVolunteer"
+        result = "\n<script>\n"
+        result += "function loaded() {\n"
+        result += "setHeader(\"Help\")\n"
+        result += "}\n"
+        result += "</script>"
+        result += "From this page you can:\n"
+        result += "<ol>\n"
+        result += "<li><div class=\"helpItem\">Logout</div>Click on the hyperlink in the title bar.</li>\n"
+        result += "<li><div class=\"helpItem\">Get help</div>Click on the hyperlink in the title bar.</li>\n"
+        result += "<li>If you have visited more than one page, you can return to sny "
+        result += "of those pages by clicking on the appropriate hyperlink in the title bar.</li>\n"
+        return result
+
+    def getHelpReturn(self):
+        result = ""
+        bc = BreadCrumbManager.getLastBreadcrumb()
+        result += "Click <a href=\""
+        if bc:
+            result += bc.getUrl()
+        else:
+            result += (self.getRequestServletPath() + Menu.HOME)
+        result += "\">here</a> to return to the Volunteer Scheduler.<br/>"
+        return result
+
+    def getHelpFooter(self):
+        replacementString = self.getRequestServletPath()
+        result = "</ol>"
+        result += self.getHelpReturn()
+        text = HelpBean.HELP_FOOTER_ENTRIES
+        if self.isVolunteer():
+            text = HelpBean.HELP_FOOTER_VOLUNTEER_ENTRIES
+        for  s in text:
+            s = s.replace('$$WEBAPP$$', replacementString)
+            result += s
+            result += "\n"
+        return result
 
 
 class HomeBean(SessionDataBean):

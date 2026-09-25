@@ -22,13 +22,26 @@ def initial(request):
 
 def logout(request):
         ValuesHolder.setCurrentLogin(None)
-        initial(request)
+        SessionData().currentLogin = None
+        SessionData().currentLoginPrivileges = []
+        return render(request, "vs/login.html")
         
 class DummyView(View):
+        
     def post(self,request, *args, **kwargs):
         pass
+    
     def get(self, request, *args, **kwargs):
         self.post(request, *args, **kwargs)
+
+class HelpView(View):
+        
+    def post(self,request, *args, **kwargs):
+        bean = HelpBean(request)
+        return render(request,bean.getURL())
+    
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 class LoginView(View):
     def post(self,request, *args, **kwargs):
@@ -36,7 +49,7 @@ class LoginView(View):
         pwd = request.POST.get('password')
         try:
             target = LoginBean(request).attempt(loginName,pwd)
-            print(target)
+            #print(target)
             return render(request, target)
         except InvalidPasswordException:
             msg = 'The password is invalid'
@@ -60,10 +73,13 @@ class LoginView(View):
             msg = 'No such login is defined'
             messages.error(request, msg)
         return redirect(request, "vs/login.html")
+    
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
          
 class Home(View):
     def get(self, request, *args, **kwargs):
-        self.post(request, *args, **kwargs)
+        return self.post(request, *args, **kwargs)
     
     def post(self,request, *args, **kwargs):
         bean = HomeBean(request)

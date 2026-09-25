@@ -1,4 +1,5 @@
 {% load VSAuthorizer %}
+{% load static %}
 <?xml version='1.0' encoding='UTF-8' ?> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -7,10 +8,10 @@
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
         <meta http-equiv="Pragma" content="no-cache"/>
         <meta http-equiv="Expires" content="0"/>
-        <link rel="stylesheet" href="css/volsched.css"/>
-        <script src="scripts/volsched.js" defer/>
-        <script src="scripts/"ts_picker.js" defer/>
-        <script src="scripts/"date.js" defer/>
+        <link rel="stylesheet" href="{% static 'vs/css/volsched.css' %}"/>
+        <script src="{% static 'vs/scripts/volsched.js' %}" defer></script>
+        <script src="{% static 'vs/scripts/ts_picker.js' %}" defer></script>
+        <script src="{% static 'vs/scripts/date.js' %}" defer></script>
         <title>{{ title }}</title>
     <:head>
 
@@ -22,21 +23,17 @@
                     <table class="max">
                         <tr class="max">
                             <td class="headerLeft"> 
-                                <form action='/logout' method=''>
+                                <form action='/vs/logout/' method=''>
                                 {% csrf_token %}
-                                    <input type="submit">Logout</input>>
+                                    <input type="submit" value='Logout'/>
                                 </form>
                             </td>
                             <td>&nbsp;</td>
                             <td class="headerCenterLeftAligned">
-                                <h:outputText
-                                    value="#{defaultBean.breadCrumbs()}"
-                                    escape="false"/>
+                                {{breadCrumbs}}
                             </td>
                             <td class="headerRight">
-                                <a href={{help}}
-                                    value="#{defaultBean.help}"
-                                    escape="false"/>
+                                <a href={{help}}>Help
                             </td>
                         </tr></table>
                 </td></tr>
