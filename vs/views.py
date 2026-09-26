@@ -29,10 +29,10 @@ def logout(request):
 class DummyView(View):
         
     def post(self,request, *args, **kwargs):
-        pass
+        return redirect("/vs/home")
     
     def get(self, request, *args, **kwargs):
-        self.post(request, *args, **kwargs)
+        return self.post(request, *args, **kwargs)
 
 class HelpView(View):
         

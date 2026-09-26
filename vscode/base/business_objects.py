@@ -1122,20 +1122,142 @@ class Address(BusinessObject):
         return atts 
 
 
-class AuthorizationManager(VSBase):
+class AuthorizationManager(VSBase): 
+    resources = {
+        'ADD_ACTIVITY': "Add Activity",
+        'ADD_AVAILABILITY': "Add Availability",
+        'ADD_CONFIGURABLE_PROPERTY': "Add Configurable Property",
+        'ADD_EVENT': "Add Event",
+        'ADD_HOUSEHOLD': "Add Household",
+        'ADD_JOB': "Add Job",
+        'ADD_JOB_ASSIGNMRNTS': "Add Job Assignments",
+        'ADD_LOCATION': "Add Location",
+        'ADD_LOGIN': "Add Login",
+        'ADD_ORGANIZATION': 'Add Organization',
+        'ADD_PRIVILEGE': "Add Privilege",
+        'ADD_PROJECT': "add Project",
+        'ADD_RELATIONSHIP': "Add Relationship",
+        'ADD_REPORT': "Add Report",
+        'ADD_RESOURCE': "Add Resource",
+        'ADD_SCHEDULE': "Add Schedule",
+        'ADD_SECURITY_GROUP': "Add Security Group",
+        'ADD_SECURITY_GROUP_PRIVILEGE': "Add Security Group Privilege",
+        'ADD_SKILL': "Add Skill",
+        'ADD_SKILL_RELATIONSHIP': "Add Skill Relationship",
+        'ADD_TASK': "Add Project Task",
+        'ADD_TEAM': "Add Project Team",
+        'ADD_VOLUNTEER': "Add Volunteer",
+        'ADD_VOLUNTEER_SKILL': "Add Volunteer Skill",
+        'ADD_WORK_ADDRESS': "Add Work Address",
+        'BUILD_SCHEDULE': "Build Schedule",
+        'DELETE_ACTIVITY': "Delete Activity",
+        'DELETE_AVAILABILITY': "Delete Availability",
+        'DELETE_CONFIGURABLE_PROPERTY': "Delete Configurable Property",
+        'DELETE_EVENT': "Delete Event",
+        'DELETE_HOUSEHOLD': "Delete Household",
+        'DELETE_JOB': "Delete Job",
+        'DELETE_JOB_ASSIGNMRNTS':"Delete Job Assignments",
+        'DELETE_LOCATION': "Delete Location",
+        'DELETE_ORGANIZATION': "Delete Organization",
+        'DELETE_PROJECT': "Delete Project",
+        'DELETE_RELATIONSHIP': "Delete Relationship",
+        'DELETE_RESOURCE': "Delete Resource",
+        'DELETE_SCHEDULE': "Delete Schedule",
+        'DELETE_SKILL': "Delete Skill",
+        'DELETE_SKILL_RELATIONSHIP': "Delete Skill Relationship",
+        'DELETE_TASK': "Delete Project Task",
+        'DELETE_TEAM': "Delete Project Team",
+        'DELETE_VOLUNTEER': "Delete Volunteer",
+        'DELETE_VOLUNTEER_SKILL': "Delete Volunteer Skill",
+        'DELETE_WORK_ADDRESS': "Delete Work Address",
+        'HOME': "Home",
+        'NOT_AUTHORIZED': "Not Authorized",
+        'ORGANIZATIONS': "Update Organizations",
+        'PASSWORD_RESET': "Password Reset",
+        'SKILL_RELATIONSHIP_UPDATE': "Update Skill Relationship",
+        'UPDATE_ACTIVITY': "Update Activity",
+        'UPDATE_AUTHORIZATION': "Update Authorization",
+        'UPDATE_AVAILABILITY': "Update Availability",
+        'UPDATE_CONFIGURABLE_PROPERTY': "Update Configurable Property",
+        'UPDATE_EVENT': "Update Event",
+        'UPDATE_EVENT_PREFERENCE': "Update Event Preference",
+        'UPDATE_HOUSEHOLD': "Update Household",
+        'UPDATE_JOB': "Update Job",
+        'UPDATE_JOB_ASSIGNMRNTS': "Update Job Assignments",
+        'UPDATE_LOCATION': "Update Location",
+        'UPDATE_LOGIN': "Update Login",
+        'UPDATE_ORGANIZATION': "Update Organization",
+        'UPDATE_PRIVILEGE': "Update Privilege", 
+        'UPDATE_PROJECT': "Update Project",
+        'UPDATE_RELATIONSHIP': "Update Relationship",
+        'UPDATE_REPORT': "Update Report",
+        'UPDATE_RESOURCE': "Update Resource",
+        'UPDATE_SCHEDULE': "Update Schedule",
+        'UPDATE_SECURITY_GROUP': "Update Security Group",
+        'UPDATE_SECURITY_GROUP_PRIVILEGE': "Update Security Group Privilege",
+        'UPDATE_SKILL': "Update Skill",
+        'UPDATE_SKILL_RELATIONSHIP': "Update Skill Relationship",
+        'UPDATE_TASK': "Update Project Task",
+        'UPDATE_TEAM': "Update Project Team",
+        'UPDATE_VOLUNTEER': "Update Volunteer",
+        'UPDATE_VOLUNTEER_SKILL': "Update Volunteer Skill",
+        'UPDATE_WORK_ADDRESS': "Update Work Address",
+        'UTILITIES': "Utilities",
+        'VALIDATE_RELATIONSHIP': "Validate Relationship",
+        'VIEW_ACTIVITIES': "View Activities",
+        'VIEW_AVAILABILITY': "View Availability",
+        'VIEW_CONFIGURABLE_PROPERTIES': "View Configurable Properties",
+        'VIEW_EVENT': "View Event",
+        'VIEW_EVENTS': "View Events",
+        'VIEW_EVENT_PREFERENCE': "View Event Preference",
+        'VIEW_HELP': "View Help",
+        'VIEW_HOUSEHOLD': "View Household",
+        'VIEW_HOUSEHOLDS': "View Households",
+        'VIEW_JOB':"View Job",
+        'VIEW_JOBS': "View Jobs",
+        'VIEW_JOB_ASSIGNMENTS': "View Job Assignments",
+        'VIEW_JOB_ASSIGNMRNTS': "View Job Assignments",
+        'VIEW_LOCATION': "View Location",
+        'VIEW_LOCATIONS': "View Locations",
+        'VIEW_LOGINS': "View Logins",
+        'VIEW_PRIVILEGES': "View Privileges",
+        'VIEW_PROJECTS': "View Projects",
+        'VIEW_RELATIONSHIP': "View Relationship",
+        'VIEW_RELATIONSHIPS': "View Relationships",
+        'VIEW_REPORTS': "View Reports",
+        'VIEW_RESOURCE': "View Resource",
+        'VIEW_RESOURCES': "View Resources",
+        'VIEW_SCHEDULE': "View Schedule",
+        'VIEW_SCHEDULES': "View Schedules",
+        'VIEW_SECURITY_GROUPS': "View Security Groups",
+        'VIEW_SECURITY_GROUP_PRIVILEGE': "View Security Group Privilege",
+        'VIEW_SKILL': "View Skill",
+        'VIEW_SKILLS': "View Skills",
+        'VIEW_SKILL_RELATIONSHIP': "View Skill Relationship",
+        'VIEW_TASKS': "View Project Tasks",
+        'VIEW_TEAMS': "View Project Teams",
+        'VIEW_VOLUNTEER': "View Volunteer",
+        'VIEW_VOLUNTEERS':"View Volunteers",
+        'VIEW_VOLUNTEER_SKILL': "View Volunteer Skill",
+        'VIEW_WORK_ADDRESS': "View Work Address",
+    }
 
     @staticmethod
-    def isAuthorized(request, login):
+    def isAuthorized(req, login):
         result = False
-        if Utils.notBlank(request):
-            securityGroups = login.getSecurityGroups()
-            for sg in securityGroups:
-                for priv in sg.getPrivileges():
-                    if request == priv.getPrivilegeName():
-                        result = True
+        if not req or not login:
+            pass
+        else:
+            val = AuthorizationManager.resources.get(req)
+            if val:
+                securityGroups = login.getSecurityGroups()
+                for sg in securityGroups:
+                    for priv in sg.getPrivileges():
+                        if val == priv.getPrivilegeName():
+                            result = True
+                            break
+                    if result:
                         break
-                if result:
-                    break
         return result
     
     @staticmethod
@@ -1158,7 +1280,7 @@ class SecurityUtils(VSBase):
     def isAuthorized(login, _type):
         result = False
         if login:
-            result = SecurityUtils.isAdmin(_type)
+            result = SecurityUtils.isAdmin(login)
             if not result:
                 result = SecurityUtils.isAdmin(login)
                 if not result:
@@ -1168,14 +1290,15 @@ class SecurityUtils(VSBase):
     @staticmethod
     def isAdmin(login):
         result = False
-        name = login.getLogin()
-        if Utils.notBlank(name):
-            adIds = SecurityUtils.getAdminIds()
-            if adIds:
-                for nm in adIds:
-                    if nm == name:
-                        result = True
-                        break
+        if login and isinstance(login, Login):
+            name = login.getLogin()
+            if Utils.notBlank(name):
+                adIds = SecurityUtils.getAdminIds()
+                if adIds:
+                    for nm in adIds:
+                        if nm == name:
+                            result = True
+                            break
         return result
 
     @staticmethod
@@ -1768,9 +1891,11 @@ class Login(BusinessObject):
             s += str(self.loginName.value)
         else:
             s += 'None' 
-        s += ", password="
-        if self.password and self.password.getValue():
-            s +- str(Encrypter().decrypt(self.password.getValue()))
+        s += ", passwords="
+        if self.passwords:
+            for pwd in self.passwords:
+                s += str(Encrypter().decrypt(pwd.password.getValue()))
+                s += ' '
         else:
             s += 'None' 
         s += ", lastChange=" 
@@ -1865,10 +1990,16 @@ class Login(BusinessObject):
                         self.myDb.securityGroups.add(secGrp)
                     else:
                         self.myDb.securityGroups.add(secGrp.myDb)
+            if self.passwords and self.loginID.value:
+                self.myDb.passwords.clear()
+                for pwd in self.passwords:
+                    self.myDb.passwords.add(pwd.myDb)
         self.myDb.organization = None
-        if self.organization:
-            if isinstance(self.organization, Organization): 
+        if self.organization: 
+            if isinstance(self.organization, Organization):
                 self.myDb.organization = self.organization.myDb
+            elif isinstance(self.organization, DbOrganization):
+                self.myDb.organization = self.organization
         
     def fromDb(self):
         if self.myDb.loginID:
@@ -1898,6 +2029,9 @@ class Login(BusinessObject):
         self.loginCreateDate.setValue(self.myDb.loginCreateDate)
         self.loginUpdateDate.setValue(self.myDb.loginUpdateDate)
         self.deleteFlag.setValue(self.myDb.deleteFlag)
+        self.passwords = []
+        for pwd in self.myDb.passwords.all():
+            self.passwords.append(Password(pwd))
     
     def validate(self):
         for att in self.getAttributeList():

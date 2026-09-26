@@ -55,34 +55,6 @@ class RequestType(Enum):
     subproject =  16
     volunteer = 17
     volunteerSkill = 18
-
-
-class AuthorizationManager():
-
-    @staticmethod
-    def isAuthorized(request, login):
-        result = False
-        if request is not None and login:
-            securityGroups = login.getSecurityGroups()
-            for sg in securityGroups:
-                for priv in sg.getPrivileges():
-                    if request == priv.getPrivilegeName():
-                        result = True
-                        break
-                if result:
-                    break
-        return result
-    
-    @staticmethod
-    def isVolunteerUser(login):
-        result = False
-        if login:
-            securityGroups = login.getSecurityGroups()
-            if len(securityGroups) == 1:
-                sg = securityGroups[0]
-                if 'SECURITY_GROUP_VOLUNTEER'.lower() == sg.getSecurityGroupName().lower():
-                    result = True
-        return result;
     
     
 class RequestParametersHolder():
@@ -307,98 +279,107 @@ class SessionData(VSBaseBean):
 
     _instance = None
     
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            # Create the instance only if it does not exist yet
-            cls._instance = super().__new__(cls)
-        return cls._instance
+    def __new__(cls):
+        if not hasattr(cls, 'inst'):
+            cls.inst = super().__new__(cls)
+        return cls.inst
 
     def __init__(self):
-        self._initialProjectStatus = None
-        self.orgs = []
-        self.securityGroupIDs = []
-        self.securityGroups = []
-        self.eventNavigator = []
-        self.projectNavigator = []
-        self.taskNavigator = []
-        self.volunteerNavigator = []
-        self.currentLogin = None
-        self.organization = None
-        self.organizationID = None
-        self.householdID = None
-        self.locationID = None
-        self.loginID = None
-        self.organizationForDetailsID = None
-        self.activityID = None
-        self.availabilityID = None
-        self.eventID = None
-        self.householdID = None
-        self.ID = None
-        self.jobID = None
-        self.loginID = None
-        self.parentTaskID = None
-        self.parentProjectID = None
-        self.projectID = None
-        self.projectResourceID = None
-        self.relationshipID = None
-        self.reportID = None
-        self.resourceID = None
-        self.securityGroupID = None
-        self.scheduleID = None
-        self.skillID = None
-        self.skillRelationshipID = None
-        self.taskID = None
-        self.teamID = None
-        self.volunteerID = None
-        self.volunteerSkillID = None
-        self.cameFrom = None
-        self.cameFromSchedule = False
-        self.cameFromVolunteer = False
-        self.cameFromHome = False
-        self.cameFromHousehold = False
-        self.cameFromHouseholds = False
-        self.currentLogin = None
-        self.currentLoginPrivileges = []
-        self.loginLevel = 10000
-        self.initialized = False
-        self.skillCounts = []
-        self.privileges = []
-        self.loginStatuses = []
-        self.skillRelationshipTypes = []
-        self.volunteerRelationshipTypes = []
-        self.recurrenceTypes = []
-        self.projectStatuses = []
-        self.taskStatuses = []
-        self.defaultTaskStatus = None
-        self.initialProjectStatus = None
-        self.resetStatus = None
-        self.readyStatus = None
-        self.userSecurityGroup = None
-        self.autoclicked = None
-        self.projectError = False
-        self.activityError = False
-        self.emailError = False
-        self.resourceError = False
-        self.skillError = False
-        self.subTaskError = False
-        self.taskError = False
-        self.teamError = False
-        self.volunteerError = False
-        self.error = None
-        self.errorMessage = None
-        self.households = []
-        self.volunteers = []
-        try:
-            self.resetStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_RESET)
-        except Exception as e:
-            super().handleException(e)
-        try:
-            self.readyStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_READY)
-        except Exception as e:
-            super().handleException(e)
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self._initialProjectStatus = None
+            self.orgs = []
+            self.securityGroupIDs = []
+            self.securityGroups = []
+            self.eventNavigator = []
+            self.projectNavigator = []
+            self.taskNavigator = []
+            self.volunteerNavigator = []
+            self.currentLogin = None
+            self.organization = None
+            self.organizationID = None
+            self.householdID = None
+            self.locationID = None
+            self.loginID = None
+            self.organizationForDetailsID = None
+            self.activityID = None
+            self.availabilityID = None
+            self.eventID = None
+            self.householdID = None
+            self.ID = None
+            self.jobID = None
+            self.loginID = None
+            self.parentTaskID = None
+            self.parentProjectID = None
+            self.projectID = None
+            self.projectResourceID = None
+            self.relationshipID = None
+            self.reportID = None
+            self.resourceID = None
+            self.securityGroupID = None
+            self.scheduleID = None
+            self.skillID = None
+            self.skillRelationshipID = None
+            self.taskID = None
+            self.teamID = None
+            self.volunteerID = None
+            self.volunteerSkillID = None
+            self.cameFrom = None
+            self.cameFromSchedule = False
+            self.cameFromVolunteer = False
+            self.cameFromHome = False
+            self.cameFromHousehold = False
+            self.cameFromHouseholds = False
+            self.currentLogin = None
+            self.currentLoginPrivileges = []
+            self.loginLevel = 10000
+            self.initialized = False
+            self.skillCounts = []
+            self.privileges = []
+            self.loginStatuses = []
+            self.skillRelationshipTypes = []
+            self.volunteerRelationshipTypes = []
+            self.recurrenceTypes = []
+            self.projectStatuses = []
+            self.taskStatuses = []
+            self.defaultTaskStatus = None
+            self.initialProjectStatus = None
+            self.resetStatus = None
+            self.readyStatus = None
+            self.userSecurityGroup = None
+            self.autoclicked = None
+            self.projectError = False
+            self.activityError = False
+            self.emailError = False
+            self.resourceError = False
+            self.skillError = False
+            self.subTaskError = False
+            self.taskError = False
+            self.teamError = False
+            self.volunteerError = False
+            self.error = None
+            self.errorMessage = None
+            self.households = []
+            self.volunteers = []
+            try:
+                self.resetStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_RESET)
+            except Exception as e:
+                super().handleException(e)
+            try:
+                self.readyStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_READY)
+            except Exception as e:
+                super().handleException(e)
+    
+            self._loadPrivileges()
+            self.loadHouseholds()
+            self.loadVolunteers()
 
-        self._loadPrivileges()
-
+    def __str__(self):
+        result = 'SessionData {currentLogin: '
+        result += str(self.currentLogin)
+        result += '}'
+        return result
+    
     def _loadPrivileges(self):
         try:
             self.volunteerRelationshipTypes.extend(ObjectFactory().getRelationshipTypes())
@@ -480,6 +461,26 @@ class SessionData(VSBaseBean):
                 Collections.sort(self.securityGroups, SecurityGroupComparator())
         except Exception as e:
             self.handleException(e)
+
+    def loadHouseholds(self): 
+        try: 
+            for obj in ObjectFactory().getHouseholds(self.sessionData.getOrganization()):
+                self.sessionData.households.append(obj)
+            
+            if len(self.sessionData.households) > 1: 
+                Collections.sort(self.sessionData.households, HouseholdComparator())
+        except Exception as e:
+            self.handleException(e)
+        
+    def loadVolunteers(self): 
+        try: 
+            for obj in ObjectFactory().getVolunteers(self.sessionData.getOrganization()):
+                self.sessionData.volunteers.append(obj)
+            if len(self.sessionData.volunteers)  > 1:
+                Collections.sort(self.sessionData.volunteers, VolunteerComparator())
+        except Exception as e: 
+            super().handleException(e)
+
 
     def clearCache(self):
         self.eventNavigator.clear()
@@ -677,6 +678,7 @@ class SessionData(VSBaseBean):
         return self.currentLogin
     
     def setCurrentLogin(self, li):
+        #print('set ' + str(li))
         self.currentLogin = li
         mn = 10000
         for sg in li.getSecurityGroups():
@@ -1363,26 +1365,7 @@ class  SessionDataBean(VSBaseBean):
         if not ok: 
             raise InvalidDateException(msg)
         return True
-
-    def loadHouseholds(self): 
-        try: 
-            for obj in ObjectFactory().getHouseholds(self.sessionData.getOrganization()):
-                self.sessionData.households.append(obj)
-            
-            if len(self.sessionData.households) > 1: 
-                Collections.sort(self.sessionData.households, HouseholdComparator())
-        except Exception as e:
-            self.handleException(e)
-        
-    def loadVolunteers(self): 
-        try: 
-            for obj in ObjectFactory().getVolunteers(self.sessionData.getOrganization()):
-                self.sessionData.volunteers.append(obj)
-            if len(self.sessionData.volunteers)  > 1:
-                Collections.sort(self.sessionData.volunteers, VolunteerComparator())
-        except Exception as e: 
-            super().handleException(e)
-
+    
 
 class BreadCrumb(SessionDataBean):
     
@@ -1443,7 +1426,119 @@ class BreadCrumbManager(SessionDataBean):
                     BreadCrumbManager.breadcrumbs.append(breadcrumb)
 
 
-class HelpBean(SessionDataBean):
+class DefaultBean(SessionDataBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        self.page = ""
+    
+
+    def getPage(self):
+        return self.page
+
+    def setPage(self, page):
+        self.page = page
+
+    def getPageTitle(self):
+        return "Volunteer Scheduler " + self.page
+    
+    def getHelp(self):
+        return "<a href='" + str(self.getRequestServletPath())\
+             + "/vs/help/" + self.getPageName() + ".html>Help</a>"
+    
+    def getPageName(self):
+        result = ''
+        uri = self.getRequest().getRequestURI()
+        index = uri.rfind('/')  
+        if index > 0:      
+            result = uri[index + 1:]
+            index = result.find(".")
+            if index > 0:
+                result = result[0, index]
+        return result
+
+    def addBreadCrumb(self):
+        result = ''
+        uri = self.getRequest().getRequestURI()
+        qry = self.getRequest().getQueryString()
+        if Utils.isNotBlank(qry):            
+            uri += "?"
+            uri += qry
+        BreadCrumbManager.add(BreadCrumb(self.getPageName(), uri))
+        first = True
+        bcs = BreadCrumbManager.getBreadcrumbs()
+        for b in bcs:
+            if not first:
+                result += '&nbsp;|&nbsp;'
+            first = False
+            result += "<a href='"
+            result += b.getUrl()
+            result += "'>"
+            result += b.getName()
+            result += "</a>"
+        return result
+
+    def isLoggedIn(self):
+        result = False
+        login = self.sessionData.currentLogin
+        if login and login.isReady():
+            result = True
+        return result
+
+    def getLogin(self):
+        return self.sessionData.currentLogin
+
+    def setLogin(self, login):
+        self.sessionData.currentLogin = login
+
+    def getAssignmentsLink(self):
+        return self.getRequestServletPath() + Menu.ASSIGNMENTS
+
+    def getOrganizationsLink(self):
+        return self.getRequestServletPath() + Menu.ORGANIZATIONS
+
+    def getEventsLink(self):
+        return self.getRequestServletPath() + Menu.EVENTS
+
+    def getLocationsLink(self):
+        return self.getRequestServletPath() + Menu.LOCATIONS
+
+    def getResourcesLink(self):
+        return self.getRequestServletPath() + Menu.RESOURCES
+
+    def getPasswordChangeLink(self):
+        return self.getRequestServletPath() + Menu.PASSWORD_CHANGE
+
+    def getSchedulesLink(self):
+        return self.getRequestServletPath() + Menu.SCHEDULES\
+
+    def getReportsLink(self):
+        return self.getRequestServletPath() + Menu.REPORTS
+
+    def getUtilitiesLink(self):
+        return self.getRequestServletPath() + Menu.UTILITIES
+
+    def getHomeLink(self):
+        return self.getRequestServletPath() + Menu.HOME
+
+    def getHouseholdsLink(self):
+        return self.getRequestServletPath() + Menu.HOUSEHOLDS
+
+    def getVolunteersLink(self):
+        return self.getRequestServletPath() + Menu.VOLUNTEERS
+
+    def getVolunteerHomeLink(self):
+        return self.getRequestServletPath() + Menu.VOLUNTEER_HOME
+
+    def getSkillsLink(self):
+        return self.getRequestServletPath() + Menu.SKILLS
+
+    def logout(self):
+        self.sessionData.currentLogin = None
+        return Login.LOGIN_MAIN
+
+
+class HelpBean(DefaultBean):
     HELP_FOOTER_VOLUNTEER_ENTRIES = [
         "<BR/>",
         "<table class=\"helpMenuTable\" width=\"100%\">",
@@ -1598,19 +1693,21 @@ class HelpBean(SessionDataBean):
         return result
 
 
-class HomeBean(SessionDataBean):
+class HomeBean(DefaultBean):
 
     def __init__(self, request):
         super().__init__(request)
-        self.volunteer = self.getVolunteer()
-        self.loadHouseholds()
-        self.loadVolunteers()  
+        self.volunteer = None
 
     def getLogin(self):
         return self.sessionData.getCurrentLogin()
     
     def setup(self):
         pass
+    
+    def isVolunteerUser(self):
+        login = SessionData().currentLogin
+        return SecurityUtils.isVolunteerUser(login)
 
     def getVolunteer(self):
         if not self.volunteer:
@@ -1641,7 +1738,7 @@ class HomeBean(SessionDataBean):
         return "volunteerDetails?cameFrom=home&id=" + self.getVolunteer().getID()
    
    
-class LoginBean(SessionDataBean):
+class LoginBean(DefaultBean):
     LOGIN_CANCEL = ''
     LOGIN_FAILED = 'vs/login.html'
     LOGIN_GET_ORG = "vs/selectOrg,html"
@@ -1834,6 +1931,8 @@ class LoginBean(SessionDataBean):
                         login.succeed()
                         self.sessionData.errorMessage = None
                         self.sessionData.setCurrentLogin(login)
+                        print(self.sessionData)
+                        print(SessionData())
                         self.currentLoginPrivileges = ObjectFactory().getCurrentUsersPrivileges(login)
                         result = Menu.HOME                        
         return result

@@ -17,6 +17,7 @@ urlpatterns = [
     path("vs/locations", views.DummyView.as_view(), name="locations"),
     path("vs/organizations", views.DummyView.as_view(), name="organizations"),
     path("vs/passwordChange", views.DummyView.as_view(), name="passwordChange"),
+    path("vs/projects", views.DummyView.as_view(), name="projects"),
     path("vs/resources", views.DummyView.as_view(), name="resources"),
     path("vs/reports", views.DummyView.as_view(), name="reports"),
     path("vs/schedules", views.DummyView.as_view(), name="schedules"),

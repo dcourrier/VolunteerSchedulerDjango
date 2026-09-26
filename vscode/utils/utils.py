@@ -1326,5 +1326,4 @@ class Encrypter:
         cipherSuite = Fernet(Encrypter.key)
         textBytes = cipherSuite.decrypt(text)
         return textBytes.decode('utf-8')
-    
-    
+
