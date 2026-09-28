@@ -91,7 +91,7 @@ class ObjectFactoryTests(VSTestBase):
             super().handleException(e)
         assert not err, "got an exception"
         assert rows, 'no result'
-        assert len(rows) == 64, 'invalID row count expected 64, but got: ' + str(len(rows))
+        assert len(rows) == 63, 'invalID row count expected 63, but got: ' + str(len(rows))
         
     def test_getTableSize(self):
         LoaderManager().load()

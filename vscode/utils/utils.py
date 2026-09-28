@@ -1312,18 +1312,18 @@ class ValuesHolder():
             pass
         
 class Encrypter:
-    key = "SHTptueuR4NYn521OaabLoZRUVVmaK99Kp9PJYgClCg="
+    key = '-MmJExxuUD0T24ls9dO0U9rUYFwZiSHDVQzL6LdqpYY='
     def __init__(self):
         pass
     
     def encrypt(self, text):
-        cipherSuite = Fernet(Encrypter.key)                
+        cipherSuite = Fernet(Encrypter.key.encode())                
         textBytes = text.encode() # Convert string to bytes
         return cipherSuite.encrypt(textBytes).decode('utf-8')
     
     def decrypt(self, text):
         #print(type(text))
-        cipherSuite = Fernet(Encrypter.key)
-        textBytes = cipherSuite.decrypt(text)
+        cipherSuite = Fernet(Encrypter.key.encode())
+        textBytes = cipherSuite.decrypt(text.encode())
         return textBytes.decode('utf-8')
 

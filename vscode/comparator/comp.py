@@ -94,7 +94,7 @@ class HouseholdComparator(DefaultComparator):
         if super().isNull(o1, 2):
             result = super().compareNull(o1, o2)
         else:
-            result = super().compareIgnoreCase(o1.getHouseholdLastName(), o2.getHouseholdLastName())
+            result = super().compareIgnoreCase(o1.getHouseholdLastName(), o2.getHouseholdLastName)
             if result == 0:
                 result = super().compareIgnoreCase(o1.getHouseholdFirstName(), o2.getHouseholdFirstName())
         return result

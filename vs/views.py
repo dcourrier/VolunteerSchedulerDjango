@@ -50,7 +50,7 @@ class LoginView(View):
         try:
             target = LoginBean(request).attempt(loginName,pwd)
             #print(target)
-            return render(request, target)
+            return redirect('/vs/home')
         except InvalidPasswordException:
             msg = 'The password is invalid'
             messages.info(request, msg)
@@ -85,5 +85,5 @@ class Home(View):
         bean = HomeBean(request)
         if bean.isVolunteerUser():
             return render(request, 'vs/volunteerHome.html')
-        context = HomeBean.setup(request)
+        context = bean.setup()
         return render(request, "vs/home.html", context)

@@ -1,5 +1,6 @@
 from datetime import datetime as DT
 from django.contrib import messages
+from django.db import models
 from django.template.context_processors import request
 from email_validator import validate_email, EmailNotValidError
 from enum import Enum
@@ -257,8 +258,10 @@ class Menu():
     ASSIGNMENTS = "vs/assignments.html"
     EVENTS = "vs/events.html"
     HOME = "vs/home.html"
+    HOME_BEAN = "vs/home"
     HOUSEHOLDS = "vs/households.html"
     LOCATIONS = "vs/locations.html"
+    LOGIN = 'vs/login.html'
     PASSWORD_CHANGE = "/passwordChange.html"
     ORGANIZATIONS = "vs/organizations.html"
     RESOURCES = "vs/resources.html"
@@ -464,20 +467,16 @@ class SessionData(VSBaseBean):
 
     def loadHouseholds(self): 
         try: 
-            for obj in ObjectFactory().getHouseholds(self.sessionData.getOrganization()):
-                self.sessionData.households.append(obj)
+            for obj in ObjectFactory().getHouseholds(org=self.getOrganization()):
+                self.households.append(obj)
             
-            if len(self.sessionData.households) > 1: 
-                Collections.sort(self.sessionData.households, HouseholdComparator())
         except Exception as e:
             self.handleException(e)
         
     def loadVolunteers(self): 
         try: 
-            for obj in ObjectFactory().getVolunteers(self.sessionData.getOrganization()):
-                self.sessionData.volunteers.append(obj)
-            if len(self.sessionData.volunteers)  > 1:
-                Collections.sort(self.sessionData.volunteers, VolunteerComparator())
+            for obj in ObjectFactory().getVolunteers(self.getOrganization()):
+                self.volunteers.append(obj)
         except Exception as e: 
             super().handleException(e)
 
@@ -1107,10 +1106,6 @@ class  SessionDataBean(VSBaseBean):
 
     def setProjectError(self, projectError): 
         self.sessionData.projectError = projectError
-    
-    @abstractmethod
-    def setup(self):
-        pass 
 
     def getCurrentLoginId(self):
         result = None
@@ -1164,7 +1159,7 @@ class  SessionDataBean(VSBaseBean):
         self.clearErrors()
         self.sessionData.error = True
         self.sessionData.cameFrom = ""
-        self.handleException(e)
+        super().handleException(e)
         self._sendErrorMail(e)
         
     def now(self): 
@@ -1260,7 +1255,7 @@ class  SessionDataBean(VSBaseBean):
                                 color=False,
                                 extra=None): 
         result = ""
-        if len(items) > 0: 
+        if items: 
             index = 0
             sb =  "<table align='center'><th"
             if color:
@@ -1283,7 +1278,7 @@ class  SessionDataBean(VSBaseBean):
                     style = vsp.getStyle()
                     sb += "<td "
                     sb += str(style)
-                    sb += ">//"
+                    sb += ">"
                 except: 
                     sb += "<td class='listTable'>"                
                 if Utils.isNotBlank(dest):
@@ -1300,13 +1295,17 @@ class  SessionDataBean(VSBaseBean):
                     if Utils.contains(dest, "?"): 
                         sb += "&id="
                     else: 
-                        sb += "?id="                    
-                    sb += str(vsp.getID())
+                        sb += "?id="
+                    if isinstance(vsp,models.Model):
+                        sb += str(vsp.pk)
+                    else:                    
+                        sb += str(vsp.getID())
                     if vsp.hasQuantity(): 
                         sb += "&qty="
                         sb += str(vsp.getQuantity())
-                        sb += "'>"
-                sb += vsp.getDisplayString()
+                    sb += "'>"
+                        
+                sb += str(vsp)
                 if Utils.isNotBlank(dest): 
                     sb += "</a>"
                 sb += "</td>\n"
@@ -1698,12 +1697,21 @@ class HomeBean(DefaultBean):
     def __init__(self, request):
         super().__init__(request)
         self.volunteer = None
+        self.setup()
 
     def getLogin(self):
         return self.sessionData.getCurrentLogin()
     
     def setup(self):
-        pass
+        of = ObjectFactory()
+        result = {}
+        #print('houseolds ' + str(self.getHouseholdsTable()))
+        #print('volunteers ' + str(self.getVolunteersTable()))
+        result['households'] = self.getHouseholdsTable()
+        result['volunteers'] = self.getVolunteersTable()
+        #print(result['households'])
+        #print(result['volunteers'])
+        return result
     
     def isVolunteerUser(self):
         login = SessionData().currentLogin
@@ -1717,13 +1725,18 @@ class HomeBean(DefaultBean):
                 super().handleException(e)         
         return self.volunteer
     
+    def getHouseholds(self):
+        return ObjectFactory().getHouseholds(org=self.sessionData.organization,dbo=True)
+    
+    def getVolunteers(self):
+        return ObjectFactory().getVolunteers(org=self.sessionData.organization,dbo=True)
 
     def getHouseholdsTable(self):
         return super().multiColumnTableRows("Households",
                 5,
                 125,
                 self.getHouseholds(),
-                "householdDetails.html" +  "?cameFromHome=true")
+                "/vs/householdDetails.html" +  "?cameFromHome=true")
     
 
     def getVolunteersTable(self):
@@ -1731,7 +1744,7 @@ class HomeBean(DefaultBean):
                 5,
                 125,
                 self.getVolunteers(),
-                "volunteerDetails.html" + "?cameFromHome=true")
+                "/vs/volunteerDetails.html" + "?cameFromHome=true")
     
 
     def redirect(self):
@@ -1893,6 +1906,7 @@ class LoginBean(DefaultBean):
             login = None
             try:
                 login = ObjectFactory().getLogin(login=loginName, org=org)
+                #print(login.getPassword())
             except NoLoginFoundException:
                     pass
             except Exception as e:
@@ -1914,7 +1928,9 @@ class LoginBean(DefaultBean):
                     result = Login.LOGIN_STATUS_RESET
                 else:
                     try:
+                        #print('attempting ' + str(login.getPassword()))
                         login.attempt(password)
+                        #print('attempt successful')
                     except AccountLockedException as e:
                         result = None
                         error = True
@@ -1928,13 +1944,14 @@ class LoginBean(DefaultBean):
                         error = True
                         self.sessionData.errorMessage = "wrong password"
                     if not error:
-                        login.succeed()
                         self.sessionData.errorMessage = None
                         self.sessionData.setCurrentLogin(login)
-                        print(self.sessionData)
-                        print(SessionData())
+                        #print(self.sessionData)
+                        #print(SessionData())
                         self.currentLoginPrivileges = ObjectFactory().getCurrentUsersPrivileges(login)
-                        result = Menu.HOME                        
+                        result = Menu.HOME_BEAN
+                    else:
+                        result = Menu.LOGIN                        
         return result
 
     def getOrgname(self, val):

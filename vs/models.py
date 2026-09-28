@@ -44,6 +44,11 @@ class DbAddress(models.Model):
     addressCreateDate = models.DateField(auto_now_add=True)
     addressUpdateDate = models.DateField(auto_now=True)
     deleteFlag = models.BooleanField(default=False)
+    Volunteer = models.ForeignKey('DbVolunteer', 
+                                     on_delete=models.CASCADE, 
+                                     null=True, 
+                                     blank=True,
+                                     related_name='addresses')
 
     def __str__(self):
         s = '\n'
@@ -212,7 +217,13 @@ class DbHousehold(models.Model):
         
     def __str__(self):
         return self.householdFirstName + " " + self.householdLastName
-
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
+    
 class DbWorkAddress(models.Model):
     workAddressID = models.AutoField(primary_key=True)
     employer = models.CharField(max_length=255, null=True, blank=True)
@@ -223,6 +234,11 @@ class DbWorkAddress(models.Model):
     waUpdateDate = models.DateField(auto_now=True)
     deleteFlag = models.BooleanField(default=False)
     address = models.ForeignKey(DbAddress, on_delete=models.CASCADE)
+    Volunteer = models.ForeignKey('DbVolunteer', 
+                                     on_delete=models.CASCADE, 
+                                     null=True, 
+                                     blank=True,
+                                     related_name='workaddresses')
 
     def __str__(self):
         return '\nworkAddressID: ' + str(self.workAddressID) + ' ' +\
@@ -328,13 +344,6 @@ class DbVolunteer(models.Model):
                                   on_delete=models.CASCADE,
                                   blank=True,
                                   null=True)
-    address = models.ManyToManyField(DbAddress,
-                                     related_name='volunteers',
-                                  blank=True,
-                                  null=True)
-    workAddress = models.ManyToManyField(DbWorkAddress,
-                                          related_name='volunteers',
-                                          blank=True)
     login = models.OneToOneField(DbAddress, 
                                    on_delete=models.CASCADE,
                                    null=True,
@@ -353,13 +362,17 @@ class DbVolunteer(models.Model):
     availability = models.OneToOneField(DbAvailability,
                                     on_delete=models.SET_NULL, 
                                     null=True, 
-                                    blank=True) 
-                      
-    address = models.OneToOneField(DbAddress,
-                                    on_delete=models.SET_NULL, 
-                                    null=True, 
-                                    blank=True)                               
+                                    blank=True)                              
     def __str__(self):
+        return str(self.volunteerFirstName) + ' ' + str(self.volunteerLastName)
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
+    
+    def toString(self):
         return '\nDbVolunteer{volunteerID: ' + str(self.volunteerID) +\
             ' volunteerFirstName: ' + str(self.volunteerFirstName) +\
             ' volunteerLastName: ' + str(self.volunteerLastName) +\

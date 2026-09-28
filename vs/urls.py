@@ -12,6 +12,7 @@ urlpatterns = [
     path("vs/help", views.HelpView.as_view(), name="help"),
     path("vs/home/", views.Home.as_view(), name="home"),
     path("vs/households", views.DummyView.as_view(), name="households"),
+    path("vs/householdDetails", views.DummyView.as_view(), name="householdDetailss"),
     path("vs/login/", views.LoginView.as_view(), name="tryLogin"),
     path("vs/logout/", views.logout, name="tryLogout"),
     path("vs/locations", views.DummyView.as_view(), name="locations"),

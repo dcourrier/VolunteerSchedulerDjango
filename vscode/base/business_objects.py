@@ -16,7 +16,7 @@ from vscode.msgr.msgr import *
 from vscode.utils.exceptions import *
 from vscode.val.vals import *
 from vs.models import *
-from zope.security.proxy import isinstance
+from twisted.internet.defer import succeed
 
 
 
@@ -39,6 +39,9 @@ class BusinessObject(BusinessObjectBase):
         if result:
             result = self.invalidAllowed == obj.invalidAllowed
         return result
+    
+    def hasQuantity(self):
+        return False
       
     def isNotBlank(self, att):
         # print(type(att))
@@ -1557,23 +1560,24 @@ class Login(BusinessObject):
             raise AccountDeletedException() 
         elif self.isExpired() and not self.isAdmin():
             raise AccountExpiredException()
-        
+        decodedPwd = None
         encodedPwd = self.getPassword().password.value
-        decodedPwd = Login.encrypter.decrypt(encodedPwd)
+        try:
+            decodedPwd = Login.encrypter.decrypt(encodedPwd)
+        except:
+            pass
         if pwd != decodedPwd:
-            # print(str(type(encodedPwd)) + ' ' + str(type(pwd)))
+            #print(str(type(encodedPwd)) + ' ' + str(type(pwd)))
             #print('decodedPwd "' + decodedPwd + '"  "' + pwd + '"')
             self.fail()
             raise InvalidPasswordException()
-        elif not self.isDeleted():
-            encodedPwd = Login.encrypter.encrypt(pwd)
-            if encodedPwd == self.getPassword():
-                result = True
-                self.succeed()
-            else:
-                self.fail()
-        else:
+        elif self.isDeleted():
             self.fail()
+            raise InvalidPasswordException()
+        else:
+            result = True
+            #print('calling succeed')
+            self.succeed()
         return result
 
     def getLoginID(self):
@@ -1653,11 +1657,13 @@ class Login(BusinessObject):
         self.loggedIn = loggedIn
    
     def succeed(self):
+        #print('entering succeed')
         self.failures.value = 0
         self.loggedIn = True
         self.setLoginStatusID(LoginStatusLoader.READY)
         ValuesHolder.setCurrentLogin(self) 
         self.save()
+        #print('succeeded')
         
     def lock(self):
             self.setLoginStatusID(LoginStatusLoader.LOCKED)
@@ -2029,9 +2035,10 @@ class Login(BusinessObject):
         self.loginCreateDate.setValue(self.myDb.loginCreateDate)
         self.loginUpdateDate.setValue(self.myDb.loginUpdateDate)
         self.deleteFlag.setValue(self.myDb.deleteFlag)
-        self.passwords = []
-        for pwd in self.myDb.passwords.all():
-            self.passwords.append(Password(pwd))
+        if self.myDb.loginID:
+            self.passwords = []
+            for pwd in self.myDb.passwords.all():
+                self.passwords.append(Password(pwd))
     
     def validate(self):
         for att in self.getAttributeList():
@@ -6519,7 +6526,7 @@ class Household(BusinessObject):
         self.setHouseholdID(d)
 
     def getID(self):
-        return self.householdID()
+        return self.getHouseholdID()
 
     def setDatabaseID(self, oid):
         self.setHouseholdID(oid)
@@ -7163,7 +7170,6 @@ class Volunteer(BusinessObject):
             s += str(self.organization)
         else:
             s += ' no org '
-            s += str(self.myDb.organization_id)
         return s
     
     def setVolunteerFirstName(self, newFirstName):
@@ -7437,10 +7443,14 @@ class Volunteer(BusinessObject):
                 self.__dict__[name] = myAtt
         if self.getVolunteerID() and self.myDb.household: #.exists():
             self.household = Household(self.myDb.household)
-        if self.getVolunteerID() and self.myDb.address:
-            self.address = Address(self.myDb.address)
-        if self.getVolunteerID() and self.myDb.workAddress.exists():
-            self.workAddress = WorkAddress(self.myDb.workAddress)
+        if self.getVolunteerID():
+            add = self.myDb.addresses.all().first()
+            if add:
+             self.address = Address(add)
+        if self.getVolunteerID():
+             wadd = self.myDb.workaddresses.all().first()
+             if wadd:
+                 self.workAddress = WorkAddress(wadd)
         if self.getVolunteerID() and self.myDb.login and self.myDb.login.exists():
             self.login = Login(self.myDb.login)
         if self.getVolunteerID() and self.myDb.organization:
@@ -11314,22 +11324,29 @@ class ObjectFactory(VSBase):
             pass
         return result
     
-    def getHouseholds(self, lastName=None,org=None):
+    def getHouseholds(self, lastName=None,org=None,dbo=False):
         result = []
         dbos = []
         if lastName:
             if not org:
-                raise InvalidArgumentException('If you specify name you must aalso specify org ')
+                raise InvalidArgumentException('If you specify name you must also specify org ')
             dbos = DbHousehold.objects.exclude(deleteFlag=True)\
             .filter(householdLastName=lastName).\
-            filter(organization_id=org.organizationID)
+            filter(organization_id=org.organizationID).\
+            order_by('householdLastName','householdFirstName')
         elif org: 
             dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
-            filter(organization_id=org.organizationID)
+            filter(organization_id=org.getOrganizationID()).\
+            order_by('householdLastName','householdFirstName')
         else:
-            dbos = DbHousehold.objects.exclude(deleteFlag=True)
-        for dbo in dbos:
-            result.append(Household(dbo))
+            dbos = DbHousehold.objects.exclude(deleteFlag=True).\
+            order_by('householdLastName','householdFirstName')
+        if dbo:
+            for db in dbos:
+                result.append(db)
+        else:
+            for db in dbos:
+                result.append(Household(db))
         return result
 
     def getAvailability(self, oid=None,vol=None):
@@ -11413,26 +11430,32 @@ class ObjectFactory(VSBase):
         #print(result)
         return result
 
-    def getVolunteers(self,org=None,household=None,skill=None):
+    def getVolunteers(self,org=None,household=None,skill=None,dbo=False):
         result = []
         dbos = None
         if skill and org:
             dbos = DbVolunteer.objects.exclude(deleteFlag=True).\
             filter(organization_id=org.getOrganizationID()).\
-            filter(skill_id=skill.getSkillID())
+            filter(skill_id=skill.getSkillID()).\
+            order_by('volunteerLastName','volunteerFirstName')
         elif org:
             dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.getOrganizationID())
+            .filter(organization_id=org.getOrganizationID()).\
+            order_by('volunteerLastName','volunteerFirstName')
         elif household:
             dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-            .filter(household_id=household.getHouseholdID())
+            .filter(household_id=household.getHouseholdID()).\
+            order_by('volunteerLastName','volunteerFirstName')
         elif skill and not org:
             raise MissingArgumentException('if you specify skill, you must also specify org')
         elif not org and not household and not skill:
             raise MissingArgumentException('No request parameter')
         if dbos:
-            for dbo in dbos:
-                result.append(Volunteer(dbo))
+            if dbo:
+                result.extend(dbos)
+            else:
+                for db in dbos:
+                    result.append(Volunteer(db))
         return result
     
     def getVolunteersNamed(self, last, org, first=None):
