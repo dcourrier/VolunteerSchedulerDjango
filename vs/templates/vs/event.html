@@ -30,7 +30,7 @@
                                     <label 
                                         for="eventName" 
                                         value="Event Name"
-                                        styleClass="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp;
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="eventName"
@@ -40,7 +40,7 @@
                                             required="true"
                                             requiredMessage="Event Name is required">
                                         </input type='text'>
-                                        <h:message for="eventName" styleClass="errorMessage" />
+                                        <h:message for="eventName" class="errorMessage" />
                                     </h:panelGrid>
                                 </td>
                                 <td width="2%"/>
@@ -48,12 +48,12 @@
                                     <label 
                                         for="startDate" 
                                         value="Start Date"
-                                        styleClass="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp;
                                     <input type='text'
                                         id="startDate"
                                         value="#{eventBean.startDateStr}"
                                         size="10"
-                                        styleClass="forJSF"
+                                        class="forJSF"
                                         maxlength="10"
                                         validator="#{eventBean.validateStartDate}">
                                     </input type='text'>
@@ -64,14 +64,14 @@
                                             width="16"
                                             height="16"
                                             alt="Click here to select a start date"/></a>
-                                    <h:message for="startDate"  styleClass="errorMessage" />
+                                    <h:message for="startDate"  class="errorMessage" />
                                 </td>
                                 <td width="2%"/>
                                 <td>
                                     <label 
                                         for="startTime" 
                                         value="Start Time (hh:mm)"
-                                        styleClass="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp;
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="startTime"
@@ -82,7 +82,7 @@
                                             requiredMessage="Start Time is required fmt: HH:mm."
                                             validator="#{eventBean.validateStartTime}">
                                         </input type='text'>
-                                        <h:message for="startTime" styleClass="errorMessage" />
+                                        <h:message for="startTime" class="errorMessage" />
                                     </h:panelGrid>
                                 </td>
                                 <td width="2%"/>
@@ -90,7 +90,7 @@
                                     <label 
                                         for="duration" 
                                         value="Duration (minutes)"
-                                        styleClass="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp;
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="duration"
@@ -101,7 +101,7 @@
                                             requiredMessage="Duration must be a positive integer.">
                                             <f:convertNumber integerOnly="true"/>
                                         </input type='text'>
-                                        <h:message for="duration" styleClass="errorMessage" />
+                                        <h:message for="duration" class="errorMessage" />
                                     </h:panelGrid>
                                 </td>
                                 <td width="2%"/>
@@ -109,7 +109,7 @@
                                     <label 
                                         for="locationSelector" 
                                         value="Location"
-                                        styleClass="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp;
                                     <h:selectOneMenu 
                                         id="locationSelector"
                                         value="#{eventBean.locationId}">
@@ -127,7 +127,7 @@
                                     <label 
                                         for="recurs" 
                                         value="recurs"
-                                        styleClass="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp;
                                     <h:selectOneMenu 
                                         id="recurs"
                                         immediate="true"
@@ -145,12 +145,12 @@
                                     <label 
                                         for="endDate" 
                                         value="Recurrence End Date"
-                                        styleClass="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp;
                                     <input type='text'
                                         id="endDate"
                                         value="#{eventBean.endDateStr}"
                                         size="10"
-                                        styleClass="forJSF"
+                                        class="forJSF"
                                         maxlength="20"
                                         required="false"
                                         validator="#{eventBean.validateEndDate}">
@@ -162,14 +162,14 @@
                                             width="16"
                                             height="16"
                                             alt="Click here to select an end date"/></a>
-                                    <h:message for="endDate" styleClass="errorMessage" />
+                                    <h:message for="endDate" class="errorMessage" />
                                 </td>
                                 <td width="2%"/>
                                 <td>
                                     <label 
                                         for="interval" 
                                         value="Interval"
-                                        styleClass="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp;
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="interval"
@@ -179,24 +179,24 @@
                                             required="false"
                                             validator="#{eventBean.validateInterval}">
                                         </input type='text'>
-                                        <h:message for="interval" styleClass="errorMessage" />
+                                        <h:message for="interval" class="errorMessage" />
                                     </h:panelGrid>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="9" align="center">
                                     <p:commandButton 
-                                        styleClass="reset-style" 
+                                        class="reset-style" 
                                        
                                         value="Save"
                                         action="#{eventBean.update()}"/>&nbsp; 
                                     <p:commandButton 
-                                        styleClass="reset-style" 
+                                        class="reset-style" 
                                        
                                         value="Delete"
                                         action="#{eventBean.delete()}"/>&nbsp; 
                                     <p:commandButton 
-                                        styleClass="reset-style" 
+                                        class="reset-style" 
                                        
                                         value="Cancel"
                                         action="#{eventBean.cancel2()}"
@@ -294,7 +294,7 @@
                                                     <tr>
                                                         <td>
                                                             <p:commandButton 
-                                                                styleClass="reset-style"
+                                                                class="reset-style"
                                                                 value="Add Job"
                                                                 action="#{eventBean.addJob()}"/>
                                                         </td>
@@ -327,7 +327,7 @@
                                                                 id="resources"
                                                                 onchange="setCounts(this);"
                                                                 value="#{eventBean.resourceId}"
-                                                                styleClass="forJSF">
+                                                                class="forJSF">
                                                                 <f:selectItems 
                                                                     value="#{eventBean.getResourceAvailabilities()}" 
                                                                     var="r"
@@ -344,7 +344,7 @@
                                                             <h:selectOneMenu 
                                                                 id="resourceNum"                               
                                                                 value="#{eventBean.resourceNum}"
-                                                                styleClass="forJSF">
+                                                                class="forJSF">
                                                                 <f:selectItems 
                                                                     value="#{eventBean.skillCounts}" 
                                                                     var="sc"
@@ -356,7 +356,7 @@
                                                     <tr>
                                                         <td>
                                                             <p:commandButton 
-                                                                styleClass="reset-style"
+                                                                class="reset-style"
                                                                 value="Add Resource"
                                                                 action="#{eventBean.addResource()}"/>
                                                         </td>

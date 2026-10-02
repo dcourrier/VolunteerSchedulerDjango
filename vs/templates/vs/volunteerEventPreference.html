@@ -45,17 +45,17 @@
                             <tr>
                                 <td>
                                     <p:commandButton
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{volunteerBean.savePreference()}"/>&nbsp;
                                     <p:commandButton
                                         value="Delete"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         rendered="#{volunteerBean.hasPreference()}"
                                         action="#{volunteerBean.deletePreference()}"/>&nbsp; 
                                     <p:commandButton
                                         value="cancel"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="volunteerDetails?faces-redirect=true"/>&nbsp;
                                 </td>
                             </tr>

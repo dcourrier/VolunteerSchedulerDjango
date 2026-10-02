@@ -87,12 +87,12 @@
                                 <td colspan="2" align="center">
                                     <p:commandButton 
                                         value="Save"
-                                        styleClass="reset-style" 
+                                        class="reset-style" 
                                         action="#{projectDetailsBean.submitProject}"/>
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_PROJECT)}">
                                         &nbsp;<p:commandButton 
                                             value="Delete"
-                                            styleClass="reset-style" 
+                                            class="reset-style" 
                                             action="#{projectDetailsBean.delete()}">
                                             <p:confirm 
                                                 header="Confirmation" 
@@ -103,12 +103,12 @@
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_TASKS)}">
                                         &nbsp;<p:commandButton 
                                             value="Manage Tasks"
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             action="#{projectDetailsBean.manageTasks()}"/>
                                     {% endif %}
                                     &nbsp;<p:commandButton 
                                         value="Cancel"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{projectDetailsBean.cancel()}"/>
                                 </td></tr>
                         </table>
@@ -134,7 +134,7 @@
                                 <td >
                                     <p:commandButton 
                                         value="Save Team"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{projectDetailsBean.submitTeam()}"/>
                                 </td></tr>
                             {% if test="#{projectDetailsBean.teamError}">
@@ -157,7 +157,7 @@
                                 <td >
                                     <p:commandButton 
                                         value="Add Subproject"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{projectDetailsBean.submitSubproject}"/>
                                 </td></tr>
                             {% if test="#{projectDetailsBean.subProjectError}">

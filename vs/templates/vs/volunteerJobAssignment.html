@@ -31,12 +31,12 @@
                                 <td>
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_JOB_ASSIGNMENTS)}">
                                         <p:commandButton 
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             action="#{assignmentBean.delete()}" 
                                             value="Delete"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{assignmentBean.cancel2()}" 
                                         value="Cancel"/>
                                 </td>

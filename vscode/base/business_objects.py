@@ -17,6 +17,7 @@ from vscode.utils.exceptions import *
 from vscode.val.vals import *
 from vs.models import *
 from twisted.internet.defer import succeed
+from zope.security.proxy import isinstance
 
 
 
@@ -1223,6 +1224,7 @@ class AuthorizationManager(VSBase):
         'VIEW_LOCATION': "View Location",
         'VIEW_LOCATIONS': "View Locations",
         'VIEW_LOGINS': "View Logins",
+        'VIEW_ORGANIZATIONS': "View Organizations",
         'VIEW_PRIVILEGES': "View Privileges",
         'VIEW_PROJECTS': "View Projects",
         'VIEW_RELATIONSHIP': "View Relationship",
@@ -1253,8 +1255,12 @@ class AuthorizationManager(VSBase):
         else:
             val = AuthorizationManager.resources.get(req)
             if val:
+                if isinstance(login, DbLogin):
+                    login=Login(login)
                 securityGroups = login.getSecurityGroups()
+                #print(securityGroups)
                 for sg in securityGroups:
+                    #print(sg.getPrivileges())
                     for priv in sg.getPrivileges():
                         if val == priv.getPrivilegeName():
                             result = True
@@ -1275,12 +1281,12 @@ class AuthorizationManager(VSBase):
         return result
 
     
-class SecurityUtils(VSBase):
+class SecurityUtils(ABC):
     adminIds = None
     ResourceNames = []
 
     @staticmethod
-    def isAuthorized(login, _type):
+    def  isAuthorized(login, _type):
         result = False
         if login:
             result = SecurityUtils.isAdmin(login)
@@ -1293,12 +1299,18 @@ class SecurityUtils(VSBase):
     @staticmethod
     def isAdmin(login):
         result = False
-        if login and isinstance(login, Login):
+        if login and isinstance(login,DbLogin):
+            login = Login(login)
+        if login and login.isAdmin():
+            result = True
+        elif login and isinstance(login, Login):
             name = login.getLogin()
+        elif login and isinstance(login, DbLogin):
+            name = login.login
             if Utils.notBlank(name):
-                adIds = SecurityUtils.getAdminIds()
-                if adIds:
-                    for nm in adIds:
+                admIds = SecurityUtils.getAdminIds()
+                if admIds:
+                    for nm in admIds:
                         if nm == name:
                             result = True
                             break
@@ -1563,7 +1575,7 @@ class Login(BusinessObject):
         decodedPwd = None
         encodedPwd = self.getPassword().password.value
         try:
-            decodedPwd = Login.encrypter.decrypt(encodedPwd)
+            decodedPwd = Encrypter().decrypt(encodedPwd)
         except:
             pass
         if pwd != decodedPwd:
@@ -1579,6 +1591,9 @@ class Login(BusinessObject):
             #print('calling succeed')
             self.succeed()
         return result
+    
+    def getID(self):
+        return self.loginID.getValue()
 
     def getLoginID(self):
         return self.loginID.getValue()
@@ -1657,10 +1672,19 @@ class Login(BusinessObject):
         self.loggedIn = loggedIn
    
     def succeed(self):
+        from vs.bean.beans import SessionData
         #print('entering succeed')
         self.failures.value = 0
         self.loggedIn = True
+        sd = SessionData()
         self.setLoginStatusID(LoginStatusLoader.READY)
+        dbli = DbLogin.objects.exclude(deleteFlag=True).filter(pk=self.loginID.value).first()
+        if dbli:
+            #print('login succeed ' + str(dbli))
+            for sg in dbli.securityGroups.all():
+                for priv in sg.privileges.all():
+                    sd.currentLoginPrivileges.append(priv)
+            #print('login succeed ' + str(sd.currentLoginPrivileges))
         ValuesHolder.setCurrentLogin(self) 
         self.save()
         #print('succeeded')
@@ -3032,6 +3056,9 @@ class Organization(BusinessObject):
         self.myDb = myDb
         if myDb:
             self.fromDb()
+            
+    def getID(self):
+        return self.getOrganizationID()
              
     def isSameState(self, vsp):
         result = True
@@ -3254,7 +3281,7 @@ class Organization(BusinessObject):
             return 
     
     def setUpdateUser(self, uid):
-        if isinstance(uid, int):
+        if uid and isinstance(uid, int):
             self.setOrganizationUpdateUser(uid)
         else:
             raise InvalidArgumentException()
@@ -3263,7 +3290,7 @@ class Organization(BusinessObject):
         return self.getOrganizationUpdateDate()
     
     def setCreateUser(self, uid):
-        if isinstance(uid, int):
+        if uid and isinstance(uid, int):
             self.setOrganizationCreateUser(uid)
         else:
             raise InvalidArgumentException()
@@ -3307,7 +3334,7 @@ class Organization(BusinessObject):
     def toDb(self):
         for name, att in self.__dict__.items():
             if name == 'organizationID' and not att:
-                print('skipped ' + str(att))
+                #print('skipped ' + str(att))
                 continue
             a = att
             if isinstance(att, Attribute):
@@ -3369,10 +3396,7 @@ class Organization(BusinessObject):
         self.organizationUpdateDate]
     
     def __str__(self):
-        result = self.getOrganizationName() + ' id='
-        result += str(self.getOrganizationID())
-        if self.address:
-            result += (' ' + str(self.address))
+        result = self.getOrganizationName() 
         return result
 
   
@@ -11431,6 +11455,7 @@ class ObjectFactory(VSBase):
         return result
 
     def getVolunteers(self,org=None,household=None,skill=None,dbo=False):
+        #print('getVolunteers() org=' + str(org))
         result = []
         dbos = None
         if skill and org:

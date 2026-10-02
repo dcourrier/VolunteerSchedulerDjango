@@ -23,18 +23,18 @@
                             <tr>
                                 <td>
                                     <p:commandButton
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Delete"
                                         action="#{scheduleBean.delete()}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_REPORT)}">
                                         <p:commandButton
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             value="Generate Report"
                                             rendered="#{scheduleBean.noReport()}"
                                             action="#{scheduleBean.addReport()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{scheduleBean.cancel()}"/>
                                 </td>

@@ -27,7 +27,7 @@
                                         id="startDate"
                                         value="#{volunteerAvailabilitiesBean.startDateStr}"
                                         size="10"
-                                        styleClass="forJSF"
+                                        class="forJSF"
                                         maxlength="20"
                                         required="false">
                                     </input type='text'>
@@ -44,7 +44,7 @@
                                     <label for="endDate" value="End Date"/>&nbsp;
                                     <input type='text'
                                         id="endDate"
-                                        styleClass="forJSF"
+                                        class="forJSF"
                                         value="#{volunteerAvailabilitiesBean.endDateStr}"
                                         size="10"
                                         maxlength="20"
@@ -63,11 +63,11 @@
                             <tr>
                                 <td align="center" colspan="4">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add"
                                         action="#{volunteerAvailabilitiesBean.add()}"/>&nbsp;
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{volunteerAvailabilitiesBean.cancel()}"/>
                                 </td>

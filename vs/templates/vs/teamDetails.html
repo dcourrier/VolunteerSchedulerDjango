@@ -36,17 +36,17 @@
                             <tr>
                                 <td align="center">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{teamDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_TEAM)}">
                                         <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                             value="Delete"
                                             action="#{teamDetailsBean.delete()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{teamDetailsBean.cancel()}"/>
                                 </td></tr>

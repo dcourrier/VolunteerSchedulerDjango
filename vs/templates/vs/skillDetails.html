@@ -68,18 +68,18 @@
                                 <td class="label">&nbsp;</td>
                                 <td>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{skillDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_SKILL)}">
                                         <p:commandButton 
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             value="Delete"
                                             rendered="#{skillDetailsBean.canDelete()}"
                                             action="#{skillDetailsBean.delete()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{skillDetailsBean.cancel()}"/>
                                 </td>

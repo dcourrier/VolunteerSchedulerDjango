@@ -15,7 +15,7 @@ def VSAuthorizer(content, _type):
     if login:
         #print(str(login) + ' : ' + str(_type))
         if SecurityUtils.isAuthorized(login, _type):
-        #    print('authorized')
+            #print('authorized')
             result = mark_safe(content)
     return result
             

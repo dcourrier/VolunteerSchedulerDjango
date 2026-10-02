@@ -9,7 +9,7 @@
     <body>
         <h:form>
             <p:commandButton 
-                styleClass="reset-style"
+                class="reset-style"
                 value="Open Dialog"
                 type="button" 
                 onclick="PF('myDialogVar').show();" />
@@ -23,18 +23,18 @@
                     <p:inputText id="email" value="#{dialogBean.email}" />
                 </h:panelGrid>
                 <p:commandButton 
-                    styleClass="reset-style"
+                    class="reset-style"
                     value="Submit"
                     action="#{dialogBean.submit}" 
                     oncomplete="PF('myDialogVar').hide();" 
                     update="@form" />
                 <p:commandButton 
-                    styleClass="reset-style"
+                    class="reset-style"
                     value="Close" 
                     type="button" 
                     onclick="PF('myDialogVar').hide();" />
                 <p:commandButton 
-                    styleClass="reset-style"
+                    class="reset-style"
                     id ="x"
                     value="reload" 
                     type="button" 

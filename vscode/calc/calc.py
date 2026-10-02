@@ -1,80 +1,84 @@
 from vscode.base.base import VSBase,ObjectFactoryBase
-from vscode.base.business_objects import *
+from vscode.utils.exceptions import *
 from vscode.utils.utils import *
+from vscode.val.vals import *
 
 class OrganizationBuilder(VSBase):
 
     def __init__(self):
-        super(self).__init__()
+        super().__init__()
 
     def build(self, name, login):
-        of = ObjectFactoryBase()
+        from vscode.base.business_objects import ObjectFactory,ConfigurationSet,ConfigurableProperty,SecurityGroup
+        of = ObjectFactory()
         if super().isBlank(name):
             raise Exception("you must supply an organization name")
         
         if not login:
             raise Exception("you must supply a valID login object")
         
-        org = of.getOrganizationByName(name)
+        org = of.getOrganization(name=name)
         if org:
             raise Exception("There is already an organization named \"" + name + "\" in the database.")
         
-        defaultOrg = of.getOrganizationByName("$$default$$")
+        defaultOrg = of.getOrganization(name="Volunteer Scheduler")
         if not defaultOrg:
             raise Exception("Couldn't get default organization")
         org = of.getNewOrganization()
         org.setName(name)
-        org.setCreateUser(login.getID())
-        org.setUpdateUser(login.getID())
+        uid = login.getID()
+        if not uid:
+            uid = 1
+        org.setOrganizationCreateUser(uid)
+        org.setOrganizationUpdateUser(uid)
         org.setCreateDate(super().now())
         org.setUpdateDate(super().now())
-        of.save(org)
-        liNew = of.getNewLogin()
-        liNew.setLogin("Admin")
+        org.save()
+        liNew = of.getNewLogin("Admin",uid,org)
         liNew.setLoginName("Admin")
-        liNew.setOrganization(org)
         liNew.setPassword("Password1")
         liNew.setSecret("secret")
         liNew.setLastChange(super().now())
-        liNew.setCreateDate(super().now())
-        liNew.setUpdateDate(super().now())
-        liNew.setCreateUser(login.getID())
-        liNew.setUpdateUser(login.getID())
+        liNew.setLogintCreateDate(super().now())
+        liNew.setLoginUpdateDate(super().now())
+        liNew.setLoginCreateUser(uid)
+        liNew.setLoginUpdateUser(uid)
         ls = ValueTableManager().getValue("LoginStatus", str(LoginStatus.STATUS_READY))
         liNew.setLoginStatus(ls)
-        of.save(liNew)
-        liNew = of.getNewLogin()
-        liNew.setLogin("SystemUtilities")
-        liNew.setLoginName("System Utilities")
-        liNew.setOrganization(org)
-        liNew.setPassword("Password1")
-        liNew.setSecret("secret")
-        liNew.setLastChange(super().now())
-        liNew.setCreateDate(super().now())
-        liNew.setUpdateDate(super().now())
-        liNew.setCreateUser(login.getID())
-        liNew.setUpdateUser(login.getID())
-        liNew.setLoginStatus(ls)
-        of.save(liNew)
+        liNew.save()
+        liNew2 = of.getNewLogin("SystemUtilities",uid,org)
+        liNew2.setLoginName("System Utilities")
+        liNew2.setPassword("Password1")
+        liNew2.setSecret("secret")
+        liNew2.setLastChange(super().now())
+        liNew2.setLoginCreateDate(super().now())
+        liNew2.setLoginUpdateDate(super().now())
+        liNew2.setLoginCreateUser(login.getID())
+        liNew2.setLoginUpdateUser(login.getID())
+        liNew2.setLoginStatus(ls)
+        liNew2.save()
         for cs in of.getConfigurationSets(defaultOrg):
             csNew = ConfigurationSet(cs)
             csNew.setOrganization(org)
-            csNew.setCreateDate(super().now())
-            csNew.setUpdateDate(super().now())
-            csNew.setCreateUser(login.getID())
-            csNew.setUpdateUser(login.getID())
-            of.save(csNew)
-            of.refresh(csNew)
+            csNew.setConfigurationSetCreateDate(super().now())
+            csNew.setConfigurationSetUpdateDate(super().now())
+            csNew.setConfigurationSetCreateUser(login.getID())
+            csNew.setConfigurationSetUpdateUser(login.getID())
+            csNew.save()
             for cp in cs.getProperties():
                 cpNew = ConfigurableProperty(cp)
                 cpNew.setPropertyConfigurationSetID(cs.getConfigurationSetID())
-                of.save(cpNew)
+                cpNew.setPropertyCreateUser(uid)
+                cpNew.setPropertyUpdateUser(uid)
+                cpNew.save()
                 csNew.addProperty(cpNew)
-            of.save(csNew)
+            csNew.save()
             for sg in of.getSecurityGroups(defaultOrg):
                 newSg = SecurityGroup(sg)
                 newSg.setOrganization(org)
-                of.save(newSg)
+                newSg.setSecurityGroupCreateUser(uid)
+                newSg.setSecurityGroupUpdateUser(uid)
+                newSg.save()
             for p in sg.getPrivileges():
                 newSg.addPrivilege(p)
             newSg.save()
@@ -82,14 +86,13 @@ class OrganizationBuilder(VSBase):
         
 class EventRejecter(VSBase):
 
-    def __init__(self, schedule, uid): 
+    def __init__(self, schedule, uid):
+        super().__init__() 
         self.schedule = schedule
         self.start = schedule.getScheduleStartDate()    
         self.end = schedule.getScheduleEndDate()
         self.org = schedule.getOrganization()
         self.loginID = uid
-        self.of = ObjectFactory()
-        super()
 
     def rejectEvents(self):
         assignments = []

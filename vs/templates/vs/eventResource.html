@@ -30,7 +30,7 @@
                                         onchange=""
                                         id="resourceNum"
                                         value="#{eventResourceBean.resourceUsage}"
-                                        styleClass="forJSF">
+                                        class="forJSF">
                                         <f:selectItems 
                                             value="#{eventResourceBean.skillCounts}" 
                                             var="sc"
@@ -42,15 +42,15 @@
                             <tr>
                                 <td>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{eventResourceBean.update()}"/>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Remove All"
                                         action="#{eventResourceBean.delete()}"/>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{eventResourceBean.cancel()}"/>
                                 </td>

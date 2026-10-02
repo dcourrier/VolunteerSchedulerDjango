@@ -1,0 +1,6 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Volunteers' help='/vs/help?volunteers'%}
+{% VSAuthorizer _type=VIEW_VOLUNTEERS %} 
+{{volunteers|safe}}
+{%VSAuthorizer_end%}   
+{% endcotton %}

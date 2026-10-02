@@ -33,7 +33,7 @@
                                                         {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_VOLUNTEER_SKILL)}">
                                                             <h:outputLink
                                                                 id="volSkillsLink"
-                                                                styleClass="inText" 
+                                                                class="inText" 
                                                                 value="#{volunteerBean.skillsURL()}">
                                                                 Skills
                                                             </h:outputLink>
@@ -43,7 +43,7 @@
                                                         {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_AVAILABILITY)}">
                                                             <h:outputLink
                                                                 id="volAvailabilityLink"
-                                                                styleClass="inText" 
+                                                                class="inText" 
                                                                 value="#{volunteerBean.availabilityURL()}">
                                                                 Availability
                                                             </h:outputLink>
@@ -53,7 +53,7 @@
                                                         {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_RELATIONSHIP)}">
                                                             <h:outputLink
                                                                 id="volRelationshipsLink"
-                                                                styleClass="inText" 
+                                                                class="inText" 
                                                                 value="#{volunteerBean.relationshipsURL()}">
                                                                 Relationships
                                                             </h:outputLink>
@@ -63,7 +63,7 @@
                                                         {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_EVENT_PREFERENCE)}">
                                                             <h:outputLink
                                                                 id="volEventPreferencesLink"
-                                                                styleClass="inText" 
+                                                                class="inText" 
                                                                 value="#{volunteerBean.eventPreferenceURL()}">
                                                                 Event Preference
                                                             </h:outputLink>
@@ -74,7 +74,7 @@
                                                             {% if test="#{volunteerBean.hasAssignments()}">
                                                                 <h:outputLink
                                                                     id="volJobAssignmentsLink"
-                                                                    styleClass="inText" 
+                                                                    class="inText" 
                                                                     value="#{volunteerBean.jobAssignmentsURL()}">
                                                                     Job Assignments
                                                                 </h:outputLink>
@@ -146,17 +146,17 @@
                                         <vscomp:workAddress bean="#{workAddressBean}"/>
                                         <tr><td colspan="6" align="center">
                                                 <p:commandButton 
-                                                    styleClass="reset-style"
+                                                    class="reset-style"
                                                     value="Save"
                                                     action="#{volunteerBean.submit()}"/>&nbsp;
                                                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_VOLUNTEER)}">
                                                     <p:commandButton 
-                                                        styleClass="reset-style"
+                                                        class="reset-style"
                                                         value="Delete"
                                                         action="#{volunteerBean.delete()}"/>&nbsp;
                                                 {% endif %}
                                                 <p:commandButton 
-                                                    styleClass="reset-style"
+                                                    class="reset-style"
                                                     value="Cancel"
                                                     action="#{volunteerBean.cancel()}"/>
                                             </td></tr>

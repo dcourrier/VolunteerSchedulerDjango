@@ -34,7 +34,7 @@
                                         id="lastAssignmentDate"
                                         value="#{volunteerSkillBean.lastAssignmentDate}"
                                         size="10"
-                                        styleClass="forJSF"
+                                        class="forJSF"
                                         maxlength="20"
                                         required="false"/>
                                     <a href="javascript:showCalendarForJSF('lastAssignmentDate');">
@@ -49,15 +49,15 @@
                             <tr>
                                 <td>   
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{volunteerSkillBean.save()}"/>&nbsp;
                                     <p:commandButton 
                                         value="Delete"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{volunteerSkillBean.delete()}"/>&nbsp;
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{volunteerSkillBean.cancel()}"/>&nbsp;
                                 </td>

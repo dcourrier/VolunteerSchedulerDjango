@@ -37,10 +37,10 @@ a.Centered {
 }
 
 a.black12 {
-    font-size: 12pt;
+    font-size: 14pt;
 }
 a.mainMenu {
-    font-size: 12pt;
+    font-size: 14pt;
     font-weight: bold;
 }
 a.mainMenuSmall {
@@ -49,14 +49,13 @@ a.mainMenuSmall {
 }
 
 a.inText {
-    font-size: 12pt;
+    font-size: 14pt;
     font-weight: bold;
 }
 
 a.listTable  {
     color: black;
     font-size: 14pt;
-    font-weight: bold;
 }
 
 a.assigned {
@@ -100,12 +99,13 @@ div.helpItem {
 }
 
 div.listItem {
+    text-align: center;
+    font-size: 14pt;
     font-weight: bold;
     font-style: italic;
 }
 
 div.volunteerName {
-    font-size: 14pt;
     font-weight: bolder;
 }
 
@@ -148,11 +148,11 @@ label.Centered {
 p.whiteRight {
     text-align: right;
     color: white;
-    font-size: 12pt;
+    font-size: 14pt;
 }
 
 select.centered {
-    font-size: 12pt;
+    font-size: 14pt;
     text-align: center;
 }
 
@@ -345,7 +345,7 @@ td.body {
 
 td.bold12 {
     text-align: left;
-    font-size: 12pt;
+    font-size: 14pt;
     vertical-align: top;
     font-weight: bolder;
 }
@@ -361,26 +361,26 @@ td.header {
 }
 td.headerLeft {
     text-align: left;
-    font-size: 12pt;
+    font-size: 14pt;
     background-color: aqua;
     width: 5%;
 }
 td.headerCenter {
     text-align: center;
-    font-size: 12pt;
+    font-size: 14pt;
     background-color: aqua;
     width: 90%;
 }
 td.headerCenterLeftAligned {
     text-align: left;
-    font-size: 12pt;
+    font-size: 14pt;
     background-color: aqua;
     width: 90%;
 }
 
 td.headerRight {
     text-align: right;
-    font-size: 12pt;
+    font-size: 14pt;
     background-color: aqua;
     width: 5%;
 }
@@ -388,14 +388,14 @@ td.headerRight {
 td.label {
     text-align: right;
     vertical-align: middle;
-    font-size: 12pt;
+    font-size: 14pt;
     width: 20%;
 }
 
 td.labelLeft {
     text-align: left;
     vertical-align: middle;
-    font-size: 12pt;
+    font-size: 14pt;
     width: 20%;
 }
 

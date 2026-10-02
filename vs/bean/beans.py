@@ -8,6 +8,7 @@ from loguru import logger
 
 from vscode.base.base import VSBase
 from vscode.base.business_objects import *
+from vscode.calc.calc import *
 from vscode.comparator.comp import *
 from vscode.utils.exceptions import PersistenceException
 from vscode.utils.utils import Utils,ValuesHolder,Encrypter
@@ -16,7 +17,7 @@ from vscode.val.vals import *
 
 class VSBaseBean(VSBase):
     def __init__(self):
-        pass
+        self.of = ObjectFactory()
          
     def handleException(self, err):
         super().handleException(err)        
@@ -264,6 +265,7 @@ class Menu():
     LOGIN = 'vs/login.html'
     PASSWORD_CHANGE = "/passwordChange.html"
     ORGANIZATIONS = "vs/organizations.html"
+    ORGANIZATIONS_BEAN = "vs/organizations"
     RESOURCES = "vs/resources.html"
     REPORTS = "vs/reports.html"
     SELECT_ORG = "vs/selectOrg.html"
@@ -288,130 +290,178 @@ class SessionData(VSBaseBean):
         return cls.inst
 
     def __init__(self):
+        super().__init__()
+        if not self.of:
+            super().of = ObjectFactory()
         if not hasattr(self, 'initialized'):
             self.initialized = True
             self._initialProjectStatus = None
+            self.currentLogin = None
+            self.currentLoginPrivileges = []
+            self.eventNavigator = []
+            self.households = []
+            self.loginStatuses = []
             self.orgs = []
+            self.privileges = []
+            self.projectNavigator = []
+            self.projectStatuses = []
+            self.recurrenceTypes = []
             self.securityGroupIDs = []
             self.securityGroups = []
-            self.eventNavigator = []
-            self.projectNavigator = []
+            self.skillCounts = []
+            self.skillRelationshipTypes = []
             self.taskNavigator = []
+            self.taskStatuses = []
             self.volunteerNavigator = []
-            self.currentLogin = None
-            self.organization = None
-            self.organizationID = None
-            self.householdID = None
-            self.locationID = None
-            self.loginID = None
-            self.organizationForDetailsID = None
+            self.volunteerRelationshipTypes = []
+            self.volunteers = []
+            self.activityError = False
             self.activityID = None
+            self.autoclicked = None
             self.availabilityID = None
-            self.eventID = None
-            self.householdID = None
-            self.ID = None
-            self.jobID = None
-            self.loginID = None
-            self.parentTaskID = None
-            self.parentProjectID = None
-            self.projectID = None
-            self.projectResourceID = None
-            self.relationshipID = None
-            self.reportID = None
-            self.resourceID = None
-            self.securityGroupID = None
-            self.scheduleID = None
-            self.skillID = None
-            self.skillRelationshipID = None
-            self.taskID = None
-            self.teamID = None
-            self.volunteerID = None
-            self.volunteerSkillID = None
             self.cameFrom = None
-            self.cameFromSchedule = False
-            self.cameFromVolunteer = False
             self.cameFromHome = False
             self.cameFromHousehold = False
             self.cameFromHouseholds = False
+            self.cameFromSchedule = False
+            self.cameFromVolunteer = False
             self.currentLogin = None
-            self.currentLoginPrivileges = []
-            self.loginLevel = 10000
-            self.initialized = False
-            self.skillCounts = []
-            self.privileges = []
-            self.loginStatuses = []
-            self.skillRelationshipTypes = []
-            self.volunteerRelationshipTypes = []
-            self.recurrenceTypes = []
-            self.projectStatuses = []
-            self.taskStatuses = []
             self.defaultTaskStatus = None
-            self.initialProjectStatus = None
-            self.resetStatus = None
-            self.readyStatus = None
-            self.userSecurityGroup = None
-            self.autoclicked = None
-            self.projectError = False
-            self.activityError = False
             self.emailError = False
-            self.resourceError = False
-            self.skillError = False
-            self.subTaskError = False
-            self.taskError = False
-            self.teamError = False
-            self.volunteerError = False
             self.error = None
             self.errorMessage = None
-            self.households = []
-            self.volunteers = []
-            try:
-                self.resetStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_RESET)
-            except Exception as e:
-                super().handleException(e)
-            try:
-                self.readyStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_READY)
-            except Exception as e:
-                super().handleException(e)
-    
-            self._loadPrivileges()
-            self.loadHouseholds()
-            self.loadVolunteers()
+            self.eventID = None
+            self.householdID = None
+            self.householdID = None
+            self.ID = None
+            self.initialized = False
+            self.initialProjectStatus = None
+            self.jobID = None
+            self.locationID = None
+            self.loginID = None
+            self.loginID = None
+            self.loginLevel = 10000
+            self.organization = None
+            self.organizationForDetailsID = None
+            self.organizationID = None
+            self.parentProjectID = None
+            self.parentTaskID = None
+            self.projectError = False
+            self.projectID = None
+            self.projectResourceID = None
+            self.readyStatus = None
+            self.relationshipID = None
+            self.reportID = None
+            self.resetStatus = None
+            self.resourceError = False
+            self.resourceID = None
+            self.scheduleID = None
+            self.securityGroupID = None
+            self.skillError = False
+            self.skillID = None
+            self.skillRelationshipID = None
+            self.subTaskError = False
+            self.taskError = False
+            self.taskID = None
+            self.teamError = False
+            self.teamID = None
+            self.userSecurityGroup = None
+            self.volunteerError = False
+            self.volunteerID = None
+            self.volunteerSkillID = None
+            self.init0()
 
     def __str__(self):
         result = 'SessionData {currentLogin: '
         result += str(self.currentLogin)
         result += '}'
         return result
+        
+    def init0(self):
+        try:
+            self.resetStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_RESET)
+        except Exception as e:
+            super().handleException(e)
+        try:
+            self.readyStatus = ValueTableManager().getValue(table='LoginStatus', key=LoginStatus.STATUS_READY)
+        except Exception as e:
+            super().handleException(e)
+
+        self._loadPrivileges()
+        if not self.organization:
+            self.init1()
+        if self.organization:
+            self.init2()
+            self.loadHouseholds()
+            self.loadVolunteers()
+    
+    def init1(self):
+        try:
+            for org in self.of.getOrganizations(dbo=True):
+                #print(org)
+                if org.organizationName.lower() == "system":
+                    continue
+                #print('got an org')
+                self.orgs.append(Organization(org))            
+            if len(self.orgs) == 1:
+                self.organization = self.orgs[0]
+        except Exception as e:
+            self.handleException(e)
+        
+    def init2(self):
+        try:
+            for sg in self.of.getSecurityGroups(self.getOrganization()):
+                self.securityGroups.append(sg)
+            if len(self.securityGroups) > 1:
+                Collections.sort(self.securityGroups, SecurityGroupComparator())
+        except Exception as e:
+            self.handleException(e)
+
+    def loadHouseholds(self): 
+        try: 
+            for obj in self.of.getHouseholds(org=self.getOrganization()):
+                self.households.append(obj)
+            
+        except Exception as e:
+            self.handleException(e)
+        
+    def loadVolunteers(self): 
+        try: 
+            for obj in self.of.getVolunteers(org=self.getOrganization()):
+                self.volunteers.append(obj)
+        except Exception as e: 
+            super().handleException(e)
+
     
     def _loadPrivileges(self):
         try:
-            self.volunteerRelationshipTypes.extend(ObjectFactory().getRelationshipTypes())
+            self.volunteerRelationshipTypes.extend(self.of.getRelationshipTypes())
             Collections.sort(self.volunteerRelationshipTypes, RelationshipTypeComparator())
         except PersistenceException as pe:
             self.handleException(pe)
         try:
-            self.skillRelationshipTypes.extend(ObjectFactory().getSkillRelationshipTypes())
+            self.skillRelationshipTypes.extend(self.of.getSkillRelationshipTypes())
         except PersistenceException as pe:
             self.handleException(pe)
         try:
-            self.recurrenceTypes.extend(ObjectFactory().getRecurrenceTypes())
+            self.recurrenceTypes.extend(self.of.getRecurrenceTypes())
             Collections.sort(self.recurrenceTypes, RecurrenceTypeComparator())
         except PersistenceException as pe:
             self.handleException(pe)
         try:
-            self.loginStatuses.extend(ObjectFactory().getLoginStatuses())
+            self.loginStatuses.extend(self.of.getLoginStatuses())
             Collections.sort(self.loginStatuses, LoginStatusComparator())
         except Exception as e:
             self.handleException(e)
         try:
             needDefaultStatus = True
-            for obj in ObjectFactory().getObjects(ProjectStatus):
+            for obj in self.of.getObjects(ProjectStatus):
                 if needDefaultStatus:
                     self.initialProjectStatus = obj
                     needDefaultStatus = False
                 self.projectStatuses.append(obj)
             needDefaultStatus = True
-            for stat in ObjectFactory().getObjects(TaskStatus):
+            for stat in self.of.getObjects(TaskStatus):
                 if needDefaultStatus:
                     self.defaultTaskStatus = stat
                     needDefaultStatus = False
@@ -421,7 +471,6 @@ class SessionData(VSBaseBean):
         loop = 1
         for loop in range(15):
             self.skillCounts.append(SkillCount(loop))
-        self.init()
 
     def getLoginLevel(self):
         return self.loginLevel
@@ -440,46 +489,6 @@ class SessionData(VSBaseBean):
     
     def setInitialProjectStatus(self, initialProjectStatus):
         self.initialProjectStatus = initialProjectStatus
-    
-    def init(self):
-        try:
-            for org in ObjectFactory().getOrganizations(dbo=True):
-                #print(org)
-                if org.organizationName.lower() == "system":
-                    continue
-                #print('got an org')
-                self.orgs.append(Organization(org))            
-            if len(self.orgs) == 1:
-                self.organization = self.orgs[0]
-        except Exception as e:
-            self.handleException(e)
-        if self.organization:
-            self.init2()
-        
-    def init2(self):
-        try:
-            for sg in ObjectFactory().getSecurityGroups(self.getOrganization()):
-                self.securityGroups.append(sg)
-            if len(self.securityGroups) > 1:
-                Collections.sort(self.securityGroups, SecurityGroupComparator())
-        except Exception as e:
-            self.handleException(e)
-
-    def loadHouseholds(self): 
-        try: 
-            for obj in ObjectFactory().getHouseholds(org=self.getOrganization()):
-                self.households.append(obj)
-            
-        except Exception as e:
-            self.handleException(e)
-        
-    def loadVolunteers(self): 
-        try: 
-            for obj in ObjectFactory().getVolunteers(self.getOrganization()):
-                self.volunteers.append(obj)
-        except Exception as e: 
-            super().handleException(e)
-
 
     def clearCache(self):
         self.eventNavigator.clear()
@@ -642,7 +651,7 @@ class SessionData(VSBaseBean):
     
     def loadPrivileges(self):
         try:
-            self.privileges.extend(ObjectFactory().getPrivileges())      
+            self.privileges.extend(self.of.getPrivileges())      
         except Exception as pe:
             self.handleException(pe)
         
@@ -795,7 +804,7 @@ class  SessionDataBean(VSBaseBean):
     def getInitialProjectStatus(self):
         if not self.sessionData._initialProjectStatus:
             try:
-                objs = ObjectFactory().getObjects(ProjectStatus)
+                objs = self.of.getObjects(ProjectStatus)
                 for ps in objs:
                     if ps.getProjectStatusType() == ProjectStatus.DEFINED:
                         self.sessionData._initialProjectStatus = ps
@@ -1134,7 +1143,7 @@ class  SessionDataBean(VSBaseBean):
     def getTaskWithNameInProject(self, name, project): 
         result = None
         if name and project and project.getProjectID(): 
-            result = ObjectFactory().getTaskWithNameInProject(name, project)
+            result = self.of.getTaskWithNameInProject(name, project)
         return result
     
     def getCameFrom(self):
@@ -1169,17 +1178,17 @@ class  SessionDataBean(VSBaseBean):
         pass
     
     def getDeletedOrganizationProjects(self, org): 
-        return ObjectFactory().getDeletedOrganizationProjects()
+        return self.of.getDeletedOrganizationProjects()
 
     def getDeletedTasks(self):
-        return ObjectFactory().getDeletedTasks() 
+        return self.of.getDeletedTasks() 
         
     def getDeletedTeams(self, org): 
-        return ObjectFactory().getDeletedTeams(org)
+        return self.of.getDeletedTeams(org)
     
 
     def getProjectsInOrganization(self, org):
-        return ObjectFactory().getProjectsInOrganization(org)
+        return self.of.getProjectsInOrganization(org)
 
     def isVolunteer(self): 
         li = self.sessionData.getCurrentLogin()
@@ -1253,7 +1262,8 @@ class  SessionDataBean(VSBaseBean):
                                 items=[],
                                 dest=None,
                                 color=False,
-                                extra=None): 
+                                extra=None,
+                                style='listTable'): 
         result = ""
         if items: 
             index = 0
@@ -1261,33 +1271,31 @@ class  SessionDataBean(VSBaseBean):
             if color:
                 sb += " class=''>"
             else: 
-                sb += "><h3>"            
+                sb += "><h2>"            
             sb += str(title)
             if not color: 
-                sb += "</h3>"            
+                sb += "</h2>"            
             sb += "</th>\n</table>\n"
             sb += "<div style='overflow-y: auto"
             sb += "height: "
             sb += str(height)
             sb += "px'>\n<table class='listTable' border=1>\n<tr>"
+            #print('style ' + str(style))
             for vsp in items: 
                 if index % size == 0 and index > 0: 
                     sb += "</tr><tr>\n"
                 index += 1
                 try:
-                    style = vsp.getStyle()
                     sb += "<td "
-                    sb += str(style)
+                    if style and isinstance(style, str): 
+                        sb += str(style)
                     sb += ">"
                 except: 
                     sb += "<td class='listTable'>"                
                 if Utils.isNotBlank(dest):
                     sb += "<a "
-                    try: 
-                        style = vsp.getStyle()
-                        sb += str(style)
-                    except: 
-                        pass
+                    if style and isinstance(style, str):
+                        sb += style                    
                     if extra: 
                         sb += str(extra)
                     sb += " href='"
@@ -1317,13 +1325,13 @@ class  SessionDataBean(VSBaseBean):
     def createNewLogin(self, vol, admLoginId): 
         name = vol.getVolunteerName()
         strippedName = name.strip().replace(" ", '')
-        li = ObjectFactory().getLogin(
+        li = self.of.getLogin(
             vol.getVolunteerFirstName(), 
             vol.getVolunteerLastName(), 
             self.sessionData.getOrganization())
         if not li: 
             org = self.sessionData.getOrganization()
-            li = ObjectFactory().createLogin(strippedName, name, org,admLoginId)
+            li = self.of.createLogin(strippedName, name, org,admLoginId)
             li.setLoginStatus(self.sessionData.resetStatus)
             li.save()
         vol.setLogin(li)
@@ -1703,10 +1711,11 @@ class HomeBean(DefaultBean):
         return self.sessionData.getCurrentLogin()
     
     def setup(self):
-        of = ObjectFactory()
         result = {}
         #print('houseolds ' + str(self.getHouseholdsTable()))
         #print('volunteers ' + str(self.getVolunteersTable()))
+        if not self.sessionData.organization:
+            raise NeedOrganizationException()
         result['households'] = self.getHouseholdsTable()
         result['volunteers'] = self.getVolunteersTable()
         #print(result['households'])
@@ -1720,31 +1729,33 @@ class HomeBean(DefaultBean):
     def getVolunteer(self):
         if not self.volunteer:
             try:
-                self.volunteer = ObjectFactory().getVolunteer(self.getLogin())
+                self.volunteer = self.of.getVolunteer(self.getLogin())
             except Exception as e:
                 super().handleException(e)         
         return self.volunteer
     
     def getHouseholds(self):
-        return ObjectFactory().getHouseholds(org=self.sessionData.organization,dbo=True)
+        #print('getHouseholds org ' + str(self.sessionData.organization))
+        return self.of.getHouseholds(org=self.sessionData.organization,dbo=True)
     
     def getVolunteers(self):
-        return ObjectFactory().getVolunteers(org=self.sessionData.organization,dbo=True)
+        return self.of.getVolunteers(org=self.sessionData.organization,dbo=True)
 
     def getHouseholdsTable(self):
         return super().multiColumnTableRows("Households",
                 5,
                 125,
                 self.getHouseholds(),
-                "/vs/householdDetails.html" +  "?cameFromHome=true")
+                "/vs/householdDetails.html" +  "?cameFromHome=True",
+                style='class=listTable')
     
-
     def getVolunteersTable(self):
         return super().multiColumnTableRows("Volunteers",
                 5,
                 125,
                 self.getVolunteers(),
-                "/vs/volunteerDetails.html" + "?cameFromHome=true")
+                "/vs/volunteerDetails.html" + "?cameFromHome=True",
+                style='class=listTable')
     
 
     def redirect(self):
@@ -1848,7 +1859,7 @@ class LoginBean(DefaultBean):
             self.errorMessage += self.validateErr(errs)
         else:
             try:
-                li = ObjectFactory().getLogin(self.sessionData.loginID, self.sessionData.getOrganization())
+                li = self.of.getLogin(self.sessionData.loginID, self.sessionData.getOrganization())
                 li.reset()
                 li.save()
                 result = LoginBean.LOGIN_CANCEL
@@ -1869,7 +1880,7 @@ class LoginBean(DefaultBean):
         
         if not err:
             try:
-                li = ObjectFactory().getLogin(self.loginID, self.sessionData.getOrganization())
+                li = self.of.getLogin(self.loginID, self.sessionData.getOrganization())
                 if not li:
                     err = True
                     result.append("No such login")
@@ -1885,7 +1896,7 @@ class LoginBean(DefaultBean):
     
     def selectOrganization(self):
         try:
-            org = ObjectFactory().getOrganization(self.getOrganizationId())
+            org = self.of.getOrganization(self.getOrganizationId())
             if org:
                 self.sessionData.setOrganization(org)
         except Exception as e:
@@ -1900,12 +1911,14 @@ class LoginBean(DefaultBean):
         result = None
         org = self.sessionData.getOrganization()
         #print(self.sessionData.orgs)
+        #print(org)
         if not org:
+            self.tryForMatch(loginName, password)
             result = Menu.SELECT_ORG
         else:
             login = None
             try:
-                login = ObjectFactory().getLogin(login=loginName, org=org)
+                login = self.of.getLogin(login=loginName, org=org)
                 #print(login.getPassword())
             except NoLoginFoundException:
                     pass
@@ -1946,29 +1959,165 @@ class LoginBean(DefaultBean):
                     if not error:
                         self.sessionData.errorMessage = None
                         self.sessionData.setCurrentLogin(login)
+                        self.sessionData.currentLogin = login
+                        #print('loginBean.attempt ' + str(self.sessionData.organization))
                         #print(self.sessionData)
                         #print(SessionData())
-                        self.currentLoginPrivileges = ObjectFactory().getCurrentUsersPrivileges(login)
+                        self.sessionData.currentLoginPrivileges = self.of.getCurrentUsersPrivileges(login)
                         result = Menu.HOME_BEAN
                     else:
                         result = Menu.LOGIN                        
         return result
+    
+    def tryForMatch(self, loginName, password):
+        li = None
+        enc = Encrypter()
+        for dbo in DbLogin.objects.exclude(deleteFlag=True).filter(login=loginName):
+            for pw in dbo.passwords.all().exclude(deleteFlag=True).order_by('-pk'):
+                pwd = pw.password
+                if pwd:
+                    dpw = enc.decrypt(pwd)
+                    #print(dpw)
+                    if password == dpw:
+                        li = dbo
+                        break
+            if li:
+                break
+        if li:
+            self.sessionData.currentLogin = li
 
     def getOrgname(self, val):
         result = None
+        org  = None
+        orgs = {}
         try:
-            count = 0
-            lis = ObjectFactory().getLogins()
+            lis = self.of.getLogins()
             for li in lis:
-                if val == li.getLogin():
-                    if li.getOrganization():
-                        result = li.getOrganization()
-                        count += 1 
-                    elif li.getLoginOrganizationID():
-                        result = ObjectFactory().getOrganization(li.getLoginOrganizationID())
-                        count += 1
-            if (count > 1):
-                result = None
+                org = li.getOrganization()
+                if not org:
+                    lid = li.getLoginOrganizationID()
+                    if lid:
+                        org = self.of.getOrganization(lid)
+                if org:
+                    orgs[org.getOrganizationName] = org
+            if len(orgs) == 1:
+                result = next(iter(org))
         except Exception as e:
             self.handleException(e)
+        return result
+    
+    
+class OrganizationsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'table' : self.getTable(),
+            'organizationNameMaxLength': Organization.NAME_LENGTH
+            }
+        return result
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('name')
+        result = Menu.ORGANIZATIONS_BEAN
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "name not specified"
+        else:
+            org = None
+            try:
+                org = self.of.getOrganization(name=name)
+                if org:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already an organization named \"" + name + "\" in the database."
+                else:
+                    OrganizationBuilder().build(name, self.sessionData.getCurrentLogin())
+                    self.sessionData.orgs = self.of.getOrganizations()
+            except Exception as pe:
+                self.handleException(pe)
+        context = self.setup()
+        if error:
+            context['errorMessage'] = errorMessage
+        self.sessionData.context = context 
+        return result
+    
+    def getTable(self):
+        #print(self.sessionData.orgs)
+        return self.multiColumnTableRows("Organizations",
+                size=5,
+                items=self.sessionData.orgs,
+                dest="/vs/organizationDetails")
+    
+   
+class OrganizationSelectionBean(DefaultBean):
+    
+    def __init__(self,request):
+        try:
+            super().__init__(request)
+        except NeedOrganizationException:
+            pass
+        
+    def setup(self):
+        result = {
+            'table' : self.getTable()
+            }
+        return result
+        
+    def submit(self):
+        error = False
+        errorMessage = None
+        name = self.sessionData.request.POST.get('name')
+        #dict = self.sessionData.request.GET.dict()
+        #for obj in list(dict):
+        #    print(obj)
+        #print('name ' + str(name))
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "name not specified"
+        else:
+            org = None
+            try:
+                org = self.of.getOrganization(name=name)
+                #print('OrganizationSelectionBean submit name=' + str(name) + ' ' + str(org))
+                if org:
+                    self.sessionData.organization = org
+                    self.sessionData.init0()
+                    result = "vs/login.html"
+                else:
+                    error = True
+                    errorMessage = "No organization with name " + str(name)
+            except Exception as pe:
+                super().handleException(pe)
+        context = self.setup()
+        if error:
+            context['errorMessage'] = errorMessage
+        self.sessionData.context = context
+        result = ''
+        #print(self.sessionData.org) 
+        return result
+    
+    def getTable(self):
+        result = '<div class="listItem">'
+        result += '\n<select id="organizationSelect" name="name"'
+        result += ' class="centered">'
+        for org in self.getOrganizations():
+            result += '\n<option value="'
+            result += str(org.organizationName)
+            result += '">'
+            result += str(org.organizationName)
+            result += '</option>'
+        result += '</select></div>'
+        return result
+    
+    def getOrganizations(self):
+        result = []
+        for dbo in DbOrganization.objects.exclude(deleteFlag=True)\
+        .exclude(organizationName='System')\
+        .order_by('organizationName'):
+            result.append(dbo)
         return result

@@ -69,6 +69,11 @@ class InvalidArgumentException(VSException):
     def __init__(self, msg=None):
         super().__init__(msg)
  
+class InvalidAttributeValueException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
 class InvalidDateException(VSException):
 
     def __init__(self, msg=None):
@@ -100,6 +105,11 @@ class InvalidSecretException(VSException):
         super().__init__(msg)
  
 class MissingArgumentException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
+class NeedOrganizationException(VSException):
 
     def __init__(self, msg=None):
         super().__init__(msg)

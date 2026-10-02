@@ -57,17 +57,17 @@
                                 <td class="label">&nbsp;</td>
                                 <td>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{projectResourceDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RESOURCE)}">
                                         <p:commandButton 
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             value="Delete"
                                             action="#{projectResourceDetailsBean.delete()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{projectResourceDetailsBean.cancel()}"/>
                                 </td></tr>

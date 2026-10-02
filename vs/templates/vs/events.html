@@ -36,7 +36,7 @@
                                                 maxlength="#{eventsBean.nameLength()}"
                                                 required="false">
                                             </input type='text'>
-                                            <h:message for="eventName" styleClass="errorMessage" />
+                                            <h:message for="eventName" class="errorMessage" />
                                         </h:panelGrid>
                                     </label>
                                 </td>
@@ -50,7 +50,7 @@
                                                     id="startDate"
                                                     value="#{eventsBean.startDateStr}"
                                                     size="10"
-                                                    styleClass="forJSF"
+                                                    class="forJSF"
                                                     maxlength="20"
                                                     required="false"
                                                     validator="#{eventsBean.validateEventsStartDate}">
@@ -62,7 +62,7 @@
                                                         width="16"
                                                         height="16"
                                                         alt="Click here to select a start date"/></a>
-                                                <h:message for="startDate"  styleClass="errorMessage" />
+                                                <h:message for="startDate"  class="errorMessage" />
                                             </td></tr></table>
                                 </td>
                                 <td width="2%"/>
@@ -80,7 +80,7 @@
                                                         validator="#{eventsBean.validateEventsStartTime}">
                                                         required="false">
                                                     </input type='text'>
-                                                    <h:message for="startTime" styleClass="errorMessage" />
+                                                    <h:message for="startTime" class="errorMessage" />
                                                 </h:panelGrid>
                                             </td></tr></table>
                                 </td>
@@ -97,7 +97,7 @@
                                             validator="#{eventsBean.validateEventsDuration}">
                                             <f:convertNumber integerOnly="true"/>
                                         </input type='text'>
-                                        <h:message for="duration" styleClass="errorMessage" />
+                                        <h:message for="duration" class="errorMessage" />
                                     </h:panelGrid>
                                 </td>
                                 <td width="2%"/>
@@ -143,7 +143,7 @@
                                                     id="endDate"
                                                     value="#{eventsBean.endDateStr}"
                                                     size="10"
-                                                    styleClass="forJSF"
+                                                    class="forJSF"
                                                     maxlength="20"
                                                     required="false"
                                                     validator="#{eventsBean.validateEndDate}">
@@ -155,7 +155,7 @@
                                                         width="16"
                                                         height="16"
                                                         alt="Click here to select an end date"/></a>
-                                                <h:message for="endDate" styleClass="errorMessage" />
+                                                <h:message for="endDate" class="errorMessage" />
                                             </td></tr></table>
                                 </td>
                                 <td width="2%"/>
@@ -174,7 +174,7 @@
                                                         validator="#{eventsBean.validateInterval}">
                                                         <f:convertNumber integerOnly="true"/>
                                                     </input type='text'>
-                                                    <h:message for="interval" styleClass="errorMessage" />
+                                                    <h:message for="interval" class="errorMessage" />
                                                 </h:panelGrid>
                                             </td></tr></table>
                                 </td>
@@ -182,11 +182,11 @@
                             <tr>
                                 <td colspan="9" align="center">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add"
                                         action="#{eventsBean.add()}"/>&nbsp; 
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{eventsBean.cancel()}"
                                         onclick="return resetEventFields();"/> 

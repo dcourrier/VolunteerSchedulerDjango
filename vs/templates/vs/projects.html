@@ -30,7 +30,7 @@
                                                                              size="30"
                                                                              maxlength="#{projectsBean.projectNameMaxLength}"
                                                                              value="#{projectsBean.name}"/>
-                                                                <h:message for="name" styleClass="errorMsg"/>
+                                                                <h:message for="name" class="errorMsg"/>
                                                             </h:panelGrid>
                                                         </td>
                                                         <td width="2%"/>
@@ -43,7 +43,7 @@
                                                                              size="10"
                                                                              maxlength="10"
                                                                              value="#{projectsBean.startDate}"/>
-                                                                <h:message for="startDate" styleClass="errorMsg"/>
+                                                                <h:message for="startDate" class="errorMsg"/>
                                                             </h:panelGrid>
                                                         </td>
                                                         <td width="2%"/>
@@ -56,7 +56,7 @@
                                                                              size="10"
                                                                              maxlength="10"
                                                                              value="#{projectsBean.finishDate}"/>
-                                                                <h:message for="finishDate" styleClass="errorMsg"/>
+                                                                <h:message for="finishDate" class="errorMsg"/>
                                                             </h:panelGrid>
                                                         </td>
                                                     </tr>
@@ -70,14 +70,14 @@
                                                         <td class="label">&nbsp;</td>
                                                         <td class="label">
                                                             <p:commandButton 
-                                                                styleClass="reset-style"
+                                                                class="reset-style"
                                                                 value="Add Project"
                                                                 action="#{projectsBean.submitProject}"/>&nbsp;
                                                         </td>
                                                         <td class="label">&nbsp;</td>
                                                         <td class="labelLeft">
                                                             <p:commandButton 
-                                                                styleClass="reset-style"
+                                                                class="reset-style"
                                                                 value="Cancel"
                                                                 action="/volsched/pages/home?faces-redirect=true"/>
                                                         </td>
@@ -140,7 +140,7 @@
                                                                     <td class="label">&nbsp;</td>
                                                                     <td class="label">
                                                                         <p:commandButton 
-                                                                            styleClass="reset-style"
+                                                                            class="reset-style"
                                                                             value="Add Team"
                                                                             action="#{projectsBean.submitTeam}"/>&nbsp;
                                                                     </td>
@@ -219,7 +219,7 @@
                                                                     <td class="label">&nbsp;</td>
                                                                     <td class="label">
                                                                         <p:commandButton 
-                                                                            styleClass="reset-style"
+                                                                            class="reset-style"
                                                                             value="Add Resource"
                                                                             action="#{projectsBean.submitResource()}"/>&nbsp;
                                                                     </td>

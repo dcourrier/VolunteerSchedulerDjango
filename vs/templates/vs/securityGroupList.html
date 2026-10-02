@@ -31,7 +31,7 @@
                                                      maxlength="#{securityGroupsBean.nameLength()}"
                                                      value="#{securityGroupsBean.name}" 
                                                      required="false"/>
-                                        <h:message for="name" styleClass="errorMsg"/>
+                                        <h:message for="name" class="errorMsg"/>
                                     </h:panelGrid>
                                 </td>
                             </tr>
@@ -45,7 +45,7 @@
                                                      maxlength="3"
                                                      value="#{securityGroupsBean.level}" 
                                                      required="false"/>
-                                        <h:message for="level" styleClass="errorMsg"/>
+                                        <h:message for="level" class="errorMsg"/>
                                     </h:panelGrid>
                                 </td>
                             </tr>
@@ -59,18 +59,18 @@
                                                      maxlength="#{securityGroupsBean.descriptionLength()}"
                                                      value="#{securityGroupsBean.description}" 
                                                      required="false"/>
-                                        <h:message for="description" styleClass="errorMsg"/>
+                                        <h:message for="description" class="errorMsg"/>
                                     </h:panelGrid>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add"
                                         action="#{securityGroupsBean.add()}"/>&nbsp;
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{securityGroupsBean.cancel()}"/>
                                 </td></tr>

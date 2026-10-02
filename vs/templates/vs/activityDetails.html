@@ -72,17 +72,17 @@
                                 <td width="100%" align="center">
                                     <p:commandButton 
                                         value="Save"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{activityDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_ACTIVITY)}">
                                         <p:commandButton 
                                             value="Delete"
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             action="#{activityDetailsBean.delete()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
                                         value="Cancel"
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         action="#{activityDetailsBean.cancel()}"/>
                                 </td></tr>
                             <vscomp:updateError 

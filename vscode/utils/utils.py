@@ -14,7 +14,7 @@ from vscode.base.base import VSBase
 from vs.models import DbScheduleEvent
    
                            
-class Constants():
+class Constants(ABC):
 
     DEFAULT_ORGANIZATION = "$$default$$"
     DEFAULT_PASSWORD = "Password1"
@@ -424,6 +424,7 @@ class SystemOption(VSBase):
         else:
             self.fileName = SystemOption.INI_FILE_NAME
         PropertiesManager().getProperty(self.fileName, self.fileName)
+        #print('SystemOption ' + str(ok))
 
     def set(self, key, value):
         if not key:
@@ -488,7 +489,7 @@ class VSSystemOption(VSPersistableSystemOption):
             cls._instance = super().__new__(cls)
         propFile = os.environ.get(Constants.PROPERTY_INI_FILE_PROPERTY)
         if propFile:                
-            _iniFileName = propFile
+            cls._iniFileName = propFile
         return cls._instance
 
     @staticmethod

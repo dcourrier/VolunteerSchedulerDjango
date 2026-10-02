@@ -1,6 +1,8 @@
-{% cotton basicLayout title='Home' help='/vs/help?home' LOGGED_IN=True%}
-  
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Home' help='/vs/help?home'%}
+{% VSAuthorizer _type=HOME %}
 {{households|safe}}
 
-{{volunteers|safe}}   
+{{volunteers|safe}}
+{% VSAuthorizer_end %}   
 {% endcotton %}

@@ -36,12 +36,12 @@
                                 <td>
                                     <p:commandButton 
                                         value="Save"
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                         action="#{organizationDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_ORGANIZATION)}">
                                          &nbsp;<p:commandButton 
                                             value="Delete"
-                                            styleClass="reset-style" 
+                                            class="reset-style" 
                                             rendered="#{organizationDetailsBean.canDelete()}"
                                             action="#{organizationDetailsBean.delete}">
                                             <p:confirm 
@@ -53,7 +53,7 @@
                                     &nbsp;<p:commandButton 
                                         id='cancel'
                                         value="Cancel"
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                         action="#{organizationDetailsBean.cancel()}"/>
                                 </td></tr>
                             {% if test="organizationDetailsBean.error">

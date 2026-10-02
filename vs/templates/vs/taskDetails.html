@@ -32,7 +32,7 @@
                                                      value="#{taskDetailsBean.taskSequence}"
                                                      required="true"
                                                      requiredMessage="You must supply a sequence number"/>
-                                        <h:message styleClass="errorMsg" for="sequence"/>
+                                        <h:message class="errorMsg" for="sequence"/>
                                     </h:panelGrid>
                                 </td>
                                 <td>
@@ -47,7 +47,7 @@
                                                      value="#{taskDetailsBean.taskName}"
                                                      required="true"
                                                      requiredMessage="You must supply a name"/>
-                                        <h:message styleClass="errorMsg" for="name"/>
+                                        <h:message class="errorMsg" for="name"/>
                                     </h:panelGrid>
                                 </td>
                                 <td><label for="taskStatus"
@@ -72,7 +72,7 @@
                                                      maxlength="10"
                                                      value="#{taskDetailsBean.plannedTaskStart}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="plannedTaskStart"/>
+                                        <h:message class="errorMsg" for="plannedTaskStart"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td>
@@ -86,7 +86,7 @@
                                                      maxlength="5"
                                                      value="#{taskDetailsBean.estimatedTaskEffort}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="estimatedEffort"/>
+                                        <h:message class="errorMsg" for="estimatedEffort"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td>
@@ -100,7 +100,7 @@
                                                      maxlength="11"
                                                      value="#{taskDetailsBean.plannedTaskFinish}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="plannedTaskFinish"/>
+                                        <h:message class="errorMsg" for="plannedTaskFinish"/>
                                     </h:panelGrid>
                                 </td> 
                             </tr>
@@ -116,7 +116,7 @@
                                                      maxlength="10"
                                                      value="#{taskDetailsBean.actualTaskStart}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="actualTaskStart"/>
+                                        <h:message class="errorMsg" for="actualTaskStart"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td>
@@ -130,7 +130,7 @@
                                                      maxlength="5"
                                                      value="#{taskDetailsBean.actualTaskEffort}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="actualTaskEffort"/>
+                                        <h:message class="errorMsg" for="actualTaskEffort"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td>
@@ -144,7 +144,7 @@
                                                      maxlength="10"
                                                      value="#{taskDetailsBean.actualTaskFinish}"
                                                      required="false"/>
-                                        <h:message styleClass="errorMsg" for="actualTaskFinish"/>
+                                        <h:message class="errorMsg" for="actualTaskFinish"/>
                                     </h:panelGrid>
                                 </td> 
                             </tr>
@@ -197,17 +197,17 @@
                                 <td/>
                                 <td align="center">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Save"
                                         action="#{taskDetailsBean.submit}"/>&nbsp;
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_RESOURCE)}">
                                         <p:commandButton 
-                                            styleClass="reset-style"
+                                            class="reset-style"
                                             value="Delete"
                                             action="#{taskDetailsBean.delete()}"/>&nbsp;
                                     {% endif %}
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Cancel"
                                         action="#{taskDetailsBean.cancel()}"/>
                                 </td>
@@ -229,7 +229,7 @@
                                                  maxlength="255"
                                                  value="#{taskDetailsBean.resource}"
                                                  required="false"/>
-                                    <h:message for="newResource"  styleClass="errorMsg"/>
+                                    <h:message for="newResource"  class="errorMsg"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td align="right" width="2%"/>
@@ -244,7 +244,7 @@
                                                  maxlength="255"
                                                  value="#{taskDetailsBean.activityName}"
                                                  required="false"/>
-                                    <h:message for="activity"  styleClass="errorMsg"/>
+                                    <h:message for="activity"  class="errorMsg"/>
                                     </h:panelGrid>
                                 </td> 
                                 <td align="right" width="2%"/>
@@ -259,28 +259,28 @@
                                                  maxlength="255"
                                                  value="#{taskDetailsBean.subtask}"
                                                  required="false"/>
-                                    <h:message for="subtask"  styleClass="errorMsg"/>
+                                    <h:message for="subtask"  class="errorMsg"/>
                                     </h:panelGrid>
                                 </td> 
                             </tr>
                             <tr>
                                 <td align="right" >
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add Resource"
                                         action="#{taskDetailsBean.submitResource}"/>
                                 </td>
                                 <td align="right" width="2%"/>
                                 <td align="center" width="32%">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add Activity"
                                         action="#{taskDetailsBean.submitActivity}"/>
                                 </td>
                                 <td align="right" width="2%"/>
                                 <td align="left" width="32%">
                                     <p:commandButton 
-                                        styleClass="reset-style"
+                                        class="reset-style"
                                         value="Add Subtask"
                                         action="#{taskDetailsBean.submitSubtask}"/>
                                 </td> 
@@ -350,14 +350,14 @@
                                     </td></tr>
                             </table>
                             <p:commandButton 
-                                styleClass="reset-style"
+                                class="reset-style"
                                 value="Submit"
                                 action="#{taskDetailsBean.addResourceAssignment}" 
                                 onclick="return checkTaskDetailInput(true);"
                                 type="submit"
                                 update="@form" />
                             <p:commandButton 
-                                styleClass="reset-style"
+                                class="reset-style"
                                 id="x1"
                                 value="Cancel" 
                                 action="#{taskDetailsBean.init}" 
@@ -389,14 +389,14 @@
                                     </td></tr>
                             </table>
                             <p:commandButton 
-                                styleClass="reset-style"
+                                class="reset-style"
                                 value="Submit"
                                 action="#{taskDetailsBean.removeResourceAssignment()}" 
                                 onclick="return checkTaskDetailInput(false);"
                                 type="submit"
                                 update="@form" />
                             <p:commandButton 
-                                styleClass="reset-style"
+                                class="reset-style"
                                 id="x2"
                                 value="Cancel" 
                                 action="#{taskDetailsBean.init}" 

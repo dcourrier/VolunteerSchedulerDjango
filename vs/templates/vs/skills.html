@@ -33,14 +33,14 @@
                                                  maxlength="#{skillsBean.skillNameMaxLength}"
                                                  value="#{skillsBean.name}"
                                                  required="false"/>
-                                    <h:message for="name" styleClass="errorMsg"/>
+                                    <h:message for="name" class="errorMsg"/>
                                     </h:panelGrid>
                                 </td></tr>
                             <tr>
                                 <td class="label">&nbsp;</td>
                                 <td>
                                     <p:commandButton 
-                                        styleClass="reset-style" 
+                                        class="reset-style" 
                                        
                                         value="Save"
                                         action="#{skillsBean.submit}"/>

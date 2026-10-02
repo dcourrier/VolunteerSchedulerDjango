@@ -1,0 +1,26 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Select Organization' help='/vs/help?sectOrganization'%}
+{% VSAuthorizer _type=VIEW_ORGANIZATION %}
+    <table cellpadding="5" align="center" border=`>
+        <th colspan="2"><h3>Select Organization</h3></th>
+        <form action='/vs/organizationSelected' method='post'>
+        {% csrf_token %}
+            <tr>
+                <td class="center"><label for='organizationSelect'>Select One:</label>
+                {{ table|safe }}
+                </td></tr>
+            <tr>
+                <td class="center">
+                    <button
+                    	type='submit' 
+                        class="reset-style">Select</button>&nbsp;
+                    <button 
+                    type="button" 
+                    onclick="window.location.href='/vs/organizationSelect'">
+                    	Cancel
+                    </button>
+                </td></tr>
+        </form>
+    </table>
+{% VSAuthorizer_end %}
+{% endcotton %}
