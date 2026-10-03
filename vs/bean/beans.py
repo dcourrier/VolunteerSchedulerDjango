@@ -265,7 +265,7 @@ class Menu():
     LOGIN = 'vs/login.html'
     PASSWORD_CHANGE = "/passwordChange.html"
     ORGANIZATIONS = "vs/organizations.html"
-    ORGANIZATIONS_BEAN = "vs/organizations"
+    ORGANIZATIONS_BEAN = "/vs/organizations"
     RESOURCES = "vs/resources.html"
     REPORTS = "vs/reports.html"
     SELECT_ORG = "vs/selectOrg.html"
@@ -291,10 +291,10 @@ class SessionData(VSBaseBean):
 
     def __init__(self):
         super().__init__()
+        #print('sessionData __init__')
         if not self.of:
             super().of = ObjectFactory()
         if not hasattr(self, 'initialized'):
-            self.initialized = True
             self._initialProjectStatus = None
             self.currentLogin = None
             self.currentLoginPrivileges = []
@@ -370,6 +370,8 @@ class SessionData(VSBaseBean):
             self.volunteerID = None
             self.volunteerSkillID = None
             self.init0()
+            self.initialized = True
+            print('sessionData __init__ did stuff')
 
     def __str__(self):
         result = 'SessionData {currentLogin: '
@@ -402,9 +404,9 @@ class SessionData(VSBaseBean):
                 if org.organizationName.lower() == "system":
                     continue
                 #print('got an org')
-                self.orgs.append(Organization(org))            
+                self.orgs.append(org)            
             if len(self.orgs) == 1:
-                self.organization = self.orgs[0]
+                self.organization = Organization(self.orgs[0])
         except Exception as e:
             self.handleException(e)
         
@@ -768,10 +770,10 @@ class  SessionDataBean(VSBaseBean):
         self.sessionData = SessionData()
         self.sessionData.request = request
         self.sessionData.session = request.session
-        self.sessionData.valID = True
+        self.sessionData.valid = True
                 
     def validateDateField(self, value, field):
-        self.sessionData.valID = True
+        self.sessionData.valid = True
         err = False
         if value and isinstance(value, str): 
             s = str(value)
@@ -791,9 +793,9 @@ class  SessionDataBean(VSBaseBean):
 
     def setValidarg(self, arg):
         if isinstance(arg, bool):
-            self.sessionData.valID = arg
+            self.sessionData.valid = arg
         else:
-            self.sessionData.valID = False 
+            self.sessionData.valid = False 
             
     def getandClearMessages(self, request):
         result = messages.get_messages(request)
@@ -1714,6 +1716,8 @@ class HomeBean(DefaultBean):
         result = {}
         #print('houseolds ' + str(self.getHouseholdsTable()))
         #print('volunteers ' + str(self.getVolunteersTable()))
+        if not self.sessionData.organization and len(self.sessionData.orgs)==1:
+            self.sessionData.organization = self.sessionData.orgs[0] # kluge
         if not self.sessionData.organization:
             raise NeedOrganizationException()
         result['households'] = self.getHouseholdsTable()
@@ -2021,7 +2025,7 @@ class OrganizationsBean(DefaultBean):
         
     def submit(self):
         name = self.sessionData.request.POST.get('name')
-        result = Menu.ORGANIZATIONS_BEAN
+        result = {}
         error = False
         errorMessage = ""
         if Utils.isBlank(name):
@@ -2037,13 +2041,18 @@ class OrganizationsBean(DefaultBean):
                     errorMessage = "There is already an organization named \"" + name + "\" in the database."
                 else:
                     OrganizationBuilder().build(name, self.sessionData.getCurrentLogin())
-                    self.sessionData.orgs = self.of.getOrganizations()
+                    self.sessionData.orgs = self.of.getOrganizations(dbo=True,system=False)
             except Exception as pe:
                 self.handleException(pe)
-        context = self.setup()
         if error:
-            context['errorMessage'] = errorMessage
-        self.sessionData.context = context 
+            result['error'] = True
+            result['errorMessage'] = errorMessage
+        else:
+            result = self.setup()
+            result['error'] = False
+            result['target'] = Menu.ORGANIZATIONS_BEAN
+        self.sessionData.context = result
+        print('OrganizationsBean.submit: ' + str(self.sessionData.currentLogin)) 
         return result
     
     def getTable(self):
@@ -2051,6 +2060,7 @@ class OrganizationsBean(DefaultBean):
         return self.multiColumnTableRows("Organizations",
                 size=5,
                 items=self.sessionData.orgs,
+                style='class=listTable',
                 dest="/vs/organizationDetails")
     
    
@@ -2063,6 +2073,10 @@ class OrganizationSelectionBean(DefaultBean):
             pass
         
     def setup(self):
+        if not self.sessionData.currentLogin:
+            dbo = DbLogin.objects.exclude(deleteFlag=True).filter(login='Admin').first()
+            if dbo:
+                self.sessionData.currentLogin = Login(dbo)
         result = {
             'table' : self.getTable()
             }

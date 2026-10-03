@@ -1634,7 +1634,7 @@ class Login(BusinessObject):
     def setPassword(self, txt, loginID=1):
         self.validatePassword(txt)
         self.save()
-        encodedPwd = Login.encrypter.encrypt(txt)
+        encodedPwd = Encrypter().encrypt(txt)
         dbo = DbPassword()
         dbo.password = encodedPwd
         dbo.login = self.myDb
@@ -1732,12 +1732,12 @@ class Login(BusinessObject):
         return result
     
     def changePassword(self, secret, newPwd):
-        encodedSecret = Login.encrypter.encrtpt(secret)
+        encodedSecret = Encrypter().encrtpt(secret)
         if (encodedSecret != self.getSecret()):
             raise InvalidPasswordException(VSMessages.invalidSecretText(secret))      
         self.validatePassword(newPwd)
         try:
-            encodedNewPwd = Login.encrypter.encrypt(newPwd)
+            encodedNewPwd = Encrypter().encrypt(newPwd)
             self.setValidatedPassword(encodedNewPwd)
         except InvalidAttributeValueException as e:
             raise InvalidPasswordException(VSMessages.invalidPassword(), e)
@@ -1746,7 +1746,7 @@ class Login(BusinessObject):
         return self.secret.getValue()
 
     def setSecret(self, secret):
-        encodedSecret = Login.encrypter.encrypt(secret)
+        encodedSecret = Encrypter().encrypt(secret)
         self.setSecretEncoded(encodedSecret)
     
     def getSecretEncoded(self):
@@ -1886,7 +1886,7 @@ class Login(BusinessObject):
                     # or not re.fullmatch(regEx, pwd))
                 raise InvalidPasswordValueException(VSMessageFactory.getInvalidPasswordError(),)
             for opwd in self.myDb.passwords.all():
-                dec = Login.encrypter.decrypt(opwd.password)
+                dec = Encrypter().decrypt(opwd.password)
                 # print(dec)
                 if dec == pwd:
                     raise PasswordAlreadyUsedException(msg=pwd)
@@ -2339,7 +2339,7 @@ class Password(BusinessObject):
         return 'Password{passwordId=' + \
             str(self.passwordID.value) + \
             ', password=' + \
-            Login.encrypter.decrypt(self.getPassword()) \
+            Encrypter().decrypt(self.getPassword()) \
             +', passwordCreateDate=' + str(self.passwordCreateDate.value)
     
     def getPassword(self):
@@ -11089,10 +11089,14 @@ class ObjectFactory(VSBase):
             self.handleException(e)
         return result
 
-    def getOrganizations(self,dbo=False):
+    def getOrganizations(self,system=True, dbo=False):
         result = [] 
         try:
-            qr = DbOrganization.objects.exclude(deleteFlag=True)
+            if system:
+                qr = DbOrganization.objects.exclude(deleteFlag=1)
+            else:
+                qr = DbOrganization.objects.exclude(deleteFlag=1)\
+                .exclude(organizationName='System')
             for db in qr:
                 if dbo:
                     result.append(db)
@@ -11358,10 +11362,15 @@ class ObjectFactory(VSBase):
             .filter(householdLastName=lastName).\
             filter(organization_id=org.organizationID).\
             order_by('householdLastName','householdFirstName')
-        elif org: 
-            dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
-            filter(organization_id=org.getOrganizationID()).\
-            order_by('householdLastName','householdFirstName')
+        elif org:
+            if isinstance(org, Organization): 
+                dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
+                filter(organization_id=org.getOrganizationID()).\
+                order_by('householdLastName','householdFirstName')
+            else:                
+                dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
+                filter(organization_id=org.organizationID).\
+                order_by('householdLastName','householdFirstName')
         else:
             dbos = DbHousehold.objects.exclude(deleteFlag=True).\
             order_by('householdLastName','householdFirstName')
@@ -11464,9 +11473,14 @@ class ObjectFactory(VSBase):
             filter(skill_id=skill.getSkillID()).\
             order_by('volunteerLastName','volunteerFirstName')
         elif org:
-            dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.getOrganizationID()).\
-            order_by('volunteerLastName','volunteerFirstName')
+            if isinstance(org,DbOrganization):
+                dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
+                .filter(organization_id=org.organizationID).\
+                order_by('volunteerLastName','volunteerFirstName')
+            else:
+                dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
+                .filter(organization_id=org.organizationID.value).\
+                order_by('volunteerLastName','volunteerFirstName')
         elif household:
             dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
             .filter(household_id=household.getHouseholdID()).\

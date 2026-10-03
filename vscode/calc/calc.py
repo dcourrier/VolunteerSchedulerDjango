@@ -9,6 +9,8 @@ class OrganizationBuilder(VSBase):
         super().__init__()
 
     def build(self, name, login):
+        from vs.bean.beans import SessionData
+        print('OrganizationBuilder ' + str(SessionData().currentLogin.login))
         from vscode.base.business_objects import ObjectFactory,ConfigurationSet,ConfigurableProperty,SecurityGroup
         of = ObjectFactory()
         if super().isBlank(name):
@@ -39,7 +41,7 @@ class OrganizationBuilder(VSBase):
         liNew.setPassword("Password1")
         liNew.setSecret("secret")
         liNew.setLastChange(super().now())
-        liNew.setLogintCreateDate(super().now())
+        liNew.setLoginCreateDate(super().now())
         liNew.setLoginUpdateDate(super().now())
         liNew.setLoginCreateUser(uid)
         liNew.setLoginUpdateUser(uid)
@@ -82,6 +84,7 @@ class OrganizationBuilder(VSBase):
             for p in sg.getPrivileges():
                 newSg.addPrivilege(p)
             newSg.save()
+        print('OrganizationBuilder exit ' + str(SessionData().currentLogin.login))
 
         
 class EventRejecter(VSBase):

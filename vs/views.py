@@ -16,7 +16,7 @@ def dashboard_view(request):
     return render(request, "dashboard.html")
 
 def initial(request):
-    result = "vs/login.html"
+    result = "vs/loginHtml"
     if len(DbStateCode.objects.all()) == 0:
         LoaderManager().load()
     sd = SessionData()
@@ -42,7 +42,8 @@ class AddOrganizationView(View):
             return render(request, 'vs/volunteerHome')
         bean = OrganizationsBean(request)
         context = bean.submit()
-        return render(request, "vs/organizations.html", context)
+        #print('view.addorganization '  + str(context))
+        return redirect(context['target'])
 
         
 class DummyView(View):

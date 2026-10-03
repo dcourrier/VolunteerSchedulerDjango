@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.views.generic import TemplateView
 #from debug_toolbar.toolbar import debug_toolbar_urls
 from . import views
 
@@ -15,6 +16,7 @@ urlpatterns = [
     path("vs/households", views.HouseholdsView.as_view(), name="households"),
     path("vs/householdDetails", views.DummyView.as_view(), name="householdDetailss"),
     path("vs/login/", views.LoginView.as_view(), name="tryLogin"),
+    path("vs/loginHtml/", TemplateView.as_view(template_name='vs/login.html'), name='loginHtml'),
     path("vs/logout/", views.logout, name="tryLogout"),
     path("vs/locations", views.DummyView.as_view(), name="locations"),
     path("vs/organizationSelect", views.OrganizationSelectView.as_view(), name="organizationSelect"),

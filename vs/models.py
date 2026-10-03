@@ -90,9 +90,18 @@ class DbOrganization(models.Model):
         if self.organizationID and self.address:
             result = True
         return result
+    
+    def getID(self):
+        return self.organizationID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
             
     def __str__(self):
-        return str(self.organizationID) + ' ' + str(self.organizationName)
+        return str(self.organizationName)
         
 class DbSecurityGroup(models.Model):
     securityGroupID = models.AutoField(primary_key=True)
@@ -174,6 +183,15 @@ class DbLogin(models.Model):
             #+", loginStatus=" + str(self.loginStatus) 
             #+", securityGroups=" + str(self.securityGroups) 
             + '}')
+    
+    def getID(self):
+        return self.loginID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
         
 class DbAvailability(models.Model):
     availabilityID = models.AutoField(primary_key=True)
