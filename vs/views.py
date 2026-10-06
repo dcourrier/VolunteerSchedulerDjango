@@ -62,6 +62,35 @@ class AddOrganizationView(View):
             context['errMsg']=str(err)
             #print('AddOrganizationView except'  + str(context))
             return render(request, 'vs/organizations.html', context)
+           
+class AddSkillView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('AddskillView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = SkillsBean(request)
+        try: 
+            with transaction.atomic():
+                context = bean.submit()
+            if context.get('err'):
+                emsg = context.get('errMsg')           
+                context = bean.setup()
+                context['err']=True
+                context['errMsg']=emsg
+                result = render(request, 'vs/skills.html', context)
+                #print('AddskillView no except'  + str(result))
+                return result
+            return redirect('/vs/skills')
+        except Exception as err:            
+            context = bean.setup()
+            context['err']=True
+            context['errMsg']=str(err)
+            #print('AddskillView except'  + str(context))
+            return render(request, 'vs/skills.html', context)
 
         
 class DummyView(View):
@@ -159,6 +188,7 @@ class OrganizationEditView(View):
         bean = OrganizationEditBean(request)
         context = bean.setup()                  
         return  render(request, "vs/OrganizationEdit.html", context)
+   
         
 class OrganizationsView(View):
     def get(self, request, *args, **kwargs):
@@ -204,6 +234,7 @@ class OrganizationSelectedView(View):
         bean = OrganizationSelectionBean(request)
         bean.submit()
         return  render(request, "vs/login.html")
+   
         
 class OrganizationUpdateView(View):
     def get(self, request, *args, **kwargs):
@@ -228,7 +259,63 @@ class OrganizationUpdateView(View):
             context['errMsg']=str(err) + ' bug'
             #print('OrganizationUpdateView handling err')
             return render(request, "vs/organizationEdit.html", context)
+            
+class SkillEditView(View):
+    
+    def post(self,request, *args, **kwargs):
+        return  self.get(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            hBean = HomeBean(request)
+            if hBean.isVolunteerUser():
+                return render(request, 'vs/volunteerHome')
+        except NeedOrganizationException:
+            bean = OrganizationSelectionBean(request)
+            context = bean.setup()
+            return render(request, "vs/organizationSelect.html", context)
+        bean = SkillEditBean(request)
+        context = bean.setup()                  
+        return  render(request, "vs/skillEdit.html", context)
+   
+                
+class SkillsView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = SkillsBean(request)
+        context = bean.setup()
+        return render(request, "vs/skills.html", context)
       
+                
+class SkillUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('OrganizationUpdateView')
+        oid = request.POST.get('oid')
+        SessionData().oid = oid
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = SkillEditBean(request)
+        try: 
+            with transaction.atomic():
+                bean.submit()
+            return redirect('/vs/skills')
+        except Exception as err:            
+            context = bean.setup()
+            context['oid']= oid                  
+            context['err']=True 
+            context['errMsg']=str(err) 
+            #print('OrganizationUpdateView handling err')
+            return render(request, "vs/skillEdit.html", context)
+
       
 class VolunteersView(View):
     def get(self, request, *args, **kwargs):

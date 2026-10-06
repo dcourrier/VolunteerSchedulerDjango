@@ -4866,7 +4866,7 @@ class Project(BusinessObject):
 
 
 class Skill(BusinessObject):
-    NAME_SIZE = 255
+    NAME_LENGTH = 255
     
     def __init__(self, myDb=None):
         self.myDb = myDb
@@ -4894,7 +4894,7 @@ class Skill(BusinessObject):
         self.skillName.setNullAllowed(False)
         self.skillID.setName("skillID")
         self.skillOrganizationID.setName("skillOrganizationID")
-        self.skillName.setMaximumLength(Skill.NAME_SIZE)
+        self.skillName.setMaximumLength(Skill.NAME_LENGTH)
         if myDb:
             self.fromDb()
             
@@ -11714,11 +11714,14 @@ class ObjectFactory(VSBase):
         return result;
     
     def getNewSkill(self, name, uid, org):
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
         dbo = DbSkill.objects.create(
                         skillName=name,
                         skillCreateUser=uid,
                         skillUpdateUser=uid,
-                        organization_id=org.getOrganizationID())
+                        organization_id=orgid)
         return Skill(dbo)
     
     def getNewDbSkill(self, name, uid, org):
@@ -11808,15 +11811,21 @@ class ObjectFactory(VSBase):
             if cnt == 1:
                 result = Skill(dbos.first())
         else:
-            raise MissingArgumentException('you must specify oID or name and org')    
+            raise MissingArgumentException('you must specify oid or name and org')    
         return result
     
-    def getSkills(self, org):
+    def getSkills(self, org,dbo=False):
         result = []
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
         dbos = DbSkill.objects.exclude(deleteFlag=True)\
-        .filter(organization_id=org.getOrganizationID())
+        .filter(organization_id=orgid).order_by('skillName')
         for dbo in dbos:
-            result.append(Skill(dbo))
+            if dbo:
+                result.append(dbo)
+            else:
+                result.append(Skill(dbo))
         return result
     
     def getNewSkillRelationship(self, s1, s2, uid,typ=None):

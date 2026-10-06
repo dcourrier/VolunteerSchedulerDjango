@@ -1,7 +1,7 @@
 {% load VSAuthorizer %}
-{% cotton basicLayout title='Organization Edit' help='/vs/help?organizationEdit'%}
-{% VSAuthorizer _type=UPDATE_ORGANIZATION %}
-<form action='/vs/organizationUpdate' method='post'>
+{% cotton basicLayout title='Skill Edit' help='/vs/help?skillEdit'%}
+{% VSAuthorizer _type=UPDATE_SKILL %}
+<form action='/vs/skillUpdate' method='post'>
 {% csrf_token %}
   <input type="hidden" id="oid" name="oid" value="{{oid}}"/>
 	<table class='centered'>
@@ -12,7 +12,7 @@
                			id="name"
                			name='name'
                         size="30"
-                        value="{{org.organizationName}}"
+                        value="{{name}}"
                         maxlength="{{organizationNameMaxLength}}"/>
           </td></tr>
           <tr>
@@ -21,7 +21,7 @@
                 	class="reset-style"
                 	name="action" 
                 	value="Save"/>&nbsp;
-{% VSAuthorizer2 _type=DELETE_ORGANIZATON %}
+{% VSAuthorizer2 _type=DELETE_SKILL %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
@@ -29,7 +29,7 @@
 {% VSAuthorizer2_end %}
                     <button 
 	                    type="button" 
-	                    onclick="window.location.href='organizations'">
+	                    onclick="window.location.href='skills'">
                     	Cancel
                     </button>
                 </td></tr>

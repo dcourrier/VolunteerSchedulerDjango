@@ -291,6 +291,15 @@ class DbSkill(models.Model):
             models.UniqueConstraint(fields=['skillName', 'organization'], 
                                             name='unique_skill')
         ]
+    
+    def getID(self):
+        return self.organizationID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
 
     def __str__(self):
         return self.skillName

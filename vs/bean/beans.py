@@ -271,6 +271,7 @@ class Menu():
     SELECT_ORG = "vs/selectOrg.html"
     SCHEDULES = "vs/schedules.html"
     SKILLS = "vs/skills.html"
+    SKILLS_BEAN = "vs/skills"
     UTILITIES = "vs/utilities.html"
     VOLUNTEER_HOME = "vs/volunteerHome.html"
     VOLUNTEER_AVAILABILITY = "vs/volunteerAvailability.html"
@@ -342,6 +343,7 @@ class SessionData(VSBaseBean):
             self.loginID = None
             self.loginID = None
             self.loginLevel = 10000
+            self.oid = None
             self.organization = None
             self.organizationForDetailsID = None
             self.organizationID = None
@@ -2082,8 +2084,8 @@ class OrganizationsBean(DefaultBean):
             result['target']= Menu.ORGANIZATIONS_BEAN
         self.sessionData.context = result
         self.sessionData.currentLogin = login
-        print('OrganizationsBean.submit: ' + str(result)) 
-        print('OrganizationsBean.submit: ' + str(self.sessionData.currentLogin)) 
+        #print('OrganizationsBean.submit: ' + str(result)) 
+        #print('OrganizationsBean.submit: ' + str(self.sessionData.currentLogin)) 
         return result
     
     def getTable(self):
@@ -2194,3 +2196,111 @@ class OrganizationUpdateBean(DefaultBean):
         else:
             raise MissingParameterException('oid not provided')     
     
+    
+class SkillsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'err':False,
+            'table' : self.getTable(),
+            'nameMaxLength': Skill.NAME_LENGTH
+            }
+        return result
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('name')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "name not specified"
+        else:
+            skill = None
+            try:
+                skill = self.of.getSkill(name=name,org=org)
+                if skill:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a skill named \"" + name + "\" in the database."
+                else:
+                    skill = self.of.getNewSkill(name, login.loginID, org)
+                    skill.save()
+            except Exception as pe:
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = self.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+            result['target']= Menu.SKILLS
+        else:
+            result = self.setup()
+            result['err'] = False
+            result['errMsg'] = errorMessage
+            result['target']= Menu.SKILLS_BEAN
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        skills = self.of.getSkills(org,dbo=True)
+        return self.multiColumnTableRows("Skills",
+                size=5,
+                items=skills,
+                style='class=listTable',
+                dest="/vs/skillEdit")
+    
+    
+class SkillEditBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
+        oid = request.GET.get('id')
+        #print('SkillEditBean setup ' + str(oid))
+        if not oid:
+            oid = self.sessionData.oid 
+        skill = self.of.getSkill(oid=oid)
+        result['oid'] = oid
+        result['name'] = skill.getSkillName()
+        result['orgID'] = orgid
+        return result
+     
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        print('SkillEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if name and len(name.strip()) > 1:
+                if action:
+                    skill = ObjectFactory().getSkill(oid=oid)
+                    if action == 'Save':
+                        skill.setSkillName(name)
+                        skill.save()
+                    elif action == 'Delete':
+                        skill.delete()
+                    else:
+                        raise InvalidArgumentException('action')
+            else:
+                raise MissingArgumentException('name must not be blank or all spaces')
+        else:
+            raise MissingParameterException('oid not provided')     
+        
