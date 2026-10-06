@@ -109,6 +109,11 @@ class MissingArgumentException(VSException):
     def __init__(self, msg=None):
         super().__init__(msg)
  
+class MissingParameterException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
 class NeedOrganizationException(VSException):
 
     def __init__(self, msg=None):

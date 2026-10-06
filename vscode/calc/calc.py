@@ -10,14 +10,14 @@ class OrganizationBuilder(VSBase):
 
     def build(self, name, login):
         from vs.bean.beans import SessionData
-        print('OrganizationBuilder ' + str(SessionData().currentLogin.login))
+        #print('OrganizationBuilder ' + str(SessionData().currentLogin.login))
         from vscode.base.business_objects import ObjectFactory,ConfigurationSet,ConfigurableProperty,SecurityGroup
         of = ObjectFactory()
         if super().isBlank(name):
             raise Exception("you must supply an organization name")
         
         if not login:
-            raise Exception("you must supply a valID login object")
+            raise Exception("you must supply a valid login object")
         
         org = of.getOrganization(name=name)
         if org:
@@ -84,7 +84,8 @@ class OrganizationBuilder(VSBase):
             for p in sg.getPrivileges():
                 newSg.addPrivilege(p)
             newSg.save()
-        print('OrganizationBuilder exit ' + str(SessionData().currentLogin.login))
+        SessionData().currentLogin = login  # got currupted 
+        #print('OrganizationBuilder exit ' + str(SessionData().currentLogin.login))
 
         
 class EventRejecter(VSBase):

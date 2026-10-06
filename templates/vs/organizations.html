@@ -6,6 +6,7 @@
         <th colspan="2"><h3>Add Organization</h3></th>
         <form action='/vs/addOrganization' method='post'>
         {% csrf_token %}
+        <c-errorMessage :err='err'></c-errorMessage> 
             <tr>
                 <td class="label"><label for='name'>Name: </label></td>
                 <td>

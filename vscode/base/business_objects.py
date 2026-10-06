@@ -11109,22 +11109,24 @@ class ObjectFactory(VSBase):
         #print(result)
         return result
 
-    def getOrganization(self, uid=None, name=None):
+    def getOrganization(self, oid=None, name=None,dbo=False):
         result = None 
+        qr = None
         if not name:
             try:
-                qr = DbOrganization.objects.exclude(deleteFlag=True).filter(pk=uid).first()
-                if qr:
-                    result = Organization(qr)
+                qr = DbOrganization.objects.exclude(deleteFlag=True).filter(pk=oid).first()
             except Exception as e:
                 self.handleException(e)
         else:   
             try:         
                 qr = DbOrganization.objects.exclude(deleteFlag=True).filter(organizationName=name).first()
-                if qr:
-                    result = Organization(qr)
             except Exception as e:
                 self.handleException(e)
+        if qr:
+            if dbo:
+                result = qr
+            else:
+                result = Organization(qr)
         return result
     
     def getNewTask(self,name, uid, org):

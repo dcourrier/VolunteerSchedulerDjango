@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404,render,redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.db import IntegrityError, transaction
 from django.views import generic,View
 from loguru import logger
 from django.utils import timezone
@@ -11,6 +12,7 @@ from vscode.base.business_objects import *
 from vscode.utils.utils import ValuesHolder,Utils
 from vs.bean.beans import *
 from vscode.loader.loaders import LoaderManager
+from Acquisition.tests import TRUE
 
 def dashboard_view(request):
     return render(request, "dashboard.html")
@@ -37,13 +39,29 @@ class AddOrganizationView(View):
         return self.post(request, *args, **kwargs)
     
     def post(self,request, *args, **kwargs):
+        #print('AddOrganizationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
         bean = OrganizationsBean(request)
-        context = bean.submit()
-        #print('view.addorganization '  + str(context))
-        return redirect(context['target'])
+        try: 
+            with transaction.atomic():
+                context = bean.submit()
+            if context.get('err'):
+                emsg = context.get('errMsg')           
+                context = bean.setup()
+                context['err']=True
+                context['errMsg']=emsg
+                result = render(request, 'vs/organizations.html', context)
+                #print('AddOrganizationView no except'  + str(result))
+                return result
+            return redirect('/vs/organizations')
+        except Exception as err:            
+            context = bean.setup()
+            context['err']=True
+            context['errMsg']=str(err)
+            #print('AddOrganizationView except'  + str(context))
+            return render(request, 'vs/organizations.html', context)
 
         
 class DummyView(View):
@@ -122,6 +140,25 @@ class LoginView(View):
     
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+          
+          
+class OrganizationEditView(View):
+    
+    def post(self,request, *args, **kwargs):
+        return  self.get(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            hBean = HomeBean(request)
+            if hBean.isVolunteerUser():
+                return render(request, 'vs/volunteerHome')
+        except NeedOrganizationException:
+            bean = OrganizationSelectionBean(request)
+            context = bean.setup()
+            return render(request, "vs/organizationSelect.html", context)
+        bean = OrganizationEditBean(request)
+        context = bean.setup()                  
+        return  render(request, "vs/OrganizationEdit.html", context)
         
 class OrganizationsView(View):
     def get(self, request, *args, **kwargs):
@@ -167,6 +204,30 @@ class OrganizationSelectedView(View):
         bean = OrganizationSelectionBean(request)
         bean.submit()
         return  render(request, "vs/login.html")
+        
+class OrganizationUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('OrganizationUpdateView')
+        oid = request.POST.get('oid')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = OrganizationUpdateBean(request)
+        try: 
+            with transaction.atomic():
+                bean.submit()
+            return redirect('/vs/organizations')
+        except Exception as err:            
+            bean = OrganizationEditBean(request)
+            context = bean.setup(oid)
+            context['oid']= oid                  
+            context['err']=True 
+            context['errMsg']=str(err) + ' bug'
+            #print('OrganizationUpdateView handling err')
+            return render(request, "vs/organizationEdit.html", context)
       
       
 class VolunteersView(View):

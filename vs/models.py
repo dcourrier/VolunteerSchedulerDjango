@@ -75,7 +75,7 @@ class DbPrivilege(models.Model):
 
 class DbOrganization(models.Model):
     organizationID = models.AutoField(primary_key=True)
-    organizationName = models.CharField(max_length=255)
+    organizationName = models.CharField(max_length=255, unique=True)
     organizationCreateUser = models.IntegerField()
     organizationUpdateUser = models.IntegerField()
     organizationCreateDate = models.DateField(auto_now_add=True)

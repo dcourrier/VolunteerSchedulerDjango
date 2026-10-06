@@ -1,0 +1,41 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Organization Edit' help='/vs/help?organizationEdit'%}
+{% VSAuthorizer _type=UPDATE_Organization %}
+<form action='/vs/organizationUpdate' method='post'>
+{% csrf_token %}
+  <input type="hidden" id="oid" name="oid" value="{{oid}}"/>
+	<table class='centered'>
+	{% if err %}
+		<tr align='center'><td class='errorMsg'>err was {{errMsg}}</td></tr>
+	{% endif %}
+        <tr align='center'>
+            <td><label for='name'>Name: </label>
+               <input type='text' 
+               			id="name"
+               			name='name'
+                        size="30"
+                        value="{{org.organizationName}}"
+                        maxlength="{{organizationNameMaxLength}}"/>
+          </td></tr>
+          <tr>
+            <td align='center'>
+                	<input type="submit" 
+                	class="reset-style"
+                	name="action" 
+                	value="Save"/>&nbsp;
+{% VSAuthorizer2 _type=DELETE_ORGANIZATON %}
+					<input type="submit" 
+					class="reset-style"
+					name="action" 
+					value="Delete"/>&nbsp;
+{% VSAuthorizer2_end %}
+                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='organizations'">
+                    	Cancel
+                    </button>
+                </td></tr>
+    </table>
+</form>
+{% VSAuthorizer_end %}   
+{% endcotton %}

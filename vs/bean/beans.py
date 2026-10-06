@@ -325,6 +325,7 @@ class SessionData(VSBaseBean):
             self.cameFromHouseholds = False
             self.cameFromSchedule = False
             self.cameFromVolunteer = False
+            self.context = None
             self.currentLogin = None
             self.defaultTaskStatus = None
             self.emailError = False
@@ -371,7 +372,7 @@ class SessionData(VSBaseBean):
             self.volunteerSkillID = None
             self.init0()
             self.initialized = True
-            print('sessionData __init__ did stuff')
+            #print('sessionData __init__ did stuff')
 
     def __str__(self):
         result = 'SessionData {currentLogin: '
@@ -2011,6 +2012,26 @@ class LoginBean(DefaultBean):
         return result
     
     
+class OrganizationEditBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self,oid=None):
+        request = self.sessionData.request
+        if not oid:
+            oid = request.GET.get("id")
+        if not oid:
+            raise MissingParameterException('id')
+        org = ObjectFactory().getOrganization(oid=oid,dbo=True)
+        result = {
+            'oid': oid,
+            'org' : org,
+            'organizationNameMaxLength': Organization.NAME_LENGTH
+            }
+        return result
+    
+    
 class OrganizationsBean(DefaultBean):
     
     def __init__(self,request):
@@ -2018,6 +2039,7 @@ class OrganizationsBean(DefaultBean):
         
     def setup(self):
         result = {
+            'err':False,
             'table' : self.getTable(),
             'organizationNameMaxLength': Organization.NAME_LENGTH
             }
@@ -2025,6 +2047,9 @@ class OrganizationsBean(DefaultBean):
         
     def submit(self):
         name = self.sessionData.request.POST.get('name')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
         result = {}
         error = False
         errorMessage = ""
@@ -2043,15 +2068,21 @@ class OrganizationsBean(DefaultBean):
                     OrganizationBuilder().build(name, self.sessionData.getCurrentLogin())
                     self.sessionData.orgs = self.of.getOrganizations(dbo=True,system=False)
             except Exception as pe:
-                self.handleException(pe)
+                error = True
+                errorMessage = str(pe)
         if error:
-            result['error'] = True
-            result['errorMessage'] = errorMessage
+            result = self.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+            result['target']= Menu.ORGANIZATIONS
         else:
             result = self.setup()
-            result['error'] = False
-            result['target'] = Menu.ORGANIZATIONS_BEAN
+            result['err'] = False
+            result['errMsg'] = errorMessage
+            result['target']= Menu.ORGANIZATIONS_BEAN
         self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        print('OrganizationsBean.submit: ' + str(result)) 
         print('OrganizationsBean.submit: ' + str(self.sessionData.currentLogin)) 
         return result
     
@@ -2061,7 +2092,7 @@ class OrganizationsBean(DefaultBean):
                 size=5,
                 items=self.sessionData.orgs,
                 style='class=listTable',
-                dest="/vs/organizationDetails")
+                dest="/vs/organizationEdit")
     
    
 class OrganizationSelectionBean(DefaultBean):
@@ -2135,3 +2166,31 @@ class OrganizationSelectionBean(DefaultBean):
         .order_by('organizationName'):
             result.append(dbo)
         return result
+  
+    
+class OrganizationUpdateBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        #print('OrganizationUpdateBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if action:
+                org = ObjectFactory().getOrganization(oid=oid)
+                if action == 'Save':
+                    org.setOrganizationName(name)
+                    org.save()
+                elif action == 'Delete':
+                    org.delete()
+                else:
+                    raise InvalidArgumentException('action')
+                self.sessionData.orgs = []
+                self.sessionData.init1()
+        else:
+            raise MissingParameterException('oid not provided')     
+    

@@ -18,5 +18,18 @@ def VSAuthorizer(content, _type):
             #print('authorized')
             result = mark_safe(content)
     return result
+
+
+@register.simple_block_tag(end_name="VSAuthorizer2_end")
+def VSAuthorizer2(content, _type):
+    #print('VSAuthorizer2 enter')
+    result = ''
+    sd = SessionData()
+    login = sd.getCurrentLogin()
+    if login:
+        if SecurityUtils.isAuthorized(login, _type):
+            result = mark_safe(content)
+    #print('VSAuthorizer2 return ' + str(result))
+    return result
             
         

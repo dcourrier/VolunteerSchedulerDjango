@@ -1,0 +1,37 @@
+
+{% load VSAuthorizer %}
+{% cotton basicLayout title=Organizations help='/vs/help?organizations'%}
+{% VSAuthorizer _type=ADD_ORGANIZATION %}
+    <table cellpadding="5" align="center">
+        <th colspan="2"><h3>Add Organization</h3></th>
+        <form action='/vs/addOrganization' method='post'>
+        {% csrf_token %}
+        <c-errorMessage :err='err'></c-errorMessage> 
+            <tr align='center'>
+                <td class="label"><label for='name'>Name: </label></td>
+                <td>
+                    <input type='text' 
+                    			id="name"
+                    			name='name'
+                                 size="30"
+                                 maxlength="{{organizationNameMaxLength}}"/>
+                </td></tr>
+            <tr align='center'>
+                <td class="label">&nbsp;</td>
+                <td>
+                    <button
+                    	type='submit' 
+                        class="reset-style">Save</button>&nbsp;
+                    <button 
+                    type="button" 
+                    onclick="window.location.href='/vs/home/'">
+                    	Cancel
+                    </button>
+                </td></tr>
+        </form>
+    </table>
+{% VSAuthorizer_end %}
+{% VSAuthorizer _type=ORGANIZATION %}
+{{table|safe}}
+{% VSAuthorizer_end %}
+{% endcotton %}
