@@ -1,0 +1,51 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Resource Edit' help='/vs/help?resourceEdit'%}
+{% VSAuthorizer _type=UPDATE_RESOURCE %}
+<form action='/vs/resourceUpdate' method='post'>
+{% csrf_token %}
+  <input type="hidden" id="oid" name="oid" value="{{oid}}"/>
+	<table class='centered'>
+        <c-errorMessage :err='err'></c-errorMessage> 
+        <tr align='center'>
+            <td><label for='name'>Name: </label>
+               <input type='text' 
+               			id="name"
+               			name='name'
+                        size="30"
+                        value="{{name}}"
+                        maxlength="{{nameMaxLength}}"
+                        required/>                        
+          </td></tr>
+            <tr align='center'>
+                <td><label for='amount'>Quantity: </label>&nbsp;
+                    <input type='text' 
+                    			id="amount"
+                    			name='amount'
+                        		value="{{amount}}"
+								inputmode="numeric" 
+								pattern="\d{1,7}" 
+								maxlength="7"
+								required/>
+                </td></tr>
+          <tr align='center'>
+            <td align='center'>
+                	<input type="submit" 
+                	class="reset-style"
+                	name="action" 
+                	value="Save"/>&nbsp;
+{% VSAuthorizer2 _type=DELETE_RESOURCE %}
+					<input type="submit" 
+					class="reset-style"
+					name="action" 
+					value="Delete"/>&nbsp;
+{% VSAuthorizer2_end %}
+                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='resources'">
+                    	Cancel
+                    </button>
+                </td></tr>
+    </table>
+</form>
+{% VSAuthorizer_end %}   
+{% endcotton %}

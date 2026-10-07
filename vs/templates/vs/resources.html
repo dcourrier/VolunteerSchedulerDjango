@@ -1,9 +1,9 @@
 {% load VSAuthorizer %}
-{% cotton basicLayout title=Locations help='/vs/help?locations'%}
-{% VSAuthorizer _type=ADD_LOCATION %}
+{% cotton basicLayout title=Resources help='/vs/help?resources'%}
+{% VSAuthorizer _type=ADD_RESOURCE %}
     <table cellpadding="5" align="center">
         <th colspan="2"><h3>Add Location</h3></th>
-        <form action='/vs/addLocation' method='post'>
+        <form action='/vs/addResource' method='post'>
         {% csrf_token %}
         <c-errorMessage :err='err'></c-errorMessage> 
             <tr>
@@ -14,6 +14,16 @@
                     			name='name'
                                  size="30"
                                  maxlength="{{nameMaxLength}}"/>
+                </td></tr>
+            <tr>
+                <td class="label"><label for='amount'>Quantity: </label></td>
+                <td>
+                    <input type='text' 
+                    			id="amount"
+                    			name='amount'
+								inputmode="numeric" 
+								pattern="\d{1,7}" 
+								maxlength="7" />
                 </td></tr>
             <tr>
                 <td class="label">&nbsp;</td>
@@ -30,7 +40,7 @@
         </form>
     </table>
 {% VSAuthorizer_end %}
-{% VSAuthorizer _type=VIEW_LOCATIONS %}
+{% VSAuthorizer _type=VIEW_RESOURCES %}
 {{table|safe}}
 {% VSAuthorizer_end %}
 {% endcotton %}

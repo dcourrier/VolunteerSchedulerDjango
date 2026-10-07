@@ -1768,6 +1768,7 @@ class HomeBean(DefaultBean):
 
     def redirect(self):
         return "volunteerDetails?cameFrom=home&id=" + self.getVolunteer().getID()    
+   
     
 class LocationEditBean(DefaultBean):
     
@@ -1880,7 +1881,6 @@ class LocationsBean(DefaultBean):
                 style='class=listTable',
                 dest="/vs/locationEdit")
     
- 
    
 class LoginBean(DefaultBean):
     LOGIN_CANCEL = ''
@@ -2307,8 +2307,61 @@ class OrganizationUpdateBean(DefaultBean):
                 self.sessionData.orgs = []
                 self.sessionData.init1()
         else:
+            raise MissingParameterException('oid not provided')       
+   
+    
+class ResourceEditBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = self.of.getOrgid(org)
+        oid = request.GET.get('id')
+        #print('LocationEditBean setup ' + str(oid))
+        if not oid:
+            oid = self.sessionData.oid
+        else:
+            self.sessionData.oid = oid 
+        res = self.of.getResource(oid=oid,dbo=True)
+        #print('LocationEditBean setup ' + str(loc))
+        result['oid'] = oid
+        result['name'] = res.name
+        result['amount'] = res.count
+        result['orgID'] = orgid
+        result['nameMaxLength'] = Resource.NAME_MAXIMUM_LENGTH
+        return result
+     
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        amount = request.POST.get('amount') 
+        #print('LocationEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if name and len(name.strip()) > 1 and amount and Utils.isNumeric(amount,False):
+                if action:
+                    res = self.of.getResource(oid=oid)
+                    if res:
+                        if action == 'Save':
+                            res.setName(name)
+                            res.setCount(amount)
+                            res.save()
+                        elif action == 'Delete':
+                            res.delete()
+                        else:
+                            raise InvalidArgumentException('action')
+                    else:
+                        raise InvalidArgumentException('no resource found in database')
+            else:
+                raise MissingArgumentException('name must not be blank or all spaces')
+        else:
             raise MissingParameterException('oid not provided')     
- 
+  
         
 class ResourcesBean(DefaultBean):
     
@@ -2325,6 +2378,7 @@ class ResourcesBean(DefaultBean):
         
     def submit(self):
         name = self.sessionData.request.POST.get('name')
+        amount = self.sessionData.request.POST.get('amount') 
         if not self.sessionData.context:
             self.sessionData.context = {}
         login = self.sessionData.getCurrentLogin()
@@ -2335,23 +2389,29 @@ class ResourcesBean(DefaultBean):
         if Utils.isBlank(name):
             error = True
             errorMessage = "name not specified"
+        elif not Utils.isNumeric(amount, False):
+            error = True
+            errorMessage = 'Quantity must be numeric'
         else:
-            loc = None
+            res = None
             try:
-                loc = self.of.getLocation(name=name,org=org)
-                if loc:
+                res = self.of.getResource(name=name,org=org)
+                if res:
                     result = ""
                     error = True
-                    errorMessage = "There is already a location named \"" + name + "\" in the database."
+                    errorMessage = "There is already a resource named \"" + name + "\" in the database."
                 else:
-                    loc = self.of.getNewLocation(name, login.loginID, org)
-                    loc.save()
+                    res = self.of.getNewResource(name, login.loginID, org)
+                    res.setCount(amount)
+                    res.save()
             except Exception as pe:
                 error = True
                 errorMessage = str(pe)
         if error:
             result = self.setup()
             result['err'] = True
+            result['name'] = name
+            result['amount'] = amount
             result['errMsg'] = errorMessage
             result['target']= Menu.LOCATIONS
         else:

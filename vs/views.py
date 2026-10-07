@@ -94,6 +94,36 @@ class AddOrganizationView(View):
             #print('AddOrganizationView except'  + str(context))
             return render(request, 'vs/organizations.html', context)
 
+                    
+class AddResourceView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('AddLocationView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = ResourcesBean(request)
+        try: 
+            with transaction.atomic():
+                context = bean.submit()
+            if context.get('err'):
+                emsg = context.get('errMsg')           
+                context = bean.setup()
+                context['err']=True
+                context['errMsg']=emsg
+                result = render(request, 'vs/resources.html', context)
+                #print('AddLocationView no except'  + str(result))
+                return result
+            return redirect('/vs/locations')
+        except Exception as err:            
+            context = bean.setup()
+            context['err']=True
+            context['errMsg']=str(err)
+            #print('AddLocationView except'  + str(context))
+            return render(request, 'vs/resources.html', context)
+           
            
 class AddSkillView(View):
     def get(self, request, *args, **kwargs):
@@ -167,6 +197,7 @@ class HouseholdsView(View):
             return render(request, 'vs/volunteerHome')
         context = bean.setup()
         return render(request, "vs/households.html", context)        
+    
             
 class LocationEditView(View):
     
@@ -351,6 +382,25 @@ class OrganizationUpdateView(View):
             #print('OrganizationUpdateView handling err')
             return render(request, "vs/organizationEdit.html", context)
  
+            
+class ResourceEditView(View):
+    
+    def post(self,request, *args, **kwargs):
+        return  self.get(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            hBean = HomeBean(request)
+            if hBean.isVolunteerUser():
+                return render(request, 'vs/volunteerHome')
+        except NeedOrganizationException:
+            bean = OrganizationSelectionBean(request)
+            context = bean.setup()
+            return render(request, "vs/organizationSelect.html", context)
+        bean = ResourceEditBean(request)
+        context = bean.setup()                  
+        return  render(request, "vs/resourceEdit.html", context)
+   
                
 class ResourcesView(View):
     def get(self, request, *args, **kwargs):
@@ -362,7 +412,38 @@ class ResourcesView(View):
             return render(request, 'vs/volunteerHome')
         bean = ResourcesBean(request)
         context = bean.setup()
-        return render(request, "vs/resourcess.html", context)
+        return render(request, "vs/resources.html", context)
+
+                
+class ResourceUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('LocationUpdateView')
+        oid = request.POST.get('oid')
+        name = request.POST.get('name')
+        amount = request.POST.get('amount')
+        SessionData().oid = oid
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = ResourceEditBean(request)
+        try: 
+            with transaction.atomic():
+                bean.submit()
+            return redirect('/vs/resources')
+        except Exception as err:
+            #traceback.print_exc()   
+            context = bean.setup()
+            context['oid']= oid  
+            context['name']= name     
+            context['amount']= amount                     
+            context['err']=True 
+            context['errMsg']=str(err)
+            #print('LocationUpdateView handling err')
+            return render(request, "vs/resourceEdit.html", context)
+
         
             
 class SkillEditView(View):

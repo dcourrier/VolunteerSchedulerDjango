@@ -670,12 +670,15 @@ class DbResource(models.Model):
     def getStyle(self):
         return ''
     
+    def getQuantity(self):
+        return self.count
+    
     def hasQuantity(self):
         return True
 
         
     def __str__(self):
-        return self.name + ' : ' + str(self.count)
+        return self.name
 
 class DbLocation(models.Model):
     locationID = models.AutoField(primary_key=True)

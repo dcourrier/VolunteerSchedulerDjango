@@ -10557,13 +10557,12 @@ class ObjectFactory(VSBase):
         return li
     
     def getNewProject(self,name,uid,org,parent=None):
-        if isinstance(org,DbOrganization):
-            org = DbOrganization(org)
+        orgid = self.getOrgid(org)
         dbo = DbProject.objects.create( 
                                 projectName=name,
                                 projectCreateUser=uid,
                                 projectUpdateUser=uid,
-                                organization_id = org.getOrganizationID(),
+                                organization_id = orgid,
                                 projectStatus_id=1)
         if parent:
             if isinstance(parent, Project):
@@ -10591,16 +10590,18 @@ class ObjectFactory(VSBase):
     
     def getDeletedTeams(self, org):
         result = []
-        if org and isinstance(org, Organization):
-            objs = DbTeam.objects.filter(deleteFlag=True).filter(organization_id=+org.getOrganizationID())
+        if org:
+            orgid = self.getOrgd(org)
+            objs = DbTeam.objects.filter(deleteFlag=True).filter(organization_id=orgid)
             for obj in objs:
                 result.append(Team(obj))
         return result
          
     def getDeletedOrganizationProjects(self, org): 
         result = []
-        if org and isinstance(org, Organization):
-            objs = DbProject.objects.filter(deleteFlag=True).filter(organization_id=org.getOrganizationID())
+        if org:
+            orgid = self.getOrgid(org)
+            objs = DbProject.objects.filter(deleteFlag=True).filter(organization_id=orgid)
             for obj in objs:
                 result.append(Project(obj))
         return result
@@ -10783,9 +10784,7 @@ class ObjectFactory(VSBase):
         result = None
         #print('\nname ' + str(name) + ' org ' + str(org))
         if name and org:
-            orgid = org.organizationID
-            if isinstance(org, Organization):
-                orgid = orgid.value
+            orgid = self.getOrgid(org)
             #print('name ' + str(name) + ' org ' + str(org) + ' ID ' + str(org.getOrganizationID())) 
             db = DbLocation.objects.exclude(deleteFlag=True).filter(locationName=name)\
             .filter(organization_id=orgid).first()
@@ -10802,9 +10801,7 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewLocation(self, name, uid, org):
-        orgid = org.organizationID
-        if isinstance(org, Organization):
-            orgid = orgid.value
+        orgid = self.getOrgid(org)
         dbo = DbLocation.objects.create(
                         locationName=name,
                         locationCreateUser=uid,
@@ -10815,9 +10812,7 @@ class ObjectFactory(VSBase):
     def getLocations(self, org=None, dbo=False):
         result = []
         if org:
-            orgid = org.organizationID
-            if isinstance(org, Organization):
-                orgid = orgid.value
+            orgid = self.getOrgid(org)
             dbos = DbLocation.objects.exclude(deleteFlag=True).filter(organization_id=orgid)
         else:
             dbos = DbLocation.objects.exclude(deleteFlag=True)
@@ -11325,39 +11320,58 @@ class ObjectFactory(VSBase):
                                             count=count)
         return EventJoinToResource(dbo)
     
-    def getNewResource(self, name,uid,org):
-        dbo = DbResource.objects.create(name=name,
+    def getNewResource(self, name,uid,org, dbo=False):
+        orgid = self.getOrgid(org)
+        db = DbResource.objects.create(name=name,
                                         resourceCreateUser=uid,
                                         resourceUpdateUser=uid,
-                                        organization_id=org.getOrganizationID()) 
-        return Resource(dbo)
+                                        organization_id=orgid) 
+        if dbo:
+            result = db
+        else:
+            result = Resource(db)
+        return result
     
-    def getResource(self, oid=None,name=None,org=None):
+    def getOrgid(self, org):
         result = None
-        dbo = None
+        if org:
+            result = org.organizationID
+            if result and isinstance(result, Organization):
+                result = result.value
+        return result
+    
+    
+    def getResource(self, oid=None,name=None,org=None,dbo=False):
+        result = None
+        db = None
         if oid:
             try:
-                dbo = DbResource.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+                db = DbResource.objects.exclude(deleteFlag=True).filter(pk=oid).first()
             except:
                 pass
         elif name and org:
             try:
-                dbo = DbResource.objects.exclude(deleteFlag=True).\
-                filter(organization__organizationID=org.getOrganizationID()).\
-                filter(name=name).first()
+                orgid = self.getOrgid(org)
+                db = DbResource.objects.exclude(deleteFlag=True).\
+                filter(organization_id=orgid).filter(name=name).first()
             except:
                 pass
-        if dbo:
-            result = Resource(dbo)    
+        if db:
+            if dbo:
+                result = db
+            else:
+                result = Resource(db)
+            result = Resource(db)    
         return result
 
     def getResources(self, org, dbo=False):
         result = []
+        orgid = self.getOrgid(org)
         if org:
             dbos = DbResource.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.getOrganizationID())
+            .filter(organization_id=orgid).order_by('name')
         else:
-            dbos = DbResource.objects.exclude(deleteFlag=True)
+            dbos = DbResource.objects.exclude(deleteFlag=True).order_by('name')
         for db in dbos:
             if dbo:
                 result.append(db)
@@ -11387,14 +11401,10 @@ class ObjectFactory(VSBase):
             filter(organization_id=org.organizationID).\
             order_by('householdLastName','householdFirstName')
         elif org:
-            if isinstance(org, Organization): 
-                dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
-                filter(organization_id=org.getOrganizationID()).\
-                order_by('householdLastName','householdFirstName')
-            else:                
-                dbos = dbos = DbHousehold.objects.exclude(deleteFlag=True).\
-                filter(organization_id=org.organizationID).\
-                order_by('householdLastName','householdFirstName')
+            orgid = self.getOrgid(org)
+            dbos = DbHousehold.objects.exclude(deleteFlag=True).\
+            filter(organization_id=orgid).\
+            order_by('householdLastName','householdFirstName')
         else:
             dbos = DbHousehold.objects.exclude(deleteFlag=True).\
             order_by('householdLastName','householdFirstName')
@@ -11497,14 +11507,10 @@ class ObjectFactory(VSBase):
             filter(skill_id=skill.getSkillID()).\
             order_by('volunteerLastName','volunteerFirstName')
         elif org:
-            if isinstance(org,DbOrganization):
-                dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-                .filter(organization_id=org.organizationID).\
-                order_by('volunteerLastName','volunteerFirstName')
-            else:
-                dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-                .filter(organization_id=org.organizationID.value).\
-                order_by('volunteerLastName','volunteerFirstName')
+            orgid = self.getOrgid(org)
+            dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid).\
+            order_by('volunteerLastName','volunteerFirstName')
         elif household:
             dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
             .filter(household_id=household.getHouseholdID()).\
@@ -11736,9 +11742,7 @@ class ObjectFactory(VSBase):
         return result;
     
     def getNewSkill(self, name, uid, org):
-        orgid = org.organizationID
-        if isinstance(org, Organization):
-            orgid = orgid.value
+        orgid = self.getOrgid(org)
         dbo = DbSkill.objects.create(
                         skillName=name,
                         skillCreateUser=uid,
@@ -11838,9 +11842,7 @@ class ObjectFactory(VSBase):
     
     def getSkills(self, org,dbo=False):
         result = []
-        orgid = org.organizationID
-        if isinstance(org, Organization):
-            orgid = orgid.value
+        orgid = self.getOrgid(org)
         dbos = DbSkill.objects.exclude(deleteFlag=True)\
         .filter(organization_id=orgid).order_by('skillName')
         for dbo in dbos:
