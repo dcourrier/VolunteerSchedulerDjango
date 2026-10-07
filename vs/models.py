@@ -663,6 +663,16 @@ class DbResource(models.Model):
                 name='unique_org_resourcename'
             )
         ]
+    
+    def getID(self):
+        return self.resourceID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return True
+
         
     def __str__(self):
         return self.name + ' : ' + str(self.count)
@@ -684,9 +694,18 @@ class DbLocation(models.Model):
             models.UniqueConstraint(fields=['locationName', 'organization'], 
                                             name='unique_locationName')
         ]
+    
+    def getID(self):
+        return self.locationID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
 
     def __str__(self):
-        return str(self.locationID) + ' ' + self.locationName + str(self.organization)
+        return self.locationName
 
 class DbEventRecurrence(models.Model):
     recurrenceID = models.AutoField(primary_key=True)

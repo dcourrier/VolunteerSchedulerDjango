@@ -7,12 +7,12 @@ from django.db import IntegrityError, transaction
 from django.views import generic,View
 from loguru import logger
 from django.utils import timezone
+import traceback
 from vs.models import *
 from vscode.base.business_objects import *
 from vscode.utils.utils import ValuesHolder,Utils
 from vs.bean.beans import *
 from vscode.loader.loaders import LoaderManager
-from Acquisition.tests import TRUE
 
 def dashboard_view(request):
     return render(request, "dashboard.html")
@@ -34,6 +34,37 @@ def logout(request):
         SessionData().currentLoginPrivileges = []
         return render(request, "vs/login.html") 
            
+           
+class AddLocationView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('AddLocationView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = LocationsBean(request)
+        try: 
+            with transaction.atomic():
+                context = bean.submit()
+            if context.get('err'):
+                emsg = context.get('errMsg')           
+                context = bean.setup()
+                context['err']=True
+                context['errMsg']=emsg
+                result = render(request, 'vs/locations.html', context)
+                #print('AddLocationView no except'  + str(result))
+                return result
+            return redirect('/vs/locations')
+        except Exception as err:            
+            context = bean.setup()
+            context['err']=True
+            context['errMsg']=str(err)
+            #print('AddLocationView except'  + str(context))
+            return render(request, 'vs/locations.html', context)
+           
+                      
 class AddOrganizationView(View):
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -62,6 +93,7 @@ class AddOrganizationView(View):
             context['errMsg']=str(err)
             #print('AddOrganizationView except'  + str(context))
             return render(request, 'vs/organizations.html', context)
+
            
 class AddSkillView(View):
     def get(self, request, *args, **kwargs):
@@ -134,7 +166,66 @@ class HouseholdsView(View):
         if bean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
         context = bean.setup()
-        return render(request, "vs/households.html", context)
+        return render(request, "vs/households.html", context)        
+            
+class LocationEditView(View):
+    
+    def post(self,request, *args, **kwargs):
+        return  self.get(request, *args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            hBean = HomeBean(request)
+            if hBean.isVolunteerUser():
+                return render(request, 'vs/volunteerHome')
+        except NeedOrganizationException:
+            bean = OrganizationSelectionBean(request)
+            context = bean.setup()
+            return render(request, "vs/organizationSelect.html", context)
+        bean = LocationEditBean(request)
+        context = bean.setup()                  
+        return  render(request, "vs/locationEdit.html", context)
+   
+                
+class LocationsView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = LocationsBean(request)
+        context = bean.setup()
+        return render(request, "vs/locations.html", context)
+ 
+                
+class LocationUpdateView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('LocationUpdateView')
+        oid = request.POST.get('oid')
+        SessionData().oid = oid
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = LocationEditBean(request)
+        try: 
+            with transaction.atomic():
+                bean.submit()
+            return redirect('/vs/locations')
+        except Exception as err:
+            #traceback.print_exc()   
+            context = bean.setup()
+            context['oid']= oid                  
+            context['err']=True 
+            context['errMsg']=str(err)
+            context['nameMaxLength'] = Location.NAME_LENGTH
+            #print('LocationUpdateView handling err')
+            return render(request, "vs/locationEdit.html", context)
+
 
 class LoginView(View):
     def post(self,request, *args, **kwargs):
@@ -259,6 +350,20 @@ class OrganizationUpdateView(View):
             context['errMsg']=str(err) + ' bug'
             #print('OrganizationUpdateView handling err')
             return render(request, "vs/organizationEdit.html", context)
+ 
+               
+class ResourcesView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = ResourcesBean(request)
+        context = bean.setup()
+        return render(request, "vs/resourcess.html", context)
+        
             
 class SkillEditView(View):
     

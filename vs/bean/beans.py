@@ -262,6 +262,7 @@ class Menu():
     HOME_BEAN = "vs/home"
     HOUSEHOLDS = "vs/households.html"
     LOCATIONS = "vs/locations.html"
+    LOCATIONS_BEAN = "vs/locations"
     LOGIN = 'vs/login.html'
     PASSWORD_CHANGE = "/passwordChange.html"
     ORGANIZATIONS = "vs/organizations.html"
@@ -1766,8 +1767,120 @@ class HomeBean(DefaultBean):
     
 
     def redirect(self):
-        return "volunteerDetails?cameFrom=home&id=" + self.getVolunteer().getID()
-   
+        return "volunteerDetails?cameFrom=home&id=" + self.getVolunteer().getID()    
+    
+class LocationEditBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
+        oid = request.GET.get('id')
+        #print('LocationEditBean setup ' + str(oid))
+        if not oid:
+            oid = self.sessionData.oid
+        else:
+            self.sessionData.oid = oid 
+        loc = self.of.getLocation(oid=oid,dbo=True)
+        #print('LocationEditBean setup ' + str(loc))
+        result['oid'] = oid
+        result['name'] = loc.locationName
+        result['orgID'] = orgid
+        result['nameMaxLength'] = Location.NAME_LENGTH
+        return result
+     
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        #print('LocationEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if name and len(name.strip()) > 1:
+                if action:
+                    loc = self.of.getLocation(oid=oid)
+                    if action == 'Save':
+                        loc.setLocationName(name)
+                        loc.save()
+                    elif action == 'Delete':
+                        loc.delete()
+                    else:
+                        raise InvalidArgumentException('action')
+            else:
+                raise MissingArgumentException('name must not be blank or all spaces')
+        else:
+            raise MissingParameterException('oid not provided')     
+ 
+        
+class LocationsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'err':False,
+            'table' : self.getTable(),
+            'nameMaxLength': Location.NAME_LENGTH
+            }
+        return result
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('name')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "name not specified"
+        else:
+            loc = None
+            try:
+                loc = self.of.getLocation(name=name,org=org)
+                if loc:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a location named \"" + name + "\" in the database."
+                else:
+                    loc = self.of.getNewLocation(name, login.loginID, org)
+                    loc.save()
+            except Exception as pe:
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = self.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+            result['target']= Menu.LOCATIONS
+        else:
+            result = self.setup()
+            result['err'] = False
+            result['errMsg'] = errorMessage
+            result['target']= Menu.LOCATIONS_BEAN
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        skills = self.of.getLocations(org=org,dbo=True)
+        return self.multiColumnTableRows("Locations",
+                size=5,
+                items=skills,
+                style='class=listTable',
+                dest="/vs/locationEdit")
+    
+ 
    
 class LoginBean(DefaultBean):
     LOGIN_CANCEL = ''
@@ -2195,7 +2308,70 @@ class OrganizationUpdateBean(DefaultBean):
                 self.sessionData.init1()
         else:
             raise MissingParameterException('oid not provided')     
+ 
+        
+class ResourcesBean(DefaultBean):
     
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'err':False,
+            'table' : self.getTable(),
+            'nameMaxLength': Resource.NAME_MAXIMUM_LENGTH
+            }
+        return result
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('name')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "name not specified"
+        else:
+            loc = None
+            try:
+                loc = self.of.getLocation(name=name,org=org)
+                if loc:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a location named \"" + name + "\" in the database."
+                else:
+                    loc = self.of.getNewLocation(name, login.loginID, org)
+                    loc.save()
+            except Exception as pe:
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = self.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+            result['target']= Menu.LOCATIONS
+        else:
+            result = self.setup()
+            result['err'] = False
+            result['errMsg'] = errorMessage
+            result['target']= Menu.LOCATIONS_BEAN
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        items = self.of.getResources(org=org,dbo=True)
+        return self.multiColumnTableRows("Resources",
+                size=5,
+                items=items,
+                style='class=listTable',
+                dest="/vs/resourceEdit")
+       
     
 class SkillsBean(DefaultBean):
     
@@ -2287,7 +2463,7 @@ class SkillEditBean(DefaultBean):
         oid = request.POST.get('oid')  
         action = request.POST.get('action') 
         name = request.POST.get('name') 
-        print('SkillEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        #print('SkillEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
         if oid:
             if name and len(name.strip()) > 1:
                 if action:

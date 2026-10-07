@@ -16,8 +16,6 @@ from vscode.msgr.msgr import *
 from vscode.utils.exceptions import *
 from vscode.val.vals import *
 from vs.models import *
-from twisted.internet.defer import succeed
-from zope.security.proxy import isinstance
 
 
 
@@ -3724,6 +3722,8 @@ class Location(BusinessObject):
         self.myDb = myDb
         if myDb:
             self.fromDb()
+        else:
+            self.myDb = DbLocation()
         
     def isSameState(self, vsp):
         result = super().isSameBaseState(vsp)
@@ -3908,6 +3908,10 @@ class Location(BusinessObject):
         return result
     
     def toDb(self):
+        #print(self.myDb.__class__.__name__)
+        if not self.myDb or not isinstance(self.myDb, DbLocation):
+            #print('Location toDb resetting myDb')
+            self.myDb = DbLocation() 
         for name, att in self.__dict__.items():
             a = att
             if isinstance(att, Attribute):
@@ -3915,7 +3919,7 @@ class Location(BusinessObject):
             self.myDb.__dict__[name] = a
         if self.organization:
             self.myDb.organization = self.organization.myDb
-            self.myDb.organization_ID = self.organization.getOrganizationID()
+            self.myDb.organization_id = self.organization.getOrganizationID()
         # print(\n + str(name) +  =  ) print(type(a))
     
     def fromDb(self):
@@ -3931,6 +3935,7 @@ class Location(BusinessObject):
                 else:
                     myAtt = att
                 self.__dict__[name] = myAtt
+            #print(str(name) + ' ' + str(att))
         dbOrg = self.myDb.organization_id
         if dbOrg:
             o = Organization(self.myDb.organization)
@@ -10774,41 +10779,55 @@ class ObjectFactory(VSBase):
                         organization_id=org.getOrganizationID())
         return Household(dbo)
     
-    def getLocation(self, oid=None, name=None, org=None):
+    def getLocation(self, oid=None, name=None, org=None, dbo=False):
         result = None
         #print('\nname ' + str(name) + ' org ' + str(org))
         if name and org:
+            orgid = org.organizationID
+            if isinstance(org, Organization):
+                orgid = orgid.value
             #print('name ' + str(name) + ' org ' + str(org) + ' ID ' + str(org.getOrganizationID())) 
-            dbo = DbLocation.objects.exclude(deleteFlag=True).filter(locationName=name)\
-            .filter(organization_id=org.getOrganizationID()).first()
+            db = DbLocation.objects.exclude(deleteFlag=True).filter(locationName=name)\
+            .filter(organization_id=orgid).first()
             #print('\ndbo = "' + str(dbo) + '"') 
-            if dbo:
-                result = Location(dbo)
         elif oid:
-            dbo = DbLocation.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+            db = DbLocation.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        if db:
+            #print('db.locationCreateUser' + ' ' + str(db.locationCreateUser))
             if dbo:
-                result = Location(dbo)
+                result = db
+            else:
+                result = Location(db)
+            #print('result.locationCreateUser' + ' ' + str(result.locationCreateUser))
         return result
     
     def getNewLocation(self, name, uid, org):
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
         dbo = DbLocation.objects.create(
                         locationName=name,
                         locationCreateUser=uid,
                         locationUpdateUser=uid,
-                        organization_id=org.getOrganizationID())
+                        organization_id=orgid)
         return Location(dbo)
     
-    def getLocations(self, org=None):
+    def getLocations(self, org=None, dbo=False):
         result = []
         if org:
-            dbos = DbLocation.objects.exclude(deleteFlag=True).filter(organization_id=org.organizationID.value)
+            orgid = org.organizationID
+            if isinstance(org, Organization):
+                orgid = orgid.value
+            dbos = DbLocation.objects.exclude(deleteFlag=True).filter(organization_id=orgid)
         else:
             dbos = DbLocation.objects.exclude(deleteFlag=True)
-        for dbo in dbos:
-            result.append(Location(dbo))
+        for db in dbos:
+            if dbo:
+                result.append(db)
+            else:
+                result.append(Location(dbo))
         return result
     
-
     def getPrivilege(self, pid):
         result = None
         try: 
@@ -11332,15 +11351,18 @@ class ObjectFactory(VSBase):
             result = Resource(dbo)    
         return result
 
-    def getResources(self, org):
+    def getResources(self, org, dbo=False):
         result = []
         if org:
             dbos = DbResource.objects.exclude(deleteFlag=True)\
             .filter(organization_id=org.getOrganizationID())
         else:
             dbos = DbResource.objects.exclude(deleteFlag=True)
-        for dbo in dbos:
-            result.append(Resource(dbo))
+        for db in dbos:
+            if dbo:
+                result.append(db)
+            else:
+                result.append(Resource(db))
         return result
     
 

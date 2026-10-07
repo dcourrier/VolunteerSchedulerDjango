@@ -1,0 +1,39 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title='Location Edit' help='/vs/help?locationEdit'%}
+{% VSAuthorizer _type=UPDATE_LOCATION %}
+<form action='/vs/locationUpdate' method='post'>
+{% csrf_token %}
+  <input type="hidden" id="oid" name="oid" value="{{oid}}"/>
+	<table class='centered'>
+        <c-errorMessage :err='err'></c-errorMessage> 
+        <tr align='center'>
+            <td><label for='name'>Name: </label>
+               <input type='text' 
+               			id="name"
+               			name='name'
+                        size="30"
+                        value="{{name}}"
+                        maxlength="{{nameMaxLength}}"/>                        
+          </td></tr>
+          <tr>
+            <td align='center'>
+                	<input type="submit" 
+                	class="reset-style"
+                	name="action" 
+                	value="Save"/>&nbsp;
+{% VSAuthorizer2 _type=DELETE_LOCATION %}
+					<input type="submit" 
+					class="reset-style"
+					name="action" 
+					value="Delete"/>&nbsp;
+{% VSAuthorizer2_end %}
+                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='locations'">
+                    	Cancel
+                    </button>
+                </td></tr>
+    </table>
+</form>
+{% VSAuthorizer_end %}   
+{% endcotton %}
