@@ -29,6 +29,8 @@ class BusinessObject(BusinessObjectBase):
         return cls._instance
     
     def __init__(self):
+        self.deleteFlag = BooleanAttribute('deleteFlag')
+        self.deleteFlag.value = False
         self.message = None
         self.invalidAllowed = True
         self.nullAllowed = True
@@ -4552,22 +4554,22 @@ class Project(BusinessObject):
         return result
 
     def getStartDate(self):
-        result = None
+        result = self.projectStartDate.value
         for t in self.tasks:
             if not result:
                 result = t.getStartDate()
             elif t.getStartDate():
-                if t.getStartDate() > result:
+                if t.getStartDate() < result:
                     result = t.getStartDate()
         return result
 
     def getEndDate(self):
-        result = None
+        result = self.projectEndDate.value
         for t in self.tasks:
             if not result:
                 result = t.getEndDate()
             elif t.getEndDate():
-                if t.getEndDate() < result:
+                if t.getEndDate() > result:
                     result = t.getEndDate().getTime()
         return result    
     
@@ -4704,6 +4706,9 @@ class Project(BusinessObject):
         
     def getProjectName(self):
         return self.projectName.getValue()
+        
+    def setProjectName(self, name):
+        self.projectName.setValue(name)
   
     def setName(self, name):
         self.setProjectName(name)
@@ -4817,8 +4822,12 @@ class Project(BusinessObject):
             self.myDb.__dict__[name] = a
         if self.organization:
             self.myDb.organization = self.organization.myDb
-            self.myDb.organization_ID = self.organization.getOrganizationID()
-        # print(\n + str(name) +  =  ) print(type(a))
+            self.myDb.organization_id = self.organization.getOrganizationID()
+        if self.status:
+            self.myDb.projectStatus_id = self.status.getProjectStatusID()
+        else:
+            self.myDb.projectStatus_id = self.projectStatus_id
+        #print('Project toDb ' + str(self.projectStatus_id) + ' ' + str(self.myDb.projectStatus_id))
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -4838,12 +4847,18 @@ class Project(BusinessObject):
             o = Organization(dbOrg)
             self.setOrganization(o)
             self.projectOrganizationID.value = self.organization.organizationID.value
+        dbStat = self.myDb.projectStatus
+        #print('Project fromDb dbStat ' + str(dbStat))
+        if dbStat:
+            ps = ProjectStatus(dbStat)
+            self.setStatus(ps)
 
     def validate(self):
         atts = self.getAttributeList()
         BusinessObject.validateAttributes(atts)
         
     def save(self):
+        print('project save')
         self.toDb()
         self.myDb.save()       
         self.fromDb()
@@ -4852,8 +4867,10 @@ class Project(BusinessObject):
             self.myDb.delete()
               
     def delete(self):
+        self.deleteFlag.value = True
         self.myDb.deleteFlag = True
         self.myDb.save()
+        #print('Project delete ' + str(self.deleteFlag.value))
     
     def getAttributeList(self): 
         return [
@@ -6078,8 +6095,10 @@ class ProjectResource(Resource):
         self.resourceUpdateDate = DateAttribute("resourceUpdateDate")
         self.organization = org
         self.myDb = myDb
+        print('ProjectResource __init__ before fromDB() ' + str(self.myDb))
         if myDb:
             self.fromDb()
+        print('ProjectResource __init__ after fromDB() ' + str(self.myDb))
         super().setIdProperties(self.resourceID)
         super().setTrackingAttributes(self.resourceCreateUser,
                 self.resourceUpdateUser,
@@ -10572,20 +10591,27 @@ class ObjectFactory(VSBase):
             dbo.save()
         return Project(dbo)
     
-    def getProjects(self,org=None,team=None,parent=None):
+    def getProjects(self,org=None,team=None,parent=None,dbo=False):
         result = []
+        dbs = []
         if org:
-            for dbo in DbProject.objects.exclude(deleteFlag=True).filter(organization__organizationID=org.getOrganizationID()).order_by('projectName'):
-                result.append(Project(dbo))
+            orgid = self.getOrgid(org)
+            for db in DbProject.objects.exclude(deleteFlag=True).filter(organization_id=orgid).order_by('projectName'):
+                dbs.append(db)
         elif team:
             for dbo in DbProject.objects.exclude(deleteFlag=True).filter(teams__teamID=team.getTeamID()).order_by('projectName'):
-                result.append(Project(dbo))
+                dbs.append(db)
         elif parent:
             for dbo in DbProject.objects.exclude(deleteFlag=True).filter(parent__projectID=parent.getProjectID()).order_by('projectName'):
-                result.append(Project(dbo))
+                dbs.append(db)
         else:
             for dbo in DbProject.objects.exclude(deleteFlag=True).order_by('projectName'):
-                result.append(Project(dbo))
+                dbs.append(db)
+        if dbo:
+            result = dbs
+        else:
+            for db in dbs:
+                result.append(Project(db))
         return result
     
     def getDeletedTeams(self, org):
@@ -10745,9 +10771,10 @@ class ObjectFactory(VSBase):
     
     def getOtherEvents(self, evtid,org):
         result = []
+        orgid = self.getOrgid(org)
         evt = DbScheduleEvent.objects.filter(pk=evtid).first()
         dbos = DbScheduleEvent.objects.exclude(deleteFlag=True)\
-        .filter(organization_id=org.getOrganizationID())\
+        .filter(organization_id=orgid)\
         .filter(eventDate=evt.eventDate)\
         .filter(location_id=evt.location_id)\
         .exclude(eventID=evt.eventID)
@@ -10768,6 +10795,7 @@ class ObjectFactory(VSBase):
         return result
                  
     def getNewHousehold(self, first, last, uid, org):
+        orgid = self.getOrgid(org)
         add = DbAddress.objects.create(
                         addressCreateUser=uid,
                         addressUpdateUser=uid)
@@ -10777,7 +10805,7 @@ class ObjectFactory(VSBase):
                         householdFirstName=first,
                         householdLastName=last,
                         address_id=add.addressID,
-                        organization_id=org.getOrganizationID())
+                        organization_id=orgid)
         return Household(dbo)
     
     def getLocation(self, oid=None, name=None, org=None, dbo=False):
@@ -10934,9 +10962,10 @@ class ObjectFactory(VSBase):
         return result
     
     def getRecurringEvents(self, org):
+        orgid = self.getOrgid(org)
         result = []
         evts = DbScheduleEvent.objects.exclude(deleteFlag=True)\
-        .filter(organization_id=org.getOrganizationID())
+        .filter(organization_id=orgid)
         #print(evts)
         for evt in evts:
             #print(str(evt.recurrence_id))
@@ -11093,12 +11122,23 @@ class ObjectFactory(VSBase):
             result = Activity(dbo)
         return result
     
-    def getProject(self, uid):
-        result = None 
+    def getProject(self, oid=None,name=None,org=None,dbo=False):
+        result = None
+        errorMsg = 'You must specify either name and org, or oid'  
         try:
-            qr = DbProject.objects.exclude(deleteFlag=True).filter(pk=uid).first()
+            if oid and not name and not org:
+                qr = DbProject.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+            elif name and org and not oid:
+                orgid = self.getOrgid(org)
+                qr = DbProject.objects.exclude(deleteFlag=True)\
+                .filter(projectName=name).filter(organization_id=orgid).first()
+            else:
+                raise InvalidArgumentException(errorMsg)
             if qr:
-                result = Project(qr)
+                if dbo:
+                    result = qr
+                else:
+                    result = Project(qr)
         except Exception as e:
             self.handleException(e)
         return result
@@ -11144,11 +11184,12 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewTask(self,name, uid, org):
+        orgid = self.getOrgid(org)
         dbo = DbTask.objects.create(
                                 taskCreateUser=uid,
                                 taskUpdateUser=uid,
                                 taskName=name,
-                                organization_id=org.getOrganizationID())
+                                organization_id=orgid)
         return Task(dbo)
 
     def getTask(self, uid):
@@ -11162,21 +11203,28 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewTeam(self,name,uid,org):
+        orgid = self.getOrgid(org)
         dbo = DbTeam.objects.create(
                                 teamCreateUser=uid,
                                 teamUpdateUser=uid,
                                 teamName=name,
-                                organization_id=org.getOrganizationID())
+                                organization_id=orgid)
         return Team(dbo)
     
-    def getTeam(self, uid):
-        result = None 
-        try:
-            dbo = DbTeam.objects.exclude(deleteFlag=True).filter(pk=uid).first()
+    def getTeam(self, oid=None,name=None,org=None,dbo=False):
+        result = None
+        db = None
+        if oid: 
+            db = DbTeam.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        elif name and org:
+            orgid = self.getOrgid(org)
+            db = DbTeam.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
+            .filter(teamName=name).first()
+        if db:
             if dbo:
-                result = Team(dbo)
-        except Exception as e:
-            self.handleException(e)
+                result = db
+            else:
+                result = Team(db)
         return result
     
     def getNewAddress(self,uid):
@@ -11224,12 +11272,13 @@ class ObjectFactory(VSBase):
  
 
     def getNewSecurityGroup(self, name, desc, level, uid, org):
+        orgid = self.getOrgid(org)
         dbo = DbSecurityGroup.objects.create(securityGroupName=name,
                                                level=level,
                                                securityGroupCreateUser = uid,
                                                securityGroupUpdateUser = uid,
                                                securityGroupDescription = desc,
-                                               organization_id = org.getOrganizationID())
+                                               organization_id = orgid)
                                                
         return SecurityGroup(dbo)
     
@@ -11336,7 +11385,7 @@ class ObjectFactory(VSBase):
         result = None
         if org:
             result = org.organizationID
-            if result and isinstance(result, Organization):
+            if result and isinstance(result, Attribute):
                 result = result.value
         return result
     
@@ -11393,15 +11442,17 @@ class ObjectFactory(VSBase):
     def getHouseholds(self, lastName=None,org=None,dbo=False):
         result = []
         dbos = []
+        orgid = None
+        if org:
+            orgid = self.getOrgid(org)
         if lastName:
             if not org:
                 raise InvalidArgumentException('If you specify name you must also specify org ')
             dbos = DbHousehold.objects.exclude(deleteFlag=True)\
             .filter(householdLastName=lastName).\
-            filter(organization_id=org.organizationID).\
+            filter(organization_id=orgid).\
             order_by('householdLastName','householdFirstName')
         elif org:
-            orgid = self.getOrgid(org)
             dbos = DbHousehold.objects.exclude(deleteFlag=True).\
             filter(organization_id=orgid).\
             order_by('householdLastName','householdFirstName')
@@ -11448,30 +11499,53 @@ class ObjectFactory(VSBase):
             result.append(Activity(dbo))
         return result
     
-    def getProjectResource(self, oid):
+    def getProjectResource(self, oid=None, name=None, org=None, dbo=False):
         result = None
-        try:
-            dbo = DbProjectResource.objects.exclude(deleteFlag=True).filter(pk=oid).first()
-            result = ProjectResource(dbo)
-        except:
-            pass
+        db = None
+        if oid:
+            db = DbProjectResource.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        elif name and org:
+            orgid = self.getOrgid(org)
+            db = DbProjectResource.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid).filter(name=name).first()
+        else:
+            raise InvalidArgumentException(' you must specify either oid or name and org')
+        if db:
+            #print('objectFactory getProjectResource ' + str(db))
+            if dbo:
+                result = db
+            else:
+                result = ProjectResource(db)
         return result
     
-    def getProjectResources(self, org):
+    def getProjectResources(self, org, dbo=False):
         result = []
         try:
+            orgid = self.getOrgid(org)
             dbos = DbProjectResource.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.organizationID.value)
-            for dbo in dbos:
-                result.append(ProjectResource(dbo))
+            .filter(organization_id=orgid)
+            for db in dbos:
+                if dbo:
+                    result.append(db)
+                else:
+                    result.append(ProjectResource(dbo))
         except:
             pass
         return result
     
-    def getTeams(self):
+    def getTeams(self,org=None,dbo=False):
         result = []
-        for dbo in DbTeam.objects.exclude(deleteFlag=True):
-            result.append(Team(dbo))
+        dbs=[]
+        if org:
+            orgid = self.getOrgid(org)
+            dbs = DbTeam.objects.exclude(deleteFlag=True).filter(organization_id=orgid)
+        else:
+            dbs = DbTeam.objects.exclude(deleteFlag=True)
+        if dbo:
+            result = dbs
+        else:
+            for db in dbs:
+                result.append(Team(db))
         return result
     
     def getTasks(self):
@@ -11481,11 +11555,12 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewVolunteer(self,  h, uid, org, fName=None, lName=None):
+        orgid = self.getOrgid(org)
         dbo = DbVolunteer.objects.create(
             volunteerCreateUser=uid,
             volunteerUpdateUser=uid,
             household_id=h.getHouseholdID(),
-            organization_id=org.getOrganizationID())
+            organization_id=orgid)
         if fName:
             dbo.volunteerFirstName = fName
         if lName:
@@ -11502,8 +11577,9 @@ class ObjectFactory(VSBase):
         result = []
         dbos = None
         if skill and org:
+            orgid = self.getOrgid(org)
             dbos = DbVolunteer.objects.exclude(deleteFlag=True).\
-            filter(organization_id=org.getOrganizationID()).\
+            filter(organization_id=orgid).\
             filter(skill_id=skill.getSkillID()).\
             order_by('volunteerLastName','volunteerFirstName')
         elif org:
@@ -11530,14 +11606,15 @@ class ObjectFactory(VSBase):
     def getVolunteersNamed(self, last, org, first=None):
         result = []
         try:
+            orgid = self.getOrgid(org)
             dbos = None
             if first:
                 dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-                .filter(organization_id=org.getOrganizationID())\
+                .filter(organization_id=orgid)\
                 .filter(volunteerFirstName=first).filter(volunteerLastName=last)
             else:                
                 dbos = DbVolunteer.objects.exclude(deleteFlag=True)\
-                .filter(organization_id=org.getOrganizationID())\
+                .filter(organization_id=orgid)\
                 .filter(volunteerLastName=last)
             if dbos:
                 for dbo in dbos:
@@ -11639,6 +11716,7 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewEvent(self,name, uid, org, sei=None, dbo=False):
+        orgid = self.getOrgid(org)
         dbo1 = DbScheduleEvent.objects.create(
                             eventDate=DT.now(),
                             eventDuration=1,
@@ -11646,7 +11724,7 @@ class ObjectFactory(VSBase):
                             eventName=name,
                             eventCreateUser=uid,
                             eventUpdateUser=uid,
-                            organization_id=org.getOrganizationID())
+                            organization_id=orgid)
         
         result = ScheduleEvent(dbo1)
         if sei:
@@ -11671,11 +11749,15 @@ class ObjectFactory(VSBase):
         if schedule:
             dbos = DbScheduleEvent.objects.exclude(deleteFlag=True).filter(schedule_id=schedule.getScheduleID())
         elif org and not start and not end:
-            dbos = DbScheduleEvent.objects.exclude(deleteFlag=True).filter(organization_id=org.getOrganizationID())
+            orgid = self.getOrgid(org)
+            dbos = DbScheduleEvent.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid)
         elif not org and not start and not end:
             dbos = DbScheduleEvent.objects.exclude(deleteFlag=True)
         elif org and start and end:
-            dbos = DbScheduleEvent.objects.exclude(deleteFlag=True).filter(organization_id=org.getOrganizationID()) \
+            orgid = self.getOrgid(org)
+            dbos = DbScheduleEvent.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid) \
             .filter(eventDate_gte=start).filter(eventDate_lte=end)
         else:
             raise InvalidRequestError('if either start or end are provided, both must be provided \nstart: "' +str(start) + '" end: "' \
@@ -11751,10 +11833,11 @@ class ObjectFactory(VSBase):
         return Skill(dbo)
     
     def getNewDbSkill(self, name, uid, org):
+        orgid = self.getOrgid(org)
         dbo = DbSkill.objects.create(skillName=name,
                                       skillCreateUser=uid,
                                       skillUpdateUser=uid,
-                                      organization_id=org.getOrganizationID())
+                                      organization_id=orgid)
         return dbo
     
     def getVolunteer(self,oid=None,first=None,last=None,org=None,login=None):
@@ -11803,8 +11886,9 @@ class ObjectFactory(VSBase):
             except:
                 pass
         elif login and org:
+            orgid = self.getOrgid(org)
             dbo = DbLogin.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.getOrganizationID())\
+            .filter(organization_id=orgid)\
             .filter(login=login).first()
             if dbo:
                 result = Login(dbo)
@@ -12060,12 +12144,13 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewSchedule(self, start, end, uid, org):
+        orgid = self.getOrgid(org)
         dbo = DbSchedule.objects.create(scheduleStartDate=start,
                                         scheduleEndDate=end,
                                         scheduleCreateUser=uid,
                                         scheduleUpdateUser=uid,
                                         scheduleStatus_id=1,
-                                        organization_id=org.getOrganizationID())
+                                        organization_id=orgid)
         result = Schedule(myDb=dbo)
         #print(result.__class__.__name__ + ' ' + str(isinstance(result, DbSchedule)))
         #print('getNewSchedule ' + str(org))
@@ -12123,12 +12208,13 @@ class ObjectFactory(VSBase):
         return result
     
     def getNewRelationship(self, vol1,vol2, uid,org,typ=None):
+        orgid = self.getOrgid(org)
         dbo = DbRelationship.objects.create(
                             relationshipCreateUser=uid,
                             relationshipUpdateUser=uid,
                             volunteerOne_id=vol1.getVolunteerID(),
                             volunteerTwo_id=vol2.getVolunteerID(),
-                            organization_id=org.getOrganizationID())
+                            organization_id=orgid)
         result = Relationship(dbo)
         if typ:
             result.setRelationshipType(typ)
@@ -12139,8 +12225,9 @@ class ObjectFactory(VSBase):
         result = []
         #print(DbRelationship.objects.all())
         if org:
+            orgid = self.getOrgid(org)
             for dbo in DbRelationship.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=org.getOrganizationID()):
+            .filter(organization_id=orgid):
                 result.append(Relationship(dbo))
         elif vol:
             for dbo in DbRelationship.objects.exclude(deleteFlag=True)\
@@ -12216,8 +12303,9 @@ class ObjectFactory(VSBase):
     
     def getOpenDatesBefore(self, start, org):
         result = []
+        orgid = self.getOrgid(org)
         dbos = DbScheduleEvent.objects.exclude(deleteFlag=True)\
-        .filter(organization_id=org.getOrganizationID())\
+        .filter(organization_id=orgid)\
         .filter(eventDate__lte=start)
         for dbo in dbos:
             #print(dbo)
@@ -12385,11 +12473,12 @@ class ObjectFactory(VSBase):
         return result
 
     def getNewLogin(self,login,uid,org):
+        orgid = self.getOrgid(org)
         dbo = DbLogin.objects.create(
                                 login=login,
                                 loginCreateUser=uid,
                                 loginUpdateUser=uid,
-                                organization_id=org.getOrganizationID())
+                                organization_id=orgid)
         return Login(dbo)
 
     def getDeletedLogin(self, oid):
@@ -12505,11 +12594,12 @@ class ObjectFactory(VSBase):
         return result
 
     def getNewProjectResource(self, name, uid, org, count=None, cost=None, reusable=None):
+        orgid = self.getOrgid(org)
         dbo = DbProjectResource.objects.create(
                                 name = name,
                                 resourceCreateUser = uid,
                                 resourceUpdateUser = uid,
-                                organization_id=org.getOrganizationID())
+                                organization_id=orgid)
         result = ProjectResource(dbo)
         if count:
             result.setCount(count)

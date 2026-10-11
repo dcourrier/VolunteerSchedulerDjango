@@ -1,8 +1,10 @@
 class VSException(Exception):
     def __init__(self, msg=None):
-        super().__init__()
         if msg:
+            super().__init__(msg)
             super().add_note(msg)
+        else:
+            super().__init__()
  
 class AccountDeletedException(VSException):
 

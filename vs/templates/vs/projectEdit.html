@@ -1,0 +1,74 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title=Projects help='/vs/help?projects'%}
+{% VSAuthorizer _type=UPDATE_PROJECT %}
+    <table cellpadding="5" width='100%' align="center">
+        <th colspan="2"><h3>Edit Project</h3></th>
+        <form action='/vs/projectUpdate' method='post'>
+        {% csrf_token %}
+  		<input type="hidden" id="oid" name="oid" value="{{oid}}"/>
+        <c-errorMessage :err='err'></c-errorMessage> 
+            <tr width='100%' align="center">
+                <td width='100%'  align="center">
+                     <table width='100%' class="centered">
+                         <tr  width='100%'  align="center">
+                             <td  align="right">
+                                 <label for="name">Name: </label>&nbsp;
+                                  <input type='text' 
+                                  			  id="name"
+                                  			  name='name'
+                                               size="30"
+                                               value="{{project.projectName}}"
+                                               maxlength="{{ nameMaxLength }}"/>
+                             </td>
+                             <td align="center">
+                                 <label for="startDate">Start Date: </label>&nbsp;
+                                     <input type='text' 
+                                     			id="startDate"
+                                     			name="startDate"
+                                                size="10"
+                                                value="{{startDate}}"
+                                                placeholder="mm/dd/yyyy"
+                                                pattern="^(0[1-9]|1[0-2])[- /.] (0[1-9]|[12][0-9]|3[01])[- /.] (19|20)\d{2}$"
+                                                maxlength="10"/>
+                             </td>
+                             <td	>
+                                 <label for="finishDate">Finish Date: </label>&nbsp;
+                                     <input type='text' 
+                                     			id="finishDate"
+                                     			name="finishDate"
+                                     			value="{{finishDate}}"
+                                                size="10"
+                                                placeholder="mm/dd/yyyy"
+                                                pattern="^(0[1-9]|1[0-2])[- /.] (0[1-9]|[12][0-9]|3[01])[- /.] (19|20)\d{2}$"
+                                                 maxlength="10"/>
+                                                
+                             </td>
+                             <td align="left">
+                             {{statusSelect|safe}}
+                             </td>
+                         </tr>
+                     </table> 
+                </td></tr>
+                <tr class="centered">
+                <td width='100%'  align="center">
+					<input type="submit" 
+                	class="reset-style"
+                	name="action" 
+                	value="Save"/>&nbsp;
+{% VSAuthorizer2 _type=DELETE_PROJECT %}
+					<input type="submit" 
+					class="reset-style"
+					name="action" 
+					value="Delete"/>&nbsp;
+{% VSAuthorizer2_end %}
+                    <button 
+                    type="button" 
+                    onclick="window.location.href='/vs/projects'">
+                    	Cancel
+                    </button>
+                </td></tr>
+        </form>
+    </table>
+{% VSAuthorizer_end %}
+
+{% endcotton %}

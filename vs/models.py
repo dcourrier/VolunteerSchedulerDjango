@@ -393,6 +393,9 @@ class DbVolunteer(models.Model):
     def __str__(self):
         return str(self.volunteerFirstName) + ' ' + str(self.volunteerLastName)
     
+    def getID(self):
+        return self.volunteerID
+    
     def getStyle(self):
         return ''
     
@@ -435,9 +438,18 @@ class DbTeam(models.Model):
             models.UniqueConstraint(fields=['teamName', 'organization'], 
                                             name='unique_teamName')
         ]
-
+    
     def __str__(self):
-        return self.teamName
+        return str(self.teamName)
+    
+    def getID(self):
+        return self.teamID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
 
 class DbTaskStatus(models.Model):
     taskStatusID = models.AutoField(primary_key=True)
@@ -469,6 +481,21 @@ class DbProjectResource(models.Model):
             models.UniqueConstraint(fields=['name', 'organization'], 
                                             name='unique_ProjectResource')
         ]
+    
+    def __str__(self):
+        return str(self.name)
+    
+    def getID(self):
+        return self.resourceID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return True
+    
+    def getQuantity(self):
+        return str(self.count)
 
 class DbVolunteerSkill(models.Model):
     volunteerSkillID = models.AutoField(primary_key=True)
@@ -536,7 +563,7 @@ class DbJob(models.Model):
 
 class DbProject(models.Model):
     projectID = models.AutoField(primary_key=True)
-    projectName = models.CharField(max_length=255, null=True, blank=True)
+    projectName = models.CharField(max_length=255, null=True, blank=True,unique=True)
     projectCreateUser = models.IntegerField()
     projectUpdateUser = models.IntegerField()
     projectStartDate = models.DateField(null=True,blank=True)
@@ -562,6 +589,15 @@ class DbProject(models.Model):
                                       on_delete=models.CASCADE,
                                       blank=True,
                                       null=True)
+    
+    def getID(self):
+        return self.projectID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
 
     def __str__(self):
         return self.projectName

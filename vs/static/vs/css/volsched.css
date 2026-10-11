@@ -114,8 +114,25 @@ div.autoscroll {
     overflow-y: auto;
 }
 
-div.autoscroll500{
-    height: 495px;
+div.autoscroll120 {
+    height: 115px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+div.autoscroll150 {
+    height: 145px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+div.autoscroll200{
+    height: 195px;
+    overflow-y: auto;
+}
+
+div.autoscroll300{
+    height: 295px;
     overflow-y: auto;
 }
 
@@ -124,17 +141,13 @@ div.autoscroll400{
     overflow-y: auto;
 }
 
-div.autoscroll200{
-    height: 195px;
+div.autoscroll500{
+    height: 495px;
     overflow-y: auto;
 }
 .selection tr {
     float: left;
     width: 25%;
-}
-div.autoscroll300{
-    height: 295px;
-    overflow-y: auto;
 }
 
 label.Centered {
@@ -353,6 +366,9 @@ td.center {
     text-align: center;
 }
 
+td.centered inherit center {
+}
+
 td.header {
     font-size: 24pt;
     font-style: normal;
@@ -488,6 +504,17 @@ td.menu {
     width: 10%;
     background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
     background-repeat: repeat;
+}
+
+th.autoscroll {
+    background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
+     position: sticky;
+     top: 0;
+     z-index: 1;
+}
+
+tr.centered {
+    text-align: center;
 }
 
 tr.max {

@@ -64,3 +64,8 @@ jspm_packages/
 # Local text editor swaps
 *.swp
 *~
+
+# DOC ignore all python cached files
+**/__pycache__/
+*.py[cod]
+# DOC

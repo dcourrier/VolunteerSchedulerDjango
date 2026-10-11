@@ -1,6 +1,6 @@
 from datetime import datetime as DT
 from django.contrib import messages
-from django.db import models
+from django.db import models,IntegrityError,transaction
 from django.template.context_processors import request
 from email_validator import validate_email, EmailNotValidError
 from enum import Enum
@@ -267,7 +267,10 @@ class Menu():
     PASSWORD_CHANGE = "/passwordChange.html"
     ORGANIZATIONS = "vs/organizations.html"
     ORGANIZATIONS_BEAN = "/vs/organizations"
+    PROJECTS = "vs/projects.html"
+    PROJECTS_BEAN = "vs/projects"
     RESOURCES = "vs/resources.html"
+    RESOURCES_BEAN = "vs/resources"
     REPORTS = "vs/reports.html"
     SELECT_ORG = "vs/selectOrg.html"
     SCHEDULES = "vs/schedules.html"
@@ -1273,7 +1276,7 @@ class  SessionDataBean(VSBaseBean):
         result = ""
         if items: 
             index = 0
-            sb =  "<table align='center'><th"
+            sb =  "<table align='center'><th align='center'"
             if color:
                 sb += " class=''>"
             else: 
@@ -1323,6 +1326,81 @@ class  SessionDataBean(VSBaseBean):
                 if Utils.isNotBlank(dest): 
                     sb += "</a>"
                 sb += "</td>\n"
+            sb += "</tr>\n</table>"
+            sb += "</div>"
+            result = sb        
+        return result
+    
+
+    def multiColumnTableRows2 (self,
+                                title=None,
+                                size=1,
+                                height=400,
+                                items=[],
+                                dest=None,
+                                color=False,
+                                extra=None,
+                                style='class=listTable'): 
+        result = ""
+        mod = 0
+        if items:
+            itemCount = len(items)
+            columnCount = itemCount
+            if itemCount > size:
+                columnCount = size
+                mod = itemCount % size  
+            index = 0
+            sb = '<div '
+            sb += style
+            sb += '>\n'
+            sb +=  "<table align='center' class='listTable' border=1>"
+            sb += "<th align='center' class='autoscroll'"
+            if columnCount > 1:
+                sb += " colspan='"
+                sb += str(columnCount)
+                sb += "'"
+            sb += "><h3>"            
+            sb += str(title)
+            sb += "</h3></th>\n"
+            sb += "<tr>"
+            #print('style ' + str(style))
+            for vsp in items: 
+                if index % size == 0 and index > 0: 
+                    sb += "</tr><tr>\n"
+                index += 1
+                try:
+                    sb += "<td "
+                    if style and isinstance(style, str): 
+                        sb += str(style)
+                    sb += ">"
+                except: 
+                    sb += "<td class='listTable'>"                
+                if Utils.isNotBlank(dest):
+                    sb += "<a "
+                    if style and isinstance(style, str):
+                        sb += style                    
+                    if extra: 
+                        sb += str(extra)
+                    sb += " href='"
+                    sb += dest
+                    if Utils.contains(dest, "?"): 
+                        sb += "&id="
+                    else: 
+                        sb += "?id="
+                    if isinstance(vsp,models.Model):
+                        sb += str(vsp.pk)
+                    else:                    
+                        sb += str(vsp.getID())
+                    if vsp.hasQuantity(): 
+                        sb += "&qty="
+                        sb += str(vsp.getQuantity())
+                    sb += "'>"
+                sb += str(vsp)
+                if Utils.isNotBlank(dest): 
+                    sb += "</a>"
+                sb += "</td>\n"
+            if mod:
+                sb += "<td colspan='500'/>"
             sb += "</tr>\n</table>"
             sb += "</div>"
             result = sb        
@@ -2307,8 +2385,369 @@ class OrganizationUpdateBean(DefaultBean):
                 self.sessionData.orgs = []
                 self.sessionData.init1()
         else:
-            raise MissingParameterException('oid not provided')       
-   
+            raise MissingParameterException('oid not provided')
+    
+    
+class ProjectEditBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self,oid=None):
+        request = self.sessionData.request
+        if not oid:
+            oid = request.GET.get("id")
+        if not oid:
+            raise MissingParameterException('id')
+        self.sessionData.projectID=oid
+        print('ProjectEditBean setup ' + str(oid))
+        project = self.of.getProject(oid=oid,dbo=True)
+        result = {
+            'oid': oid,
+            'project' : project,
+            'nameMaxLength': Project.NAME_LENGTH,
+            'statusSelect': self.getStatusSelect(project)
+            }
+        if project.projectStartDate:
+            result['startDate'] = project.projectStartDate.strftime('%m/%d/%Y')
+        if project.projectFinishDate:
+            result['finishDate'] = project.projectFinishDate.strftime('%m/%d/%Y')
+        return result
+    
+    def getStatusSelect(self, project):
+        result = '\n<label for="status">Status: </label>'
+        result += '\n<select name="status" id="status">'
+        result += '\n<option value="-1"> </option>'
+        for ps in self.of.getProjectStatuses():
+            result += '\n    <option value="'
+            result += str(ps.getProjectStatusID())
+            result += '"'
+            if project and ps.getProjectStatusID() == project.projectStatus_id:
+                result += ' selected'
+            result += '>'
+            result += ps.getProjectStatusDescription()
+            result += '</option>'
+        result += '\n</select>'
+        return result
+        
+    def submit(self):
+        oid = self.sessionData.request.POST.get('oid')
+        name = self.sessionData.request.POST.get('name')
+        start = self.sessionData.request.POST.get('startDate') 
+        end = self.sessionData.request.POST.get('finishDate') 
+        action = self.sessionData.request.POST.get('action') 
+        status = self.sessionData.request.POST.get('status') 
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        startDate = None
+        endDate = None
+        proj = self.of.getProject(oid=oid)
+        if not proj:
+            raise InvalidArgumentException('no project with id=' + str(oid))
+        #print('ProjectEditBean submit ' + str(action) + ' oid= ' + str(oid))
+        if action == 'Delete':
+            print('ProjectEditBean submit delete ' + str(proj))
+            try:
+                with transaction.atomic():
+                    proj.delete()
+                #print('ProjectEditBean submit deleted ' + str(proj) + ' flag= ' + str(proj.deleteFlag.value))
+                return
+            except Exception as e:
+                super().handleException(e)
+                error = True
+                errorMessage = str(e)
+        else:
+            #print('ProjectEditBean submit ' + str(name))
+            if Utils.isBlank(name):
+                error = True
+                errorMessage = "name not specified"
+            if start:
+                try:
+                    startDate = date.strptime(start, '%m/%d/%Y')
+                except ValueError:
+                    error = True
+                    errorMessage = 'start date must be mm/dd/yyyy'
+            #print('ProjectEditBean submit ' + str(end))
+            if end:
+                try:
+                    endDate = date.strptime(end, '%m/%d/%Y')
+                except ValueError:
+                    error = True
+                    errorMessage = 'finish date must be mm/dd/yyyy'
+            if not error:
+                if startDate and endDate and (endDate < startDate):
+                    error = True
+                    errorMessage = 'start date must be before end date'
+            if not error:
+                print('projectEditBean submit2')
+                proj2 = None
+                proj2 = self.of.getProject(name=name,org=org)
+                if proj2 and (proj2.getProjectStatusID() != proj2.getProjectStatusID()):
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a project named \"" + name + "\" in the database."
+                else:
+                    #print('projectEditBean submit' + str(status))
+                    proj.setProjectName(name)
+                    proj.setProjectStartDate(startDate)
+                    proj.setProjectFinishDate(endDate)
+                    proj.status = None
+                    proj.projectStatus_id = status
+                    try:
+                        with transaction.atomic():
+                            proj.save()
+                    except Exception as pe:
+                        super().handleException(pe)
+                        error = True
+                        errorMessage = str(pe)
+        if error:
+            result = self.setup(oid)
+            result['err'] = True
+            result['name'] = name
+            result['startDate'] = start
+            result['finishDate'] = end
+            result['errMsg'] = errorMessage
+            result['target']= Menu.PROJECTS
+        else:
+            #print('ProjectEditBean submit calling setup after success ' + str(proj.deleteFlag) + ' oid ' + str(oid))
+            result = self.setup(oid)
+            #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
+            result['err'] = False
+            result['target']= Menu.PROJECTS_BEAN
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
+        return result
+    
+           
+     
+          
+class ProjectsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'err':False,
+            'projectsTable' : self.getProjectsTable(),
+            'teamsTable' : self.getTeamsTable(),
+            'projectResourcesTable' : self.getProjectResourcesTable(),
+            'nameMaxLength': Project.NAME_LENGTH
+            }
+        return result
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('name')
+        start = self.sessionData.request.POST.get('startDate') 
+        end = self.sessionData.request.POST.get('finishDate') 
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        startDate = None
+        endDate = None
+        #print('ProjectsBean submit ' + str(name))
+        if Utils.isBlank(name):
+            error = True
+            errorMessage += "name not specified"
+        if start:
+            try:
+                startDate = date.strptime(start, '%m/%d/%Y')
+            except ValueError:
+                error = True
+                errorMessage += ' start date must be mm/dd/yyyy'
+        if end:
+            try:
+                endDate = date.strptime(end, '%m/%d/%Y')
+            except ValueError:
+                error = True
+                errorMessage += ' finish date must be mm/dd/yyyy'
+        if not error:
+            if startDate and endDate and (endDate < startDate):
+                error = True
+                errorMessage = 'start date must be before end date'
+        if not error:
+            proj = None
+            try:
+                proj = self.of.getProject(name=name,org=org)
+                if proj:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a project named \"" + name + "\" in the database."
+                else:
+                    lid = login.loginID
+                    if isinstance(lid,Attribute):
+                        lid = lid.value
+                    proj = self.of.getNewProject(name, lid, org)
+                    proj.setProjectStartDate(startDate)
+                    proj.setProjectFinishDate(endDate)
+                    with transaction.atomic():
+                        proj.save()
+            except Exception as pe:
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = self.setup()
+            result['err'] = True
+            result['name'] = name
+            result['startDate'] = start
+            result['finishDate'] = end
+            result['errMsg'] = errorMessage
+            result['target']= Menu.PROJECTS
+        else:
+            result = self.setup()
+            result['err'] = False
+            result['target']= Menu.PROJECTS_BEAN
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getProjectsTable(self):
+        org = self.sessionData.organization
+        items = self.of.getProjects(org=org,dbo=True)
+        return self.multiColumnTableRows2("Projects",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest="/vs/projectEdit")
+    
+    def getTeamsTable(self):
+        org = self.sessionData.organization
+        items = self.of.getTeams(org=org,dbo=True)
+        return self.multiColumnTableRows2("Teams",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest="/vs/teamEdit")
+    
+    def getProjectResourcesTable(self):
+        org = self.sessionData.organization
+        items = self.of.getProjectResources(org=org,dbo=True)
+        return self.multiColumnTableRows2("Resources",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest="/vs/projectResourceEdit")
+    
+    
+class ProjectResourcesBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def submit(self):
+        name = self.sessionData.request.POST.get('projectResourceName')
+        count = self.sessionData.request.POST.get('count')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "Project Resource name not specified"
+        else:
+            projectsBean = ProjectsBean(self.sessionData.request)
+            team = None
+            try:
+                pr = self.of.getProjectResource(name=name,org=org)
+                if pr:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a project resource named \"" + name + "\" in the database."
+                else:
+                    pr = self.of.getNewProjectResource(name, login.loginID, org)
+                    if count:
+                        pr.setCount(count)
+                    pr.save()
+            except Exception as pe:
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = projectsBean.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+        else:
+            result = projectsBean.setup()
+            result['err'] = False
+            result['errMsg'] = errorMessage
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        skills = self.of.getSkills(org,dbo=True)
+        return self.multiColumnTableRows("Skills",
+                size=5,
+                items=skills,
+                style='class=listTable',
+                dest="/vs/skillEdit")
+
+    
+class ProjectResourceEditBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = self.of.getOrgid(org)
+        oid = request.GET.get('id')
+        #print('LocationEditBean setup ' + str(oid))
+        if not oid:
+            oid = self.sessionData.oid
+        else:
+            self.sessionData.oid = oid 
+        res = self.of.getProjectResource(oid=oid,dbo=True)
+        #print('LocationEditBean setup ' + str(loc))
+        result['oid'] = oid
+        result['name'] = res.name
+        result['amount'] = res.count
+        result['orgID'] = orgid
+        result['nameMaxLength'] = Resource.NAME_MAXIMUM_LENGTH
+        return result
+     
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        amount = request.POST.get('amount') 
+        #print('LocationEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if name and len(name.strip()) > 1 and amount and Utils.isNumeric(amount,False):
+                if action:
+                    res = self.of.getProjectResource(oid=oid)
+                    if res:
+                        if action == 'Save':
+                            res.setName(name)
+                            res.setCount(amount)
+                            res.save()
+                        elif action == 'Delete':
+                            res.delete()
+                        else:
+                            raise InvalidArgumentException('action')
+                    else:
+                        raise InvalidArgumentException('no resource found in database')
+            else:
+                raise MissingArgumentException('name must not be blank or all spaces')
+        else:
+            raise MissingParameterException('oid not provided')     
+            
     
 class ResourceEditBean(DefaultBean):
     
@@ -2539,4 +2978,99 @@ class SkillEditBean(DefaultBean):
                 raise MissingArgumentException('name must not be blank or all spaces')
         else:
             raise MissingParameterException('oid not provided')     
+    
+    
+class TeamsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
         
+    def submit(self):
+        name = self.sessionData.request.POST.get('teamName')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "team name not specified"
+        else:
+            projectsBean = ProjectsBean(self.sessionData.request)
+            team = None
+            try:
+                team = self.of.getTeam(name=name,org=org)
+                if team:
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a team named \"" + name + "\" in the database."
+                else:
+                    lid = login.loginID
+                    if isinstance(lid,Attribute):
+                        lid = lid.value
+                    team = self.of.getNewTeam(name, lid, org)
+                    with transaction.atomic():
+                        team.save()
+            except Exception as pe:
+                super().handleException(pe)
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = projectsBean.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+        else:
+            result = projectsBean.setup()
+            result['err'] = False
+            result['errMsg'] = errorMessage
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    
+class TeamEditBean(DefaultBean):
+    
+    def __init__(self, request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = self.of.getOrgid(org)
+        oid = request.GET.get('id')
+        print('TeamEditBean setup ' + str(self.sessionData.projectID))
+        if not oid:
+            oid = self.sessionData.oid 
+        team = self.of.getTeam(oid=oid)
+        self.sessionData.oid = oid
+        result['oid'] = oid
+        result['name'] = team.getTeamName()
+        result['orgID'] = orgid
+        result['projectID'] = self.sessionData.projectID
+        return result
+     
+    def submit(self):
+        request = self.sessionData.request
+        oid = request.POST.get('oid')  
+        action = request.POST.get('action') 
+        name = request.POST.get('name') 
+        #print('SkillEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
+        if oid:
+            if name and len(name.strip()) > 1:
+                if action:
+                    team = ObjectFactory().getTeam(oid=oid)
+                    if action == 'Save':
+                        team.setTeamName(name)
+                        team.save()
+                    elif action == 'Delete':
+                        team.delete()
+                    else:
+                        raise InvalidArgumentException('action')
+            else:
+                raise MissingArgumentException('name must not be blank or all spaces')
+        else:
+            raise MissingParameterException('oid not provided')     
+               
