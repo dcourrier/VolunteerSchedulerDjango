@@ -2400,7 +2400,7 @@ class ProjectEditBean(DefaultBean):
         if not oid:
             raise MissingParameterException('id')
         self.sessionData.projectID=oid
-        print('ProjectEditBean setup ' + str(oid))
+        #print('ProjectEditBean setup ' + str(oid))
         project = self.of.getProject(oid=oid,dbo=True)
         result = {
             'oid': oid,
@@ -3041,7 +3041,7 @@ class TeamEditBean(DefaultBean):
         org = self.sessionData.organization
         orgid = self.of.getOrgid(org)
         oid = request.GET.get('id')
-        print('TeamEditBean setup ' + str(self.sessionData.projectID))
+        #print('TeamEditBean setup ' + str(self.sessionData.projectID))
         if not oid:
             oid = self.sessionData.oid 
         team = self.of.getTeam(oid=oid)

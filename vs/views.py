@@ -238,24 +238,43 @@ class AddTeamView(View):
             return render(request, 'vs/volunteerHome')
         bean = TeamsBean(request)
         projBean = ProjectsBean(request)
+        oid = request.POST.get('oid')
+        cameFromProjectEdit = request.POST.get('cameFromProjectEdit')
+        toProjectEdit = False 
+        if cameFromProjectEdit and cameFromProjectEdit.lower() == 'true':
+            toProjectEdit = True
+        print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
         try: 
             context = bean.submit()
+            tgt = 'vs/projects.html'
+            if toProjectEdit:
+                tgt ='/vs/projectEdit?id=' + str(oid)
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = projBean.setup()
+                context['oid'] = oid
                 context['err']=True
                 context['errMsg']=emsg
-                result = render(request, 'vs/projects.html', context)
+                if toProjectEdit:
+                    tgt = 'vs/projectEdit.html'
+                else:
+                    tgt = 'vs/projects.html'
+                result = render(request, tgt, context)
                 #print('AddLocationView no except'  + str(result))
                 return result
-            return redirect('/vs/projects')
+            return redirect(tgt)
         except Exception as err:
             projBean.handleException(err)            
             context = projBean.setup()
+            context['oid'] = oid
             context['err']=True
             context['errMsg']=str(err)
             #print('AddLocationView except'  + str(context))
-            return render(request, 'vs/projects.html', context)
+            if toProjectEdit:
+                tgt = 'vs/projectEdit.html'
+            else:
+                tgt = 'vs/projects.html'
+            return render(request, tgt, context)
  
         
 class DummyView(View):
