@@ -13,6 +13,7 @@ urlpatterns = [
     path("vs/addProjectResource", views.AddProjectResourceView.as_view(), name="addProjectResource"),
     path("vs/addResource", views.AddResourceView.as_view(), name="addResource"),
     path("vs/addSkill", views.AddSkillView.as_view(), name="addSkill"),
+    path("vs/addSubproject", views.AddSubprojectView.as_view(), name="addSubproject"),
     path("vs/addTeam", views.AddTeamView.as_view(), name="addTeam"),
     path("vs/assignments", views.DummyView.as_view(), name="assignments"),
     path("vs/events", views.DummyView.as_view(), name="events"),

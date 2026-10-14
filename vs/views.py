@@ -227,6 +227,55 @@ class AddSkillView(View):
             #print('AddskillView except'  + str(context))
             return render(request, 'vs/skills.html', context)
           
+                    
+class AddSubprojectView(View):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+    
+    def post(self,request, *args, **kwargs):
+        #print('AddLocationView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        bean = SubprojectsBean(request)
+        projBean = ProjectsBean(request)
+        oid = request.POST.get('oid')
+        cameFromProjectEdit = request.POST.get('cameFromProjectEdit')
+        toProjectEdit = False 
+        if cameFromProjectEdit and cameFromProjectEdit.lower() == 'true':
+            toProjectEdit = True
+        #print('AddSubprojectView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
+        try: 
+            context = bean.submit()
+            tgt = '/vs/projects'
+            if toProjectEdit:
+                tgt ='/vs/projectEdit?id=' + str(oid)
+            if context.get('err'):
+                emsg = context.get('errMsg')           
+                context = projBean.setup()
+                context['oid'] = oid
+                context['err']=True
+                context['errMsg']=emsg
+                if toProjectEdit:
+                    tgt = '/vs/projectEdit.html'
+                result = render(request, tgt, context)
+                #print('AddLocationView no except'  + str(result))
+                return result
+            return redirect(tgt)
+        except Exception as err:
+            projBean.handleException(err)            
+            context = projBean.setup()
+            context['oid'] = oid
+            context['err']=True
+            context['errMsg']=str(err)
+            #print('AddLocationView except'  + str(context))
+            if toProjectEdit:
+                tgt = '/vs/projectEdit.html'
+            else:
+                tgt = '/vs/projects.html'
+            return render(request, tgt, context)
+ 
+   
 class AddTeamView(View):
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -243,7 +292,7 @@ class AddTeamView(View):
         toProjectEdit = False 
         if cameFromProjectEdit and cameFromProjectEdit.lower() == 'true':
             toProjectEdit = True
-        print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
+        #print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
         try: 
             context = bean.submit()
             tgt = 'vs/projects.html'
@@ -509,10 +558,6 @@ class OrganizationUpdateView(View):
 
             
 class ProjectEditView(View):
-    
-    def post(self,request, *args, **kwargs):
-        return  self.get(request, *args, **kwargs)
-    
     def get(self, request, *args, **kwargs):
         try:
             hBean = HomeBean(request)
@@ -525,6 +570,10 @@ class ProjectEditView(View):
         bean = ProjectEditBean(request)
         context = bean.setup()                  
         return  render(request, "vs/projectEdit.html", context)
+    
+    def post(self,request, *args, **kwargs):
+        return  self.get(request, *args, **kwargs)
+    
     
                   
 class ProjectsView(View):
@@ -545,12 +594,13 @@ class ProjectUpdateView(View):
         return self.post(request, *args, **kwargs)
     
     def post(self,request, *args, **kwargs):
+        sd = SessionData()
         #print('LocationUpdateView')
         oid = request.POST.get('oid')
         name = request.POST.get('name')
         startDate = request.POST.get('startDate')
         finishDate = request.POST.get('finishDate')
-        SessionData().oid = oid
+        sd.oid = oid
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -558,7 +608,10 @@ class ProjectUpdateView(View):
         try: 
             bean.submit()
             #print('ProjectUpdateView handling success')
-            return redirect('/vs/projects')
+            tgt = '/vs/projects'
+            if sd.cameFromProjectEdit:
+                tgt ='/vs/projectEdit?id=' + str(sd.projectID)
+            return redirect(tgt)
         except Exception as err:
             #traceback.print_exc()   
             context = bean.setup(oid)

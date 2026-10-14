@@ -4858,7 +4858,7 @@ class Project(BusinessObject):
         BusinessObject.validateAttributes(atts)
         
     def save(self):
-        print('project save')
+        #print('project save')
         self.toDb()
         self.myDb.save()       
         self.fromDb()
@@ -10591,22 +10591,32 @@ class ObjectFactory(VSBase):
             dbo.save()
         return Project(dbo)
     
-    def getProjects(self,org=None,team=None,parent=None,dbo=False):
+    def getProjects(self,org=None,team=None,parent=None,dbo=False,children=True):
         result = []
         dbs = []
+        childFilter = ''
+        if not children:
+            childFilter = '.filter(parent__null=True)'
         if org:
             orgid = self.getOrgid(org)
             for db in DbProject.objects.exclude(deleteFlag=True).filter(organization_id=orgid).order_by('projectName'):
                 dbs.append(db)
         elif team:
-            for dbo in DbProject.objects.exclude(deleteFlag=True).filter(teams__teamID=team.getTeamID()).order_by('projectName'):
+            for db in DbProject.objects.exclude(deleteFlag=True).filter(teams__teamID=team.getTeamID()).order_by('projectName'):
                 dbs.append(db)
         elif parent:
-            for dbo in DbProject.objects.exclude(deleteFlag=True).filter(parent__projectID=parent.getProjectID()).order_by('projectName'):
+            for db in DbProject.objects.exclude(deleteFlag=True).filter(parent__projectID=parent.getProjectID()).order_by('projectName'):
                 dbs.append(db)
         else:
-            for dbo in DbProject.objects.exclude(deleteFlag=True).order_by('projectName'):
+            for db in DbProject.objects.exclude(deleteFlag=True).order_by('projectName'):
                 dbs.append(db)
+        if not children:
+            temp = []
+            for db in dbs:
+                if db.parent_id:
+                    continue
+                temp.append(db)
+            dbs = temp
         if dbo:
             result = dbs
         else:

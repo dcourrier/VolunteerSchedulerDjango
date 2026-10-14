@@ -2395,6 +2395,7 @@ class ProjectEditBean(DefaultBean):
         
     def setup(self,oid=None):
         request = self.sessionData.request
+        cameFromProjectEdit = request.GET.get('cameFromProjectEdit')
         if not oid:
             oid = request.GET.get("id")
         if not oid:
@@ -2406,14 +2407,36 @@ class ProjectEditBean(DefaultBean):
             'oid': oid,
             'project' : project,
             'nameMaxLength': Project.NAME_LENGTH,
-            'statusSelect': self.getStatusSelect(project)
+            'statusSelect': self.getStatusSelect(project),
+            'subprojects': self.getSubprojectsTable(project)
             }
+        if project.parent_id:
+            result['parentID'] = project.parent_id
+        else:
+            result['parentID'] = None
+        if cameFromProjectEdit is not None and cameFromProjectEdit.lower() == 'true':
+            result['cameFromProjectEdit'] = True
+            self.sessionData.cameFromProjectEdit = True
+        else:
+            self.sessionData.cameFromProjectEdit = None
         if project.projectStartDate:
             result['startDate'] = project.projectStartDate.strftime('%m/%d/%Y')
         if project.projectFinishDate:
             result['finishDate'] = project.projectFinishDate.strftime('%m/%d/%Y')
         return result
     
+    def getSubprojectsTable(self, project):
+        result = ''
+        items = list(project.subprojects.all())
+        #print('ProjectEditBean getSubprojectsTable ' + str(items))
+        if items and len(items) > 0:
+            result = self.multiColumnTableRows2("Subprojects",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest=("/vs/projectEdit?cameFromProjectEdit=True&parent=" + str(project.projectID)))
+        return result
+            
     def getStatusSelect(self, project):
         result = '\n<label for="status">Status: </label>'
         result += '\n<select name="status" id="status">'
@@ -2512,20 +2535,16 @@ class ProjectEditBean(DefaultBean):
             result['startDate'] = start
             result['finishDate'] = end
             result['errMsg'] = errorMessage
-            result['target']= Menu.PROJECTS
         else:
             #print('ProjectEditBean submit calling setup after success ' + str(proj.deleteFlag) + ' oid ' + str(oid))
             result = self.setup(oid)
             #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
             result['err'] = False
-            result['target']= Menu.PROJECTS_BEAN
         self.sessionData.context = result
         self.sessionData.currentLogin = login
         #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
         return result
-    
-           
-     
+                   
           
 class ProjectsBean(DefaultBean):
     
@@ -2613,7 +2632,7 @@ class ProjectsBean(DefaultBean):
     
     def getProjectsTable(self):
         org = self.sessionData.organization
-        items = self.of.getProjects(org=org,dbo=True)
+        items = self.of.getProjects(org=org,dbo=True,children=False)
         return self.multiColumnTableRows2("Projects",
                 size=5,
                 items=items,
@@ -2978,7 +2997,78 @@ class SkillEditBean(DefaultBean):
                 raise MissingArgumentException('name must not be blank or all spaces')
         else:
             raise MissingParameterException('oid not provided')     
+
     
+class SubprojectsBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
+        
+    def setup(self):
+        result = {
+            'err':False,
+            'table' : self.getTable()
+            }
+        return result
+        
+    def submit(self):
+        projectsBean = ProjectsBean(self.sessionData.request)
+        name = self.sessionData.request.POST.get('subprojectName')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        parentID = self.sessionData.projectID
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            error = True
+            errorMessage = "Subproject Name name not specified"
+        else:
+            proj = None
+            parent = None
+            try:
+                parent = self.of.getProject(oid=parentID)
+                proj = self.of.getProject(name=name,org=org)
+                if not parent:
+                    error = True
+                    errorMessage = "Couldn't get parent project with id  " + str(parentID)
+                elif proj:
+                    error = True
+                    errorMessage = "There is already a project named \"" + name + "\" in the database."
+                else:
+                    lid = login.loginID
+                    if isinstance(lid,Attribute):
+                        lid = lid.value
+                    proj = self.of.getNewProject(name, lid, org, parent)
+                    with transaction.atomic():
+                        proj.save()
+            except Exception as pe:
+                super().handleException(pe)
+                error = True
+                errorMessage = str(pe)
+        if error:
+            result = projectsBean.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+        else:
+            result = projectsBean.setup()
+            result['err'] = False
+            result['errMsg'] = None
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        items = self.of.getResources(org=org,dbo=True)
+        return self.multiColumnTableRows("Resources",
+                size=5,
+                items=items,
+                style='class=listTable',
+                dest="/vs/resourceEdit")
+        
     
 class TeamsBean(DefaultBean):
     

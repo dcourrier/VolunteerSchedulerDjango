@@ -66,15 +66,24 @@
 					class="reset-style"
 					name="action" 
 					value="Manage Tasks"/>&nbsp;
+                    {% if parentID %}
+	                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='/vs/projectEdit?id={{ parentID }}'">
+	                    	Cancel
+	                    </button>
+                    {% else %}
+	                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='/vs/projects'">
+	                    	Cancel
+	                    </button>
+                    {% endif %}
 {% VSAuthorizer2_end %}
-                    <button 
-                    type="button" 
-                    onclick="window.location.href='/vs/projects'">
-                    	Cancel
-                    </button>
                 </td></tr>
         </form>
     </table>
+<table width='100%' align='center'><tr><td width='66%' align=right>
 {% VSAuthorizer_end %}
 <table width='100%' align='center'>
 {% VSAuthorizer _type=ADD_TEAM %}
@@ -101,6 +110,7 @@
 	<tr width='100%' align='center'><td>
 		<form action='/vs/addSubproject' method='post'>
 	        {% csrf_token %}
+  		<input type="hidden" id="cameFromProjectEdit" name="cameFromProjectEdit" value="True"/>
   		<input type="hidden" id="oid" name="oid" value="{{oid}}"/>
   			<label for='subprojectName'>Subproject Name:</label>
   			<input type='text'
@@ -114,7 +124,12 @@
                 	class="reset-style"
                 	value="Add Subproject"/>
 	     </form>
-	</td></tr>
+	</td></tr></table></td>
 {% VSAuthorizer_end %}
-</table>
+{% VSAuthorizer _type=UPDATE_SUBPROJECT%}
+<td align='left'>
+	{{subprojects|safe}}
+</td>
+{% VSAuthorizer_end %}
+</tr></table>
 {% endcotton %}
