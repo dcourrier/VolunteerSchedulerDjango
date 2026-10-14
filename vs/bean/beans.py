@@ -2412,6 +2412,7 @@ class ProjectEditBean(DefaultBean):
             }
         if project.parent_id:
             result['parentID'] = project.parent_id
+            self.sessionData.projectNavigator.append(project.parent_id)
         else:
             result['parentID'] = None
         if cameFromProjectEdit is not None and cameFromProjectEdit.lower() == 'true':
@@ -2479,7 +2480,6 @@ class ProjectEditBean(DefaultBean):
                 with transaction.atomic():
                     proj.delete()
                 #print('ProjectEditBean submit deleted ' + str(proj) + ' flag= ' + str(proj.deleteFlag.value))
-                return
             except Exception as e:
                 super().handleException(e)
                 error = True
@@ -2507,7 +2507,7 @@ class ProjectEditBean(DefaultBean):
                     error = True
                     errorMessage = 'start date must be before end date'
             if not error:
-                print('projectEditBean submit2')
+                #print('projectEditBean submit')
                 proj2 = None
                 proj2 = self.of.getProject(name=name,org=org)
                 if proj2 and (proj2.getProjectStatusID() != proj2.getProjectStatusID()):
@@ -2540,6 +2540,8 @@ class ProjectEditBean(DefaultBean):
             result = self.setup(oid)
             #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
             result['err'] = False
+            if self.sessionData.projectNavigator:
+                result['parentID']=self.sessionData.projectNavigator.pop()
         self.sessionData.context = result
         self.sessionData.currentLogin = login
         #print('ProjectEditBean submit exiting up after success ' + str(proj.deleteFlag))
