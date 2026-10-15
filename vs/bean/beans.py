@@ -2395,6 +2395,7 @@ class ProjectEditBean(DefaultBean):
         
     def setup(self,oid=None):
         request = self.sessionData.request
+        org = self.sessionData.organization
         cameFromProjectEdit = request.GET.get('cameFromProjectEdit')
         if not oid:
             oid = request.GET.get("id")
@@ -2408,7 +2409,9 @@ class ProjectEditBean(DefaultBean):
             'project' : project,
             'nameMaxLength': Project.NAME_LENGTH,
             'statusSelect': self.getStatusSelect(project),
-            'subprojects': self.getSubprojectsTable(project)
+            'subprojects': self.getSubprojectsTable(project),
+            'availableTeams':self.getAvailableTeamsTable(project, org),
+            'assignedTeams':self.getAssignedTeamsTable(project, org)
             }
         if project.parent_id:
             result['parentID'] = project.parent_id
@@ -2426,11 +2429,47 @@ class ProjectEditBean(DefaultBean):
             result['finishDate'] = project.projectFinishDate.strftime('%m/%d/%Y')
         return result
     
+    def getAssignedTeamsTable(self,project, org):
+        result = ""
+        items = list(project.teams.all())
+        if items:
+            result = self.multiColumnTableRows2("Assigned Teams",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest=("/vs/unassignTeam?projectID="\
+                      + str(self.sessionData.projectID)))
+        return result
+    
+    def getAvailableTeamsTable(self,project, org):
+        result = ''
+        assigned = {}
+        for tm in project.teams.all():
+            assigned[str(tm.teamID)] = tm
+        items = []
+        for tm in self.of.getTeams(org=org,dbo=True):
+            if assigned.get(str(tm.teamID)):
+                continue
+            items.append(tm)
+        if items:
+            result = self.multiColumnTableRows2("Available Teams",
+                size=5,
+                items=items,
+                style='class=autoscroll120',
+                dest=("/vs/assignTeam?projectID="\
+                      + str(self.sessionData.projectID)))
+        return result
+            
     def getSubprojectsTable(self, project):
         result = ''
-        items = list(project.subprojects.all())
+        l = list(project.subprojects.all())
+        items = []
+        for p in l:
+            if p.deleteFlag == True:
+                continue
+            items.append(p)
         #print('ProjectEditBean getSubprojectsTable ' + str(items))
-        if items and len(items) > 0:
+        if items:
             result = self.multiColumnTableRows2("Subprojects",
                 size=5,
                 items=items,
@@ -3043,9 +3082,8 @@ class SubprojectsBean(DefaultBean):
                     lid = login.loginID
                     if isinstance(lid,Attribute):
                         lid = lid.value
-                    proj = self.of.getNewProject(name, lid, org, parent)
                     with transaction.atomic():
-                        proj.save()
+                        proj = self.of.getNewProject(name, lid, org, parent)
             except Exception as pe:
                 super().handleException(pe)
                 error = True
@@ -3070,7 +3108,76 @@ class SubprojectsBean(DefaultBean):
                 items=items,
                 style='class=listTable',
                 dest="/vs/resourceEdit")
+  
+    
+class TasksBean(DefaultBean):
+    
+    def __init__(self,request):
+        super().__init__(request)
         
+    def setup(self):
+        result = {
+            'err':False,
+            'tasksTable' : self.getTable()
+            }
+        return result
+        
+    def submit(self):
+        #print('Taskbean submit enter')
+        if not self.sessionData.context:
+            self.sessionData.context = {}
+        login = self.sessionData.getCurrentLogin()
+        org = self.sessionData.organization
+        name = self.sessionData.request.POST.get('taskName')
+        sequence = self.sessionData.request.POST.get('taskSequence')
+        result = {}
+        error = False
+        errorMessage = ""
+        if Utils.isBlank(name):
+            #print('Taskbean submit blank name ' + str(name))
+            error = True
+            errorMessage = "name not specified"
+        else:
+            task = None
+            try:
+                task = self.of.getTask(name=name,org=org)
+                if task:
+                    #print('Taskbean submit dup ' + str(task))
+                    result = ""
+                    error = True
+                    errorMessage = "There is already a task named \"" + name + "\" in the database."
+                else:
+                    with transaction.atomic():
+                        #print('Taskbean submit')
+                        task = self.of.getNewTask(name, login.loginID, org, sequence)
+                        #print('TaskBean submit ' + str(task))
+            except Exception as e:
+                super().handleException(e)
+                error = True
+                errorMessage = str(e)
+        if error:
+            result = self.setup()
+            result['err'] = True
+            result['errMsg'] = errorMessage
+        else:
+            
+            result = self.setup()
+            result['err'] = False
+            result['errMsg'] = None
+        self.sessionData.context = result
+        self.sessionData.currentLogin = login
+        return result
+    
+    def getTable(self):
+        org = self.sessionData.organization
+        items = self.of.getTasks(org=org,dbo=True)
+        #print('TasksBean getTable ' + str(items))
+        return self.multiColumnTableRows2("Tasks",
+                size=5,
+                items=items,
+                style='class=listTable',
+                dest="/vs/taskEdit")
+          
     
 class TeamsBean(DefaultBean):
     

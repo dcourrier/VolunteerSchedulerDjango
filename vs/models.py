@@ -670,10 +670,19 @@ class DbTask(models.Model):
                                    null=True,
                                    blank=True,
                                    on_delete=models.SET_NULL)
+    
+    def getID(self):
+        return self.taskID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False
 
     def __str__(self):
         if self.taskName:
-            return str(self.taskName)
+            return str(self.taskSequence) + ' ' + str(self.taskName)
         else:
             return'None'
 

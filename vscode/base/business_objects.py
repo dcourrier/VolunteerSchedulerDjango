@@ -18,7 +18,6 @@ from vscode.val.vals import *
 from vs.models import *
 
 
-
 class BusinessObject(BusinessObjectBase):
     _instance = None
 
@@ -11193,23 +11192,37 @@ class ObjectFactory(VSBase):
                 result = Organization(qr)
         return result
     
-    def getNewTask(self,name, uid, org):
+    def getNewTask(self,name, uid, org, sequence=None):
         orgid = self.getOrgid(org)
         dbo = DbTask.objects.create(
                                 taskCreateUser=uid,
                                 taskUpdateUser=uid,
                                 taskName=name,
                                 organization_id=orgid)
+        if sequence:
+            if isinstance(sequence, str):
+                sequence = int(sequence)
+            dbo.taskSequence = sequence
+            dbo.save()
         return Task(dbo)
 
-    def getTask(self, uid):
-        result = None 
-        try:
-            qr = DbTask.objects.exclude(deleteFlag=True).filter(pk=uid).first()
-            if qr:
+    def getTask(self, oid=None,name=None,org=None,dbo=False):
+        result = None
+        if oid and not name and not org: 
+            qr = DbTask.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        elif not oid and (name and org):
+            orgid = self.getOrgid(org)
+            qr =DbTask.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
+            .filter(taskName=name).first()
+        else:
+            raise InvalidArgumentException('You must specify either oid or name, org and not oid')
+        #print('of get task ' + str(qr))
+        
+        if qr:
+            if dbo:
+                result = qr
+            else:
                 result = Task(qr)
-        except Exception as e:
-            self.handleException(e)
         return result
     
     def getNewTeam(self,name,uid,org):
@@ -11558,10 +11571,20 @@ class ObjectFactory(VSBase):
                 result.append(Team(db))
         return result
     
-    def getTasks(self):
+    def getTasks(self,org=None,dbo=False):
         result = []
-        for dbo in DbTask.objects.exclude(deleteFlag=True):
-            result.append(Task(dbo))
+        dbs = []
+        if org:
+            orgid = self.getOrgid(org)
+            dbs = DbTask.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
+            .order_by('taskSequence')
+        else:
+            dbs = DbTask.objects.exclude(deleteFlag=True).order_by('taskSequence')
+        if dbo:
+            result = dbs
+        else:
+            for db in dbs:
+                result.append(Task(db))
         return result
     
     def getNewVolunteer(self,  h, uid, org, fName=None, lName=None):

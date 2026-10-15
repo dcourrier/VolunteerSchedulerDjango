@@ -62,10 +62,19 @@
 					value="Delete"/>&nbsp;
 {% VSAuthorizer2_end %}
 {% VSAuthorizer2 _type=VIEW_TASKS %}
-					<input type="submit" 
-					class="reset-style"
-					name="action" 
-					value="Manage Tasks"/>&nbsp;
+                    {% if parentID %}
+	                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='/vs/projectEdit?id={{ parentID }}'">
+	                    	Manage Tasks
+	                    </button>
+                    {% else %}
+	                    <button 
+	                    type="button" 
+	                    onclick="window.location.href='/vs/tasks'">
+	                    	Manage Tasks
+	                    </button>
+                    {% endif %}
                     {% if parentID %}
 	                    <button 
 	                    type="button" 
@@ -131,5 +140,9 @@
 	{{subprojects|safe}}
 </td>
 {% VSAuthorizer_end %}
-</tr></table>
+</tr>
+{% VSAuthorizer _type=UPDATE_TEAM%}
+	<tr><td>{{ availableTeams|safe }}</td><td>{{ assignedTeams|safe }}</td></tr>	
+{% VSAuthorizer_end %}
+</table>
 {% endcotton %}
