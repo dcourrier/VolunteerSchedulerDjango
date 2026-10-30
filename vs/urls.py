@@ -1,5 +1,6 @@
 from django.urls import include, path
 from django.views.generic import TemplateView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 #from debug_toolbar.toolbar import debug_toolbar_urls
 from . import views
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path("vs/addSubproject", views.AddSubprojectView.as_view(), name="addSubproject"),
     path("vs/addTask", views.AddTaskView.as_view(), name="addTask"),
     path("vs/addTeam", views.AddTeamView.as_view(), name="addTeam"),
+    path("vs/assignResource", views.AssignResourceView.as_view(), name="assignResource"),
     path("vs/assignTeam", views.AssignTeamView.as_view(), name="assignTeam"),
     path("vs/assignments", views.DummyView.as_view(), name="assignments"),
     path("vs/events", views.DummyView.as_view(), name="events"),
@@ -41,16 +43,18 @@ urlpatterns = [
     path("vs/projectUpdate", views.ProjectUpdateView.as_view(), name="projectUpdate"),
     path("vs/projectResourceEdit", views.ProjectResourceEditView.as_view(), name="projectResourceEdit"),
     path("vs/projectResourceUpdate", views.ProjectResourceUpdateView.as_view(), name="projectResourceUpdate"),
+    path("vs/releaseResource", views.ReleaseResourceView.as_view(), name="releaseResource"),
     path("vs/resourceEdit", views.ResourceEditView.as_view(), name="resourceEdit"),
-    path("vs/resources", views.ResourcesView.as_view(), name="resources"),
-    path("vs/resourceUpdate", views.ResourceUpdateView.as_view(), name="resourceUpdate"),
+    path("vs/resources", views.ResourcesView.as_view(), name="resources"),  
     path("vs/reports", views.DummyView.as_view(), name="reports"),
     path("vs/schedules", views.DummyView.as_view(), name="schedules"),
     path("vs/skillEdit", views.SkillEditView.as_view(), name="skillEdit"),
     path("vs/skills", views.SkillsView.as_view(), name="skills"),
     path("vs/skillUpdate", views.SkillUpdateView.as_view(), name="skillUpdate"),
     path("vs/tasks", views.TasksView.as_view(), name="tasks"),
+    path("vs/taskEdit", views.TaskEditView.as_view(), name="taskEdit"),
     path("vs/teamEdit", views.TeamEditView.as_view(), name="teamEdit"),
+    path("vs/taskUpdate", views.TaskUpdateView.as_view(), name="taskUpdate"),
     path("vs/teamUpdate", views.TeamUpdateView.as_view(), name="teamUpdate"),
     path("vs/unassignTeam", views.UnassignTeamView.as_view(), name="unassignTeam"),
     path("vs/utilities", views.DummyView.as_view(), name="utilities"),
@@ -61,3 +65,4 @@ urlpatterns = [
     path("vs/volunteerRelationships", views.DummyView.as_view(), name="volunteerRelationships"),
     path("vs/volunteers", views.VolunteersView.as_view(), name="volunteers"),
 ] #+ debug_toolbar_urls()
+urlpatterns += staticfiles_urlpatterns()

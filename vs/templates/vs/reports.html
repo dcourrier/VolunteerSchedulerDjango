@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Reports");
+                        setHeader("Reports")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_REPORT)}">
@@ -41,7 +41,7 @@
                                         value="Generate Report"
                                         rendered="${reportsBean.getNoReportSchedules().size() > 0}"
                                         action="${reportsBean.addReport()}"/>
-                               &nbsp;&nbsp;
+                               &nbsp&nbsp
                                     <p:commandButton
                                         class="reset-style"
                                         value="Cancel"

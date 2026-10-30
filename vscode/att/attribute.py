@@ -168,7 +168,7 @@ class StringAttribute(Attribute):
         message = ''
         if self.getValue() is None:
             if not super().isNullAllowed():
-                message += ';\n' + AttributeMessageFactory.NoneError()
+                message += '\n' + AttributeMessageFactory.NoneError()
                 result = False
         else:
             val = self.getValue()

@@ -1,4 +1,5 @@
-from vscode.base.base import VSBase,ObjectFactoryBase
+from vscode.base.base import VSBase,Constants
+from vscode.msgr.msgr import *
 from vscode.utils.exceptions import *
 from vscode.utils.utils import *
 from vscode.val.vals import *
@@ -97,15 +98,15 @@ class EventRejecter(VSBase):
         self.end = schedule.getScheduleEndDate()
         self.org = schedule.getOrganization()
         self.loginID = uid
+        from vscode.base.business_objects import ObjectFactory
+        self.of = ObjectFactory()
 
     def rejectEvents(self):
         assignments = []
         assignments.extend(self.of.getVolunteerSkillAssignments())
         for sei in self.of.getEvents(schedule=self.schedule):
             self.resetSkillDates(sei, assignments)
-        ''' what's this?
         self.of.rejectEvents(self.start, self.end, self.org, self.loginId)
-        '''
         for vsa in assignments:
             vsa.delete()
 
@@ -139,6 +140,12 @@ class EventRejecter(VSBase):
      
      
 class EventValidator(VSBase):
+    
+    def __init__(self):
+        super().__init__()
+        from vscode.base.business_objects import ObjectFactory
+        self.of = ObjectFactory()
+        
     def validate(self, event):
         if not event.isDeleted():
             if event.getLocation():
@@ -153,8 +160,7 @@ class EventValidator(VSBase):
                     except:
                         pass
                     if not ignore:
-                        of = ObjectFactory()
-                        sched = of.getSchedule(event)
+                        sched = self.of.getSchedule(event)
                         if sched:
                             sStart = sched.getScheduleStartDate()
                             sEnd = sched.getScheduleEndDate()
@@ -162,7 +168,7 @@ class EventValidator(VSBase):
                             if eDate < sStart or eDate > sEnd:
                                 m = VSMessageFactory.getEventScheduleDateChangeError(MessageSeverity.RECOVERABLE)
                                 raise EventDateScheduleDateConflictException(m, event.getDisplayString())
-                            lst = of.getOtherEvents(event)
+                            lst = self.of.getOtherEvents(event)
                         if len(lst) > 0:
                             for sei in lst:
                                 if self.eventsOverlap(event, sei):
@@ -173,23 +179,136 @@ class EventValidator(VSBase):
                 
     def eventsOverlap(self,  event1,  event2, ignoreLocation=False):
         result = False
-        if event1 != None and event2 != None:
-            if isinstance(event1, ScheduleEvent) and isinstance(event2, ScheduleEvent) and \
-                event1.getEventDate() and event2.getEventDate():
-                date1 = event1.getEventDate().strftime(VSBase.DATE_FMT)
-                date2 = event2.getEventDate().strftime(VSBase.DATE_FMT)
-                if date1 == date2:
-                    time1 = event1.getEventStartTime().strftime(VSBase.TIME_FMT)
-                    time2 = event2.getEventStartTime().strftime(VSBase.TIME_FMT)
-                    end1 = event1.getEventStartTime() + timedelta(minutes=event1.getEventDuration()) 
-                    end2 = event2.getEventStartTime() + timedelta(minutes=event2.getEventDuration())
-                    if time1 >= time2 and end1 <= end2:
-                        result = True
-                    elif time2 >= time1 and end2 <= end1:
-                        result = True
-                    if result and not ignoreLocation:
-                        if event1.location.getLocationID() != event2.location.getLocationID():
-                            result = False                      
+        from vscode.base.business_objects import ScheduleEvent
+        if isinstance(event1, ScheduleEvent) and isinstance(event2, ScheduleEvent) and \
+        event1.getEventDate() and event2.getEventDate():
+            date1 = event1.getEventDate().strftime(VSBase.DATE_FMT)
+            date2 = event2.getEventDate().strftime(VSBase.DATE_FMT)
+            if date1 == date2:
+                time1 = event1.getEventStartTime().strftime(VSBase.TIME_FMT)
+                time2 = event2.getEventStartTime().strftime(VSBase.TIME_FMT)
+                end1 = event1.getEventStartTime() + timedelta(minutes=event1.getEventDuration()) 
+                end2 = event2.getEventStartTime() + timedelta(minutes=event2.getEventDuration())
+                if time1 >= time2 and end1 <= end2:
+                    result = True
+                elif time2 >= time1 and end2 <= end1:
+                    result = True
+                if result and not ignoreLocation:
+                    if event1.location.getLocationID() != event2.location.getLocationID():
+                        result = False                      
         return result   
+
     
+class VolunteerLoginManager(VSBase):
+    resetStatus = None
+    
+    def __init__(self):
+        super().__init__()
+        from vscode.base.business_objects import ObjectFactory 
+        self.of = ObjectFactory()
+        
+    def getResetStatus(self):
+        if VolunteerLoginManager.resetStatus == None:
+            for lis in self.of.getLoginStatuses():
+                if lis.getLoginStatusID() == LoginStatus.STATUS_RESET:
+                    VolunteerLoginManager.resetStatus = lis
+                    break
+        return VolunteerLoginManager.resetStatus
+
+    def save(self, vol, loginId):  
+        if vol:
+            if vol.isNew():
+                self.addLogin(vol, loginId)
+            else:
+                if vol.getVolunteerLoginID():     
+                    li = self.of.getLogin(vol.getVolunteerLoginID())
+                    vol.setLogin(li)
+                    if self.needSecurityGroup(li):
+                        li.addSecurityGroup(self.of.getSecurityGroup(Constants.VOLUNTEER_SECURITY_GROUP_ID))
+                    email = vol.getEmail()
+                    if Utils.notBlank(email) and li.getEmail() != email:
+                        try:
+                            li.setEmail(email)
+                            li.save()
+                        except Exception as iave:
+                            super().handleException(iave)
+                else:
+                    self.addLogin(vol, loginId)
+            vol.save()
+            
+    def addLogin(self, vol, loginId):
+        if self.checkForDuplicate(vol, False):
+            raise DuplicateLoginException()
+        deleted = self.checkForDuplicate(vol, True)
+        if deleted:
+            self.resurrect(vol, loginId)
+        else:
+            li = vol.getLogin()
+            if not li:
+                name = "".join(vol.getVolunteerName().split())
+                li = self.of.getNewLogin()
+                li.setLogin(name)
+                li.setOrganization(vol.getOrganization())
+                li.setLoginName(vol.getVolunteerName())
+                li.setSecret(name)
+                if len(name) > 20:
+                    li.setSecret("secret")
+                else:
+                    li.setSecret(name)
+                li.setPassword("Password1")
+                li.setLastChange(DT.now())
+                li.setLoginCreateUser(loginId)
+                li.setLoginUpdateUser(loginId)
+                li.setLoginStatus(self.getResetStatus())
+                li.save()
+                vol.setLogin(li)
+                li.addSecurityGroup(self.of.getSecurityGroup(Constants.VOLUNTEER_SECURITY_GROUP_ID))
+            else:
+                if self.needSecurityGroup(li):
+                    li.addSecurityGroup(self.of.getSecurityGroup(Constants.VOLUNTEER_SECURITY_GROUP_ID))
+
+    def resurrect(self, vol, loginId):
+        from vscode.base.business_objects import Volunteer
+        vols = self.of.getDeletedObjects(Volunteer.__class__)
+        vol2 = None
+        for v in vols:
+            if Utils.equals(vol.getVolunteerFirstName(), v.getVolunteerFirstName())\
+                    and vol.getVolunteerLastName() == v.getVolunteerLastName():
+                vol2 = v
+                break
+        if vol2:
+            vol2.setDeleted(False)
+            vol2.setUpdateUser(loginId)
+            vol2.save()
+            li = vol2.getLogin()
+            if li:
+                li.setDeleted(False)
+                li.setUpdateUser(loginId)
+                self.of.save(li)
+                
+    def checkForDuplicate(self, vol ,deleted=False):
+        from vscode.base.business_objects import Login
+        result = False
+        if deleted:
+            for li in self.of.getDeletedObjects(Login.__class__):
+                if Utils.equals(vol.getVolunteerName(), li.getLoginName()):
+                    result = True
+                    break
+        else:
+            org = vol.getOrganization()
+            for li in self.of.getLogins(org):
+                if Utils.equals(vol.getVolunteerName(), li.getLoginName()):
+                    result = True
+                    break
+        return result
+    
+
+    def needSecurityGroup(self, li):
+        result = True
+        if li.getSecurityGroups():
+            for sg in li.getSecurityGroups():
+                if (sg.getSecurityGroupID() == Constants.VOLUNTEER_SECURITY_GROUP_ID):
+                    result = False
+                    break
+        return result
     

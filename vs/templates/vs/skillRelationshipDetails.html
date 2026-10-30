@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Skill Relationship Edit");
+                        setHeader("Skill Relationship Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SKILL_RELATIONSHIP)}">
@@ -25,7 +25,7 @@
                                 <td>
                                     <label for="relationshipType"
                                                    rendered="true"
-                                                   value="Type"/>&nbsp;
+                                                   value="Type"/>&nbsp
                                     <h:selectOneMenu id="relationshipType"
                                                      value="#{skillRelationshipDetailsBean.relationshipTypeID}">
                                         <f:selectItems 
@@ -41,11 +41,11 @@
                                     <p:commandButton
                                         class="reset-style"
                                         action="#{skillRelationshipDetailsBean.updateRelationship()}"
-                                        value="Save"/>&nbsp;
+                                        value="Save"/>&nbsp
                                     <p:commandButton
                                         class="reset-style"
                                         action="#{skillRelationshipDetailsBean.deleteRelationship()}"
-                                        value="Delete"/>&nbsp;
+                                        value="Delete"/>&nbsp
                                     <p:commandButton
                                         class="reset-style"
                                         action="#{skillRelationshipDetailsBean.cancel()}"

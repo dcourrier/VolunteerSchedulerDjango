@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Logins");
+                        setHeader("Logins")
                     }
                 </script>
                 <h:outputText value="#{loginDetailsBean.reset()}"/>
@@ -25,7 +25,7 @@
                             <tr>
                                 <td>
                                     <label for="login" 
-                                                   value="Login"/>&nbsp;
+                                                   value="Login"/>&nbsp
                                     <input type='text' id="login" 
                                                  size="30"
                                                  maxlength="#{loginsBean.loginLength()}"
@@ -36,7 +36,7 @@
                             <tr>
                                 <td>
                                     <label for="name" 
-                                                   value="Name"/>&nbsp;
+                                                   value="Name"/>&nbsp
                                     <input type='text' id="name" 
                                                  size="30"
                                                  maxlength="#{loginsBean.loginNameLength()}"
@@ -47,7 +47,7 @@
                             <tr>
                                 <td>
                                     <label for="secret" 
-                                                   value="Secret"/>&nbsp;
+                                                   value="Secret"/>&nbsp
                                     <input type='text' id="secret" 
                                                  size="20"
                                                  maxlength="#{loginsBean.secretLength()}"
@@ -58,7 +58,7 @@
                             <tr>
                                 <td>
                                     <label for="securityGroups" 
-                                                   value="Security Group"/>&nbsp; 
+                                                   value="Security Group"/>&nbsp 
                                     <p:selectCheckboxMenu id="securityGroups"
                                                           dynamic="true"
                                                           filter="true" 
@@ -84,7 +84,7 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{loginsBean.addLogin()}"/>&nbsp;
+                                        action="#{loginsBean.addLogin()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

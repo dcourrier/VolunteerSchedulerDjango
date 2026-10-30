@@ -4,6 +4,7 @@ from django.db import connection
 from  django.db.models import Q
 from django.shortcuts import get_object_or_404
 import mysql.connector
+from operator import attrgetter
 import re
 from pathlib import Path
 from abc import abstractmethod, ABC
@@ -6077,7 +6078,29 @@ class Team(BusinessObject):
             self.teamCreateDate,
             self.teamUpdateDate,
         ]
+        
+        
+class ProjectResourceAvailability(ABC):
 
+    def __init__(self,resource,count):
+        self.resource = resource
+        self.count = count
+        
+    def __str__(self):
+        return self.resource.name + ' ' + str(self.count)
+    
+    def getID(self):
+        return self.resource.resourceID
+    
+    def getStyle(self):
+        return ''
+    
+    def getQuantity(self):
+        return self.count
+    
+    def hasQuantity(self):
+        return True
+        
 
 class ProjectResource(Resource):
 
@@ -6094,10 +6117,10 @@ class ProjectResource(Resource):
         self.resourceUpdateDate = DateAttribute("resourceUpdateDate")
         self.organization = org
         self.myDb = myDb
-        print('ProjectResource __init__ before fromDB() ' + str(self.myDb))
+        #print('ProjectResource __init__ before fromDB() ' + str(self.myDb))
         if myDb:
             self.fromDb()
-        print('ProjectResource __init__ after fromDB() ' + str(self.myDb))
+        #print('ProjectResource __init__ after fromDB() ' + str(self.myDb))
         super().setIdProperties(self.resourceID)
         super().setTrackingAttributes(self.resourceCreateUser,
                 self.resourceUpdateUser,
@@ -9405,7 +9428,7 @@ class Schedule(BusinessObject):
         if self.events and len(self.events) > 0:
             self.myDb.events.clear()
             for evt in self.events:
-                self.myDb.events.add(evt.myDb);
+                self.myDb.events.add(evt.myDb)
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -10904,7 +10927,7 @@ class ObjectFactory(VSBase):
     def getDeletedTasks(self):
         result = []
         for dbt in DbTask.objects.filter(deleteFlag=True):
-            result.append(Task(dbt));
+            result.append(Task(dbt))
         return result
     
     def getResourceAvailabilities(self, sei):
@@ -10983,7 +11006,7 @@ class ObjectFactory(VSBase):
                 #print(str(er))
                 if er and not er.completelyBuilt:
                     result.append(ScheduleEvent(evt))
-        return result;    
+        return result    
 
     def getDeletedSecurityGroups(self, org=None):
         result = []
@@ -11305,7 +11328,28 @@ class ObjectFactory(VSBase):
                                                
         return SecurityGroup(dbo)
     
-
+    def addResourceToTask(self, resourceID, taskID, qty):
+        rusg = DbProjectResourceUsage.objects.filter(resource_id=resourceID)\
+        .filter(task_id=taskID).first()
+        if rusg:
+            rusg.count += qty
+        else:
+            rusg = DbProjectResourceUsage()
+            rusg.task_id = taskID
+            rusg.resource_id=resourceID
+            rusg.count = qty
+        rusg.save()
+        
+    def releaseTaskResource(self, resourceID, taskID, qty):
+        rusg = DbProjectResourceUsage.objects.filter(resource_id=resourceID)\
+        .filter(task_id=taskID).first()
+        if rusg:
+            rusg.count -= qty
+            if rusg.count <= 0:
+                rusg.delete()
+            else:
+                rusg.save()
+                
     def getReport(self, oid=None,schedule=None):
         result = None
         try:
@@ -11541,6 +11585,56 @@ class ObjectFactory(VSBase):
                 result = ProjectResource(db)
         return result
     
+    def getAvailableProjectResources(self,org):
+        result = []
+        try:
+            orgid = self.getOrgid(org)
+            resources = DbProjectResource.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid).in_bulk()
+            for r in resources.values():
+                r.used = 0
+            for usage in DbProjectResourceUsage.objects.all():
+                res = resources.get(usage.resource_id)
+                if res:
+                    res.used += usage.count
+                    if res.used >  res.count:
+                        res.used = res.count
+                else:
+                    print('of.getAvailableProjectResources missed target')
+            for res in resources.values():
+                if  res.used < res.count:
+                    result.append(ProjectResourceAvailability(res, res.count - res.used))
+            if len(result) > 1:
+                result.sort(key=attrgetter('resource.name'))
+        except Exception as err:
+            super().handleException(err)
+        return result
+   
+    def getAssignedProjectResources(self,org):
+        result = []
+        try:
+            orgid = self.getOrgid(org)
+            resources = DbProjectResource.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid).in_bulk()
+            for r in resources.values():
+                r.used = 0
+            for usage in DbProjectResourceUsage.objects.all():
+                res = resources.get(usage.resource_id)
+                if res:
+                    res.used += usage.count
+                    if res.used >  res.count:
+                        res.used = res.count
+                else:
+                    print('of.getAvailableProjectResources missed target')
+            for res in resources.values():
+                if  res.used:
+                    result.append(ProjectResourceAvailability(res, res.used))
+            if len(result) > 1:
+                result.sort(key=attrgetter('resource.name'))
+        except Exception as err:
+            super().handleException(err)
+        return result
+           
     def getProjectResources(self, org, dbo=False):
         result = []
         try:
@@ -11551,7 +11645,7 @@ class ObjectFactory(VSBase):
                 if dbo:
                     result.append(db)
                 else:
-                    result.append(ProjectResource(dbo))
+                    result.append(ProjectResource(db))
         except:
             pass
         return result
@@ -11854,7 +11948,7 @@ class ObjectFactory(VSBase):
                 if end < dbo.startDate: 
                     continue
             result.append(EventRecurrence(dbo))
-        return result;
+        return result
     
     def getNewSkill(self, name, uid, org):
         orgid = self.getOrgid(org)
@@ -11957,16 +12051,16 @@ class ObjectFactory(VSBase):
             raise MissingArgumentException('you must specify oid or name and org')    
         return result
     
-    def getSkills(self, org,dbo=False):
+    def getSkills(self, org, dbo=False):
         result = []
         orgid = self.getOrgid(org)
         dbos = DbSkill.objects.exclude(deleteFlag=True)\
         .filter(organization_id=orgid).order_by('skillName')
-        for dbo in dbos:
+        for db in dbos:
             if dbo:
-                result.append(dbo)
+                result.append(db)
             else:
-                result.append(Skill(dbo))
+                result.append(Skill(db))
         return result
     
     def getNewSkillRelationship(self, s1, s2, uid,typ=None):
@@ -12612,11 +12706,13 @@ class ObjectFactory(VSBase):
                             taskStatusType=typ)
         return TaskStatus(dbo)
 
-    def getTaskStatus(self, oid):
+    def getTaskStatus(self, oid, dbo=False):
         result = None
-        dbo = DbTaskStatus.objects.exclude(deleteFlag=True).filter(pk=oid).first()
-        if dbo:
-            result = TaskStatus(dbo)
+        db = DbTaskStatus.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        if db:
+            result = db
+        else:
+            result = TaskStatus(db)
         return result
 
     def getDeletedTaskStatus(self, oid):
@@ -12934,10 +13030,13 @@ class ObjectFactory(VSBase):
             result.append(Volunteer(dbo))
         return result
 
-    def getTaskStatuses(self):
+    def getTaskStatuses(self,dbo=False):
         result = []
-        for dbo in DbTaskStatus.objects.exclude(deleteFlag=True):
-            result.append(TaskStatus(dbo))
+        for db in DbTaskStatus.objects.exclude(deleteFlag=True).order_by('taskStatusType'):
+            if dbo:
+                result.append(db)
+            else:
+                result.append(TaskStatus(db))
         return result
 
     def getDeletedTaskStatuses(self):

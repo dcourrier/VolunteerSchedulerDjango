@@ -25,7 +25,7 @@ class EventValidator(VSBase):
                                         VSMessageFactory.getEventScheduleDateChangeError(MessageSeverity.RECOVERABLE)
                                 raise EventDateScheduleDateConflictException(m, event.getDisplayString())
                             lst = of.getOtherEvents(event)
-                        if len(lst) > 0;
+                        if len(lst) > 0
                             for sei in lst:
                                 if self.eventsOverlap(event, sei):
                                     Message m = VSMessageFactory.getExistingEventError(MessageSeverity.RECOVERABLE)

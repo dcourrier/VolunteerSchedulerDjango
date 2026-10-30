@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title='Skill Edit' help='/vs/help?skillEdit'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=UPDATE_SKILL %}
 <form action='/vs/skillUpdate' method='post'>
 {% csrf_token %}
@@ -20,12 +23,12 @@
                 	<input type="submit" 
                 	class="reset-style"
                 	name="action" 
-                	value="Save"/>&nbsp;
+                	value="Save"/>&nbsp
 {% VSAuthorizer2 _type=DELETE_SKILL %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Delete"/>&nbsp;
+					value="Delete"/>&nbsp
 {% VSAuthorizer2_end %}
                     <button 
 	                    type="button" 

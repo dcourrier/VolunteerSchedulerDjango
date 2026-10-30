@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Event Job Edit");
+                        setHeader("Event Job Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_JOB)}">
@@ -72,11 +72,11 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{eventJobBean.update()}"/>&nbsp;
+                                        action="#{eventJobBean.update()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{eventJobBean.delete()}"/>&nbsp;
+                                        action="#{eventJobBean.delete()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

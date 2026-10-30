@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title='Project Resource Edit' help='/vs/help?projectResourceEdit'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=UPDATE_PROJECT_RESOURCE %}
 <form action='/vs/projectResourceUpdate' method='post'>
 {% csrf_token %}
@@ -17,7 +20,7 @@
                         required/>                        
           </td></tr>
             <tr align='center'>
-                <td><label for='amount'>Quantity: </label>&nbsp;
+                <td><label for='amount'>Quantity: </label>&nbsp
                     <input type='text' 
                     			id="amount"
                     			name='amount'
@@ -32,12 +35,12 @@
                 	<input type="submit" 
                 	class="reset-style"
                 	name="action" 
-                	value="Save"/>&nbsp;
+                	value="Save"/>&nbsp
 {% VSAuthorizer2 _type=DELETE_PROJECT_RESOURCE %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Delete"/>&nbsp;
+					value="Delete"/>&nbsp
 {% VSAuthorizer2_end %}
                     <button 
 	                    type="button" 

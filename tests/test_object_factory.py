@@ -153,7 +153,7 @@ class ObjectFactoryTests(VSTestBase):
         err = None
         result = None
         try:
-            result = of.executeSqlUpdate('SELECT count(*) frOM VolunteerScheduler.vs_dbstatecode;')
+            result = of.executeSqlUpdate('SELECT count(*) frOM VolunteerScheduler.vs_dbstatecode')
             #print(result)
         except Exception as e:
             err = e
@@ -1307,7 +1307,7 @@ class ObjectFactoryTests(VSTestBase):
             super().handleException(e)
         assert not err, "got an exception"
         assert result, "no output"
-        assert len(result) == 1, 'Wrong count. expected 1; got ' + len(result)
+        assert len(result) == 1, 'Wrong count. expected 1 got ' + len(result)
     
     def test_getDeletedLocation(self):
         LoaderManager().load()
@@ -1344,7 +1344,7 @@ class ObjectFactoryTests(VSTestBase):
             super().handleException(e)
         assert not err, "got an exception"
         assert result, "no output"
-        assert len(result) == 1, 'Wrong count. expected 1; got ' + len(result)
+        assert len(result) == 1, 'Wrong count. expected 1 got ' + len(result)
     
     def test_getDeletedLogin(self):
         LoaderManager().load()
@@ -1403,7 +1403,7 @@ class ObjectFactoryTests(VSTestBase):
             super().handleException(e)
         assert not err, "got an exception"
         assert result, "no output"
-        assert len(result) == 1, 'Wrong count. expected 1; got ' + len(result)
+        assert len(result) == 1, 'Wrong count. expected 1 got ' + len(result)
  
     def test_getDeletedOrganization(self):
         LoaderManager().load()

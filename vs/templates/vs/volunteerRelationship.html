@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Relationship Edit");
+                        setHeader("Volunteer Relationship Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_RELATIONSHIP)}">
@@ -26,7 +26,7 @@
                             <th>Change the Relationship</th>
                             <tr>
                                 <td align="center">
-                                    <label for="typeSelector" value="Type"/>&nbsp; 
+                                    <label for="typeSelector" value="Type"/>&nbsp 
                                     <h:selectOneMenu 
                                         id="typeSelector"
                                         value="#{volunteerReltionshipBean.relationshipTypeId}">
@@ -35,8 +35,8 @@
                                             var="s"
                                             itemLabel="#{s.displayString}" 
                                             itemValue="#{s.ID}" />
-                                    </h:selectOneMenu>&nbsp;
-                                    <label for="volSelector" value="Volunteer"/>&nbsp; 
+                                    </h:selectOneMenu>&nbsp
+                                    <label for="volSelector" value="Volunteer"/>&nbsp 
                                     <h:selectOneMenu 
                                         id="volSelector"
                                         value="#{volunteerReltionshipBean.vol2Id}">
@@ -53,11 +53,11 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{volunteerReltionshipBean.update()}"/> &nbsp;
+                                        action="#{volunteerReltionshipBean.update()}"/> &nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{volunteerReltionshipBean.delete()}"/> &nbsp;
+                                        action="#{volunteerReltionshipBean.delete()}"/> &nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

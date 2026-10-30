@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title='Select Organization' help='/vs/help?sectOrganization'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=VIEW_ORGANIZATION %}
     <table cellpadding="5" align="center" border=`>
         <th colspan="2"><h3>Select Organization</h3></th>
@@ -13,7 +16,7 @@
                 <td class="center">
                     <button
                     	type='submit' 
-                        class="reset-style">Select</button>&nbsp;
+                        class="reset-style">Select</button>&nbsp
                     <button 
                     type="button" 
                     onclick="window.location.href='/vs/organizationSelect'">

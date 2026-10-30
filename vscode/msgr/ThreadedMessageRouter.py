@@ -1,36 +1,4 @@
-*
- *  Copyright (C) 2011 Darrel Courrier
- *
-or modify
- *  it under the terms of the GNU General  License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General  License for more details.
- *
- *  You should have received a copy of the GNU General  License
->.
-
-package com.courrier.messaging
-
-import com.courrier.config.ConfigNode
-import java.beans.PropertyChangeEvent
-import java.util.ArrayList
-import java.util.Iterator
-import java.util.List
-import org.apache.commons.lang3.StringUtils
-
-
-\*\*
- * A message router that operates in its own thread.
- * @author Scott Fleming &amp Darrel Courrier
- * @version 1.0
- * @see MessageRouter for more details on the capabilities of a message router.
-
-class ThreadedMessageRouter extends MessageRouter implements Runnable
+class ThreadedMessageRouter(MessageRouter)
 
     
     final Object lock = Object()
@@ -194,6 +162,3 @@ ol>
     remove(MessageSource ms)
         synchronized (lock)
             sources.remove(ms)
-        
-    
-

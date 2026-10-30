@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Job Assignment");
+                        setHeader("Volunteer Job Assignment")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_JOB_ASSIGNMENTS)}">
@@ -33,7 +33,7 @@
                                         <p:commandButton 
                                         class="reset-style"
                                             action="#{assignmentBean.delete()}" 
-                                            value="Delete"/>&nbsp;
+                                            value="Delete"/>&nbsp
                                     {% endif %}
                                     <p:commandButton 
                                         class="reset-style"

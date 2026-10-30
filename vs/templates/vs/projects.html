@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title=Projects help='/vs/help?projects'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 <table align='center'>
 	{% VSAuthorizer _type=ADD_PROJECT %}
 	<tr align='center'><td align='center'>
@@ -13,7 +16,7 @@
                      <table width='100%' class="centered">
                          <tr  width='100%'  align="center">
                              <td align="right">
-                                 <label for="name">Name: </label>&nbsp;
+                                 <label for="name">Name: </label>&nbsp
                                   <input type='text' 
                                   			  id="name"
                                   			  name='name'
@@ -22,7 +25,7 @@
                                                maxlength="{{ nameMaxLength }}"/>
                              </td>
                              <td align="center">
-                                 <label for="startDate">Start Date: </label>&nbsp;
+                                 <label for="startDate">Start Date: </label>&nbsp
                                      <input type='text' 
                                      			id="startDate"
                                      			name="startDate"
@@ -33,7 +36,7 @@
                                                 maxlength="10"/>
                              </td>
                              <td align="left">
-                                 <label for="finishDate">Finish Date: </label>&nbsp;
+                                 <label for="finishDate">Finish Date: </label>&nbsp
                                      <input type='text' 
                                      			id="finishDate"
                                      			name="finishDate"
@@ -51,7 +54,7 @@
                 <td width='100%'  align="center">
                     <button
                     	type='submit' 
-                        class="reset-style">Save</button>&nbsp;
+                        class="reset-style">Save</button>&nbsp
                     <button 
                     type="button" 
                     onclick="window.location.href='/vs/home/'">
@@ -106,7 +109,7 @@
 				  				id='projectResourceName'
 			                     size="30"
 			                     maxlength='255'/>
-		                     &nbsp;&nbsp;
+		                     &nbsp&nbsp
 		                     <label for='count'>Count: </label>
 		                     <input type="text" 
 		                     id="count" 

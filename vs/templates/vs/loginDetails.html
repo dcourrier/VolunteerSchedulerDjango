@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Login Edit");
+                        setHeader("Login Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_LOGIN)}">
@@ -25,7 +25,7 @@
                             <tr>
                                 <td>
                                     <label for="login" 
-                                                   value="Login"/>&nbsp;
+                                                   value="Login"/>&nbsp
                                     <input type='text' id="login" 
                                                  size="30"
                                                  maxlength="#{loginDetailsBean.loginLength()}"
@@ -36,7 +36,7 @@
                             <tr>
                                 <td>
                                     <label for="name" 
-                                                   value="Name"/>&nbsp;
+                                                   value="Name"/>&nbsp
                                     <input type='text' id="name" 
                                                  size="30"
                                                  maxlength="#{loginDetailsBean.loginNameLength()}"
@@ -47,7 +47,7 @@
                             <tr>
                                 <td>
                                     <label for="password" 
-                                                   value="Password"/>&nbsp;
+                                                   value="Password"/>&nbsp
                                     <input type='text' id="password" 
                                                  size="20"
                                                  maxlength="#{loginDetailsBean.passwordLength()}"
@@ -58,7 +58,7 @@
                             <tr>
                                 <td>
                                     <label for="secret" 
-                                                   value="Secret"/>&nbsp;
+                                                   value="Secret"/>&nbsp
                                     <input type='text' id="secret" 
                                                  size="20"
                                                  maxlength="#{loginDetailsBean.secretLength()}"
@@ -69,7 +69,7 @@
                             <tr>
                                 <td>
                                     <label for="status" 
-                                                   value="Status"/>&nbsp; 
+                                                   value="Status"/>&nbsp 
                                     <h:selectOneMenu 
                                         id="status"
                                         value="#{loginDetailsBean.loginStatusID}">
@@ -87,13 +87,13 @@
                                         class="reset-style" 
                                         
                                         value="Save"
-                                        action="#{loginDetailsBean.save()}"/>&nbsp;
+                                        action="#{loginDetailsBean.save()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style" 
                                        
                                         value="delete"
                                         rendered="#{loginDetailsBean.hasNoVolunteer()}"
-                                        action="#{loginDetailsBean.delete()}"/>&nbsp;
+                                        action="#{loginDetailsBean.delete()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style" 
                                        

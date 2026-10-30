@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Security Groups");
+                        setHeader("Security Groups")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SECURITY_GROUP)}">
@@ -24,7 +24,7 @@
                             <tr>
                                 <td>
                                     <label for="name" 
-                                                   value="Name"/>&nbsp;
+                                                   value="Name"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text' id="name" 
                                                      size="30"
@@ -38,7 +38,7 @@
                             <tr>
                                 <td>
                                     <label for="level" 
-                                                   value="Level"/>&nbsp;
+                                                   value="Level"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text' id="level" 
                                                      size="3"
@@ -52,7 +52,7 @@
                             <tr>
                                 <td>
                                     <label for="description" 
-                                                   value="Description"/>&nbsp;
+                                                   value="Description"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text' id="description" 
                                                      size="30"
@@ -68,7 +68,7 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Add"
-                                        action="#{securityGroupsBean.add()}"/>&nbsp;
+                                        action="#{securityGroupsBean.add()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

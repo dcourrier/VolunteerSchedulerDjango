@@ -26,7 +26,7 @@ class VSBaseBean(VSBase):
 class SkillCount(VSBase):
 
     def __init__(self, num=0):
-        self.num = num;
+        self.num = num
 
     def getNum(self):
         return self.num
@@ -1461,7 +1461,7 @@ class  SessionDataBean(VSBaseBean):
 class BreadCrumb(SessionDataBean):
     
     def __init__(self, name, url):
-        self.name = name;
+        self.name = name
         self.url = url
         
     def getName(self):
@@ -1481,7 +1481,7 @@ class BreadCrumbManager(SessionDataBean):
 
     @staticmethod
     def getLastBreadcrumb():
-        result = None;
+        result = None
         if BreadCrumbManager.breadcrumbs:
             result = BreadCrumbManager.breadcrumbs[-1]
         return result
@@ -1501,11 +1501,11 @@ class BreadCrumbManager(SessionDataBean):
         else:
             if "/help/" not in breadcrumb.getUrl().lower() and \
             'passwordchange' not in breadcrumb.getUrl().lower():
-                found = False;
+                found = False
                 idx = 0
                 for b in BreadCrumbManager.breadcrumbs:
                     if breadcrumb.getUrl() == b.getUrl():
-                        found = True;
+                        found = True
                         break
                     idx += 1
                 if found:
@@ -1560,7 +1560,7 @@ class DefaultBean(SessionDataBean):
         bcs = BreadCrumbManager.getBreadcrumbs()
         for b in bcs:
             if not first:
-                result += '&nbsp;|&nbsp;'
+                result += '&nbsp|&nbsp'
             first = False
             result += "<a href='"
             result += b.getUrl()
@@ -3011,12 +3011,31 @@ class SkillEditBean(DefaultBean):
         #print('SkillEditBean setup ' + str(oid))
         if not oid:
             oid = self.sessionData.oid 
-        skill = self.of.getSkill(oid=oid)
+        skill = self.of.getTask(oid=oid,dbo=True)
         result['oid'] = oid
-        result['name'] = skill.getSkillName()
         result['orgID'] = orgid
         return result
-     
+    
+    def getTaskStatusSelect(self,task):
+        statuses = self.of.getTaskStatus(dbo=True)
+        s = '\n<label for="taskStatus"><Task Status:/label>&nbsp'
+        s += '\n<select name="taskStatus" id="taskStatus" size="1" required>' 
+        s += '\n<option value=""'
+        if not task.taskStatus_id:
+            s += ' disabled selected '
+        s += '>-- Please choose an option --</option>'
+        for status in statuses:
+            s += '\n<option value="'
+            s += status.taskStatusID
+            s += '"'
+            if status.taskStatus_id == task.taskStatus_id:
+                s += ' selected'
+            s += '>'
+            s += status.taskStatusDescription
+            s += '</option>'
+        s += '\n</select'
+        return s
+    
     def submit(self):
         request = self.sessionData.request
         oid = request.POST.get('oid')  
@@ -3109,7 +3128,169 @@ class SubprojectsBean(DefaultBean):
                 style='class=listTable',
                 dest="/vs/resourceEdit")
   
+  
+class TaskEditBean(DefaultBean):  
+    def __init__(self,request):
+        super().__init__(request)
+         
+         
+    def setup(self):
+        result = {}
+        request = self.sessionData.request
+        org = self.sessionData.organization
+        orgid = org.organizationID
+        if isinstance(org, Organization):
+            orgid = orgid.value
+        oid = request.GET.get('id')
+        #print('SkillEditBean setup ' + str(oid))
+        if not oid:
+            oid = self.sessionData.oid 
+        task = self.of.getTask(oid=oid,dbo=True)
+        pts = task.plannedTaskStart
+        if pts:
+            pts = pts.strftime('"%m/%d/%Y')
+        ptf = task.plannedTaskFinish
+        if ptf:
+            ptf = ptf.strftime('"%m/%d/%Y')
+        ats = task.actualTaskStart
+        if ats:
+            ats = ats.strftime('"%m/%d/%Y')
+        atf = task.actualTaskFinish
+        if atf:
+            atf = atf.strftime('"%m/%d/%Y')  
+        ete = task.estimatedTaskEffort 
+        ate = task.actualTaskEffort
+        result['orgID'] = orgid
+        result['oid'] = oid
+        result['task'] = task
+        result['taskSequence'] = task.taskSequence
+        result['taskName'] = task.taskName
+        result['status'] = self.getTaskStatusSelect(task)
+        if pts:
+            result['plannedTaskStart'] = pts
+        if ptf:
+            result['plannedTaskFinish'] = ptf
+        if ete:
+            result['estimatedTaskEffort'] = ete
+        if ate:
+            result['actualTaskEffort'] = ate
+        if ats:
+            result['actualTaskStart'] = ats
+        if atf:
+            result['actualTaskFinish'] = atf
+        result['skills'] = self.getSkillSelect(task, org)
+        result['teams'] =  self.getTeamSelect(task, org)
+        result['volunteers'] = self.getVolunteersSelect(task, org)
+        result['availableResourcesLinks'] = self.getAvailableResourcesLinks(task,org)
+        result['assignedesources'] = self.getAssignedResources(task,org)
+        result['activities'] = oid
+        result['subtasks'] = oid
+        return result
     
+    def getAssignedResources(self,task, org):
+        result = ''
+        resources = self.of.getAssignedProjectResources(org)
+        #print('TaskEditBean getAvailableResources ' + str(resources))
+        if resources:
+            result = super().multiColumnTableRows2 (
+                                title='Assigned Resources',
+                                size=2,
+                                height=140,
+                                items=resources,
+                                extra=" onclick='checkForModal(this);return false;'",
+                                dest='releaseResource?cameFrom=task&taskID=' + str(task.taskID))
+        return result 
+    def getAvailableResourcesLinks(self,task, org):
+        result = ''
+        resources = self.of.getAvailableProjectResources(org)
+        #print('TaskEditBean getAvailableResourcesLinks ' + str(resources))
+        if resources:
+            result = super().multiColumnTableRows2 (
+                                title='Available Resources',
+                                size=2,
+                                height=140,
+                                items=resources,
+                                extra=" onclick='checkForModal(this);return false;'",
+                                dest='assignResource?cameFrom=task&taskID=' + str(task.taskID))
+        return result 
+    
+    def getVolunteersSelect(self,task, org):
+        taskVolunteers = list(task.volunteers.all())
+        volunteers = self.of.getVolunteers(org,dbo=True)
+        s = '\n<label for="volunteers" sstyle="display: blockmargin-bottom: 5px">volunteers</label>&nbsp;'
+        s += '\n<select name="volunteers" id="volunteers" size="2" multiple>'
+        for vol in volunteers:
+            sel = any(vol.volunteerID == sk.volunteerID for sk in taskVolunteers) 
+            s += '\n<option value="'
+            s += str(vol.volunteerID)
+            s += '"'
+            if sel:
+                s += ' selected'
+            s += '>'
+            s += vol.__str__() 
+            s += '</option>'
+        s += '\n</select'
+        return s
+    
+    
+    def getTeamSelect(self,task, org):
+        taskTeams = list(task.teams.all())
+        teams = self.of.getTeams(org,dbo=True)
+        s = '\n<label for="teams" style="display: blockmargin-bottom: 5px">Teams</label>&nbsp;'
+        s += '\n<select name="teams" id="teams" size="2" multiple>'
+        for team in teams:
+            sel = any(team.teamID == sk.teamID for sk in taskTeams) 
+            s += '\n<option value="'
+            s += str(team.teamID)
+            s += '"'
+            if sel:
+                s += ' selected'
+            s += '>'
+            s += str(team.teamName)
+            s += '</option>'
+        s += '\n</select'
+        return s
+    
+    def getSkillSelect(self,task, org):
+        taskSkills = list(task.skills.all())
+        skills = self.of.getSkills(org,dbo=True)
+        s = '\n<label for="taskSkills" style="display: blockmargin-bottom: 5px">Skills:</label>&nbsp;'
+        s += '\n<select name="taskSkills" id="taskSkills" size="2" multiple>'
+        for skill in skills:
+            sel = any(skill.skillID == sk.skillID for sk in taskSkills) 
+            s += '\n<option value="'
+            s += str(skill.skillID)
+            s += '"'
+            if sel:
+                s += ' selected'
+            s += '>'
+            s += str(skill.skillName)
+            s += '</option>'
+        s += '\n</select'
+        return s
+    
+    def getTaskStatusSelect(self,task):
+        statuses = self.of.getTaskStatuses(dbo=True)
+        s = '\n<label for="taskStatus"><Task Status:/label>&nbsp'
+        s += '\n<select name="taskStatus" id="taskStatus" size="1" required>' 
+        s += '\n<option value=""'
+        if not task.taskStatus_id:
+            s += ' disabled selected '
+        s += '>-- Please choose an option --</option>'
+        for status in statuses:
+            s += '\n<option value="'
+            s += str(status.taskStatusID)
+            s += '"'
+            if status.taskStatusID == task.taskStatus_id:
+                s += ' selected'
+            s += '>'
+            s += str(status.taskStatusDescription)
+            s += '</option>'
+        s += '\n</select'
+        return s
+    
+        
+        
 class TasksBean(DefaultBean):
     
     def __init__(self,request):

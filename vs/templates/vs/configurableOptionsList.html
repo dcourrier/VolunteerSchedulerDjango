@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Configurable Options");
+                        setHeader("Configurable Options")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_CONFIGURABLE_PROPERTY)}">
@@ -30,7 +30,7 @@
                                                      size="2"
                                                      maxlength="255"
                                                      value="#{co.propertyValue}" 
-                                                     required="false"/>&nbsp;
+                                                     required="false"/>&nbsp
                                         <label for="a#{status.index}" 
                                                        value="#{co.propertyDescription}"/>
                                     </td>
@@ -41,7 +41,7 @@
                                     <p:commandButton 
                                             class="reset-style"
                                         value="Save"
-                                        action="#{configurableOptionsBean.save()}"/>&nbsp;
+                                        action="#{configurableOptionsBean.save()}"/>&nbsp
                                     <p:commandButton 
                                             class="reset-style"
                                         value="Cancel"

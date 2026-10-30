@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Skills");
+                        setHeader("Volunteer Skills")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_VOLUNTEER_SKILL)}">
@@ -25,7 +25,7 @@
                                 <td align="center">
                                     {% if test="#{volunteerSkillsBean.haveAvailable()}">
                                         <label for="skillSelector" 
-                                                       value="Available Skills"/>&nbsp; 
+                                                       value="Available Skills"/>&nbsp 
                                         <h:selectOneMenu 
                                             id="skillSelector"
                                             value="#{volunteerSkillsBean.skillID}">
@@ -34,16 +34,16 @@
                                                 var="s"
                                                 itemLabel="#{s.skillName}" 
                                                 itemValue="#{s.skillID}" />
-                                        </h:selectOneMenu>&nbsp;                                       
+                                        </h:selectOneMenu>&nbsp                                       
                                         <label for="expertSelect" value="Expert"/>
                                         <h:selectBooleanCheckbox
                                             id="expertSelect"
-                                            value="#{volunteerSkillsBean.expert}"/>&nbsp;
+                                            value="#{volunteerSkillsBean.expert}"/>&nbsp
                                         <p:commandButton 
                                             class="reset-style" 
                                            
                                             value="Add Skill"
-                                            action="#{volunteerSkillsBean.addSkill()}"/>&nbsp;
+                                            action="#{volunteerSkillsBean.addSkill()}"/>&nbsp
                                     {% endif %}
                                     <p:commandButton 
                                         class="reset-style" 

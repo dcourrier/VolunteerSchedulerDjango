@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Event Preference");
+                        setHeader("Volunteer Event Preference")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_HOME)}">
@@ -24,7 +24,7 @@
                                 <td>
                                     <label 
                                         for="eventSelector" 
-                                        value="Recurring Events"/>&nbsp; 
+                                        value="Recurring Events"/>&nbsp 
                                     <h:selectOneMenu
                                         id="eventSelector"
                                         value="#{volunteerBean.preferenceEventId}">
@@ -33,10 +33,10 @@
                                             var="e"
                                             itemLabel="#{e.eventName}" 
                                             itemValue="#{e.ID}" />
-                                    </h:selectOneMenu>&nbsp;
+                                    </h:selectOneMenu>&nbsp
                                     <label 
                                         for="required" 
-                                        value="Required"/>&nbsp;
+                                        value="Required"/>&nbsp
                                     <h:selectBooleanCheckbox
                                         id="required"
                                         value="#{volunteerBean.required}"/>
@@ -47,16 +47,16 @@
                                     <p:commandButton
                                         class="reset-style"
                                         value="Save"
-                                        action="#{volunteerBean.savePreference()}"/>&nbsp;
+                                        action="#{volunteerBean.savePreference()}"/>&nbsp
                                     <p:commandButton
                                         value="Delete"
                                         class="reset-style"
                                         rendered="#{volunteerBean.hasPreference()}"
-                                        action="#{volunteerBean.deletePreference()}"/>&nbsp; 
+                                        action="#{volunteerBean.deletePreference()}"/>&nbsp 
                                     <p:commandButton
                                         value="cancel"
                                         class="reset-style"
-                                        action="volunteerDetails?faces-redirect=true"/>&nbsp;
+                                        action="volunteerDetails?faces-redirect=true"/>&nbsp
                                 </td>
                             </tr>
                         </table>

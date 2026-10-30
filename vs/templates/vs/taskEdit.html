@@ -1,0 +1,342 @@
+{% load VSAuthorizer %}
+{% cotton basicLayout title=Task Edit help='/vs/help?taskEdit'%}
+<c-slot name='loadedScript'>
+<script type="text/javascript">
+
+function loaded() {
+}
+
+function checkForModal(link) {
+	//alert(link)
+	document = link.ownerDocument;
+	//alert(document)
+	document.myClickedLink = link
+	href = link.getAttribute('href');
+	//alert( href)
+	idx = href.indexOf('qty=');
+	//alert(idx)
+	idxend = href.indexOf('&',idx);
+	//alert(idxend)
+	if(idxend > 0) {
+		countStr = href.substring(idx + 4, idxend);
+	} else {
+		countStr = href.substring(idx + 4);
+	}
+	//alert(countStr)
+	count = +countStr
+	document.maxAvailable = count
+	//alert(count)
+	if(count == 1) {	
+		return true
+	} else {
+		//alert('going modal');
+		var modal = document.getElementById("myModal");
+		var modalMessage = document.getElementById("modalMessage");
+		var msg = 'Enter a value between 1 and ZZZ';
+		msg = msg.replace('ZZZ', countStr);
+		modalMessage.innerText = msg;
+		//alert(msg)
+	  	/*var span = document.getElementsByClassName("modalclose")[0];
+	  	span.onclick = function() {
+	}*/
+	  	modal.style.display = "block";
+	}
+	return false;
+	}
+	
+	function cancelParm() {
+		//alert('cancelParm')
+		document.myClickedLink = null
+		var modal = document.getElementById("myModal");
+	  	modal.style.display = "none";
+	}
+		
+	function setParm() {
+		var link = document.myClickedLink 
+		var quantity = +(document.getElementById("quantity").value);
+		//alert('quantity ' + quantity.constructor.name)
+		if(quantity < 1 || quantity > document.maxAvailable) {
+			return
+		}
+		href = link.href
+		var rmdr = ''
+		idx = href.indexOf('qty=');
+		idxend = href.indexOf('&',idx);
+		if(idxend > 0) {
+			rmdr = href.substring(idxend);
+		}
+		newRef = href.substring(0, idx + 4);
+		newRef += quantity
+		newRef += rmdr
+		window.location.replace(newRef)
+		var modal = document.getElementById("myModal");
+	  	modal.style.display = "none";
+}
+</script>
+</c-slot>
+<style>
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;      /* Stays in place relative to the screen */
+  top: 50%;             /* Moves top edge to the middle */
+  left: 50%;            /* Moves left edge to the middle */
+  transform: translate(-50%, -50%); /* Shifts element back by half its own width/height */
+  width: 25%; /* Full width */
+  height: 25%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+{% VSAuthorizer _type=UPDATE_TASK %}
+<form id="form1" action='taskUpdate' method='post' autocomplete='on'>
+{% csrf_token %}
+<input type="hidden" id="oid" name="oid" value="{{oid}}"/>
+<table cellpadding="5" class="centered">
+	<tr>
+	    <td>
+	        <label for="sequence">Sequence number:</label>
+	        &nbsp;
+	           <input type='text' id="sequence"
+	                        size="4"
+	                        maxlength="4"
+	                        value="{{  taskSequence }}"
+	                         required/>
+	    </td>
+	    <td>
+	        <label for="name">Name:</label>
+	        &nbsp;
+	        <input type='text' id="name"
+	                         size="30" 
+	                         maxlength="255"
+	                         value="{{ taskName }}"
+	                         required/>
+	    </td>
+	    <td>
+        {{ status|safe }}
+	    </td>
+	 </tr>
+	 <tr>
+	     <td>
+	         <label for="plannedTaskStart">Planned Start:</label>
+	         &nbsp;
+             <input type='text' id="plannedTaskStart"
+                          size="10"
+                          maxlength="10"
+                          value="{{ plannedTaskStart }}"/>
+	     </td> 
+	     <td>
+	         <label for="estimatedEffort">Estimated Effort:</label>
+	         &nbsp;
+             <input type='text' id="estimatedEffort"
+                          size="3"
+                          maxlength="5"
+                          value="{{ estimatedTaskEffort }}"/>
+	     </td> 
+	     <td>
+	         <label for="plannedTaskFinish">Planned Finish:</label>
+	         &nbsp;
+             <input type='text' id="plannedTaskFinish"
+                          size="10"
+                          maxlength="11"
+                          value="{{ plannedTaskFinish }}"/>
+	     </td> 
+	 </tr>
+	 <tr>
+	     <td>
+	         <label for="actualTaskStart">Actual Start:</label>
+	         &nbsp;
+             <input type='text' id="actualTaskStart"
+                          size="10"
+                          maxlength="10"
+                          value="{{ actualTaskStart }}"/>
+	     </td> 
+	     <td>
+	         <label for="actualTaskEffort">Actual Effort:</label>
+	         &nbsp;
+             <input type='text' id="actualTaskEffort"
+                          size="3"
+                          maxlength="5"
+                          value="{{ actualTaskEffort }}"/>
+	     </td> 
+	     <td>
+	         <label for="actualTaskFinish">Actual Finish:</label>
+	         &nbsp;
+	             <input type='text' id="actualTaskFinish"
+	                          size="10"
+	                          maxlength="10"
+	                          value="{{ actualTaskFinish }}"/>
+	     </td> 
+	 </tr>
+     <tr>
+       	<td>
+		{{ skills|safe }}
+		</td>
+		<td>
+		{{ teams|safe }}
+		</td>
+		<td>
+		{{ volunteers|safe }}
+    	</td>
+    	<td/>
+	</tr>
+    <tr>
+        <td/>
+        <td align="center">
+            <input type='submit' 
+                class="reset-style"
+                value="Save"
+                name="save"/>&nbsp;
+            {% VSAuthorizer2 _type=DELETE_TASK %}
+             <input type='submit'  
+                 class="reset-style"
+                 value="Delete"
+                 name="Delete"/>&nbsp;
+             {% VSAuthorizer2_end %}
+            <input type='submit' 
+                class="reset-style"
+                value="Cancel"
+                name="Cancel"/>
+        </td>
+        <td/>
+    </tr>
+{% VSAuthorizer_end %}
+    <tr align="center" width="100%">
+        <td align="right"  width="32%">
+{% VSAuthorizer _type=ADD_RESOURCE %}
+            <label for="newResource">Resource:</label>
+            &nbsp;
+            <input type='text' 
+            			id="newResource"
+            			name="newResource"
+                        size="20"
+                        maxlength="255"/>
+{% VSAuthorizer_end %}
+        </td> 
+        <td align="center" width="32%">
+{% VSAuthorizer _type=ADD_ACTIVITY %}
+            <label for="activity">Activity</label>
+            &nbsp;
+            <input type='text' id="activity"
+            			 name="activity"
+                         size="20"
+                         maxlength="255"/>
+{% VSAuthorizer_end %}
+        </td> 
+        <td align="left" width="32%">
+{% VSAuthorizer _type=ADD_SUBTASK %}
+            <label for="subtask">Subtask:</label>
+            &nbsp;
+            <input type='text' 
+            		 id="subtask"
+            		 name="subtask"
+                     size="20"
+                     maxlength="255"/>
+{% VSAuthorizer_end %}
+        </td>
+        <td/><td/> 
+    </tr>
+    <tr>
+        <td align="center">
+{% VSAuthorizer _type=ADD_RESOURCE %}
+            <input type='submit' 
+                class="reset-style"
+                value="Add Resource"
+                name='addResource'/>
+{% VSAuthorizer_end %}
+        </td>
+        <td align="center" width="32%">
+{% VSAuthorizer _type=ADD_ACTIVITY %}
+            <input type='submit' 
+                class="reset-style"
+                value="Add Activity"
+                name="addActivity"/>
+{% VSAuthorizer_end %}
+        </td>
+        <td align="center" width="32%">
+{% VSAuthorizer _type=ADD_SUBTASK %}
+            <input type='submit' 
+                class="reset-style"
+                name="addSubtask"
+                value="Add Subtask"/>
+{% VSAuthorizer_end %}
+        </td> 
+        <td/> <td/>
+    </tr> 
+    <tr width="100%">
+        <td colspan="5">
+            <table class="centeredMax">
+                <tr>
+                    <td>
+                        {{ availableResourcesLinks|safe }}
+                    </td>
+                    <td>
+                        {{ assignedesources|safe }}
+                    </td>
+                    <td>
+                        {{ activities|safe }}
+                    </td>
+                    <td>
+                        {{ subtasks|safe }}
+                    </td>
+                </tr>
+            </table>
+        </td> 
+    </tr>
+</table>
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <p id='modalMessage'>Enter a value between 1 and ZZZ</p>
+    <table align='center'>
+    <tr>
+	    <td>
+	    	<input type='number'
+	    	id="quantity" 
+	    	name="quantity" 
+	    	value="1"
+	    	min = 1
+	    	max = 9999
+	    	inputmode="numeric"
+	    	required/>
+	   	</td>
+    </tr>
+    <tr>
+    	<td>
+    		<button 
+    			type="button" 
+    			onclick="setParm()">OK</button>&nbsp;
+   			<button 
+	   			type='button'
+	   			onclick='cancelParm()'>Cancel</button>
+    	</td>
+   	</tr>
+    </table>
+  </div>
+
+</div>
+{% endcotton %}

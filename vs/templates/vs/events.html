@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script type="text/javascript">
                     function loaded() {
-                        setHeader("Events");
+                        setHeader("Events")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_EVENT)}">
@@ -55,7 +55,7 @@
                                                     required="false"
                                                     validator="#{eventsBean.validateEventsStartDate}">
                                                 </input type='text'>
-                                                <a href="javascript:showCalendarForJSF('startDate');">
+                                                <a href="javascript:showCalendarForJSF('startDate')">
                                                     <h:graphicImage 
                                                         library="images"
                                                         name="cal.gif"
@@ -86,7 +86,7 @@
                                 </td>
                                 <td width="2%"/>
                                 <td>
-                                    <label for="duration" value="Duration (minutes)"/>&nbsp;
+                                    <label for="duration" value="Duration (minutes)"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="duration"
@@ -102,7 +102,7 @@
                                 </td>
                                 <td width="2%"/>
                                 <td>
-                                    <label for="locationSelector" value="Location"/>&nbsp;
+                                    <label for="locationSelector" value="Location"/>&nbsp
                                     <h:selectOneMenu 
                                         id="locationSelector"
                                         value="#{eventsBean.locationId}">
@@ -148,7 +148,7 @@
                                                     required="false"
                                                     validator="#{eventsBean.validateEndDate}">
                                                 </input type='text'>
-                                                <a href="javascript:showCalendarForJSF('endDate');">
+                                                <a href="javascript:showCalendarForJSF('endDate')">
                                                     <h:graphicImage 
                                                         library="images"
                                                         name="cal.gif"
@@ -184,12 +184,12 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Add"
-                                        action="#{eventsBean.add()}"/>&nbsp; 
+                                        action="#{eventsBean.add()}"/>&nbsp 
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"
                                         action="#{eventsBean.cancel()}"
-                                        onclick="return resetEventFields();"/> 
+                                        onclick="return resetEventFields()"/> 
                                 </td>
                             </tr>
                             <vscomp:updateError 

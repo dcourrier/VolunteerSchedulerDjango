@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Schedules");
+                        setHeader("Schedules")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_SCHEDULE)}">
@@ -22,7 +22,7 @@
                             <th><h3>Add a Schedule</h3></th>
                             <tr>
                                 <td align="center">
-                                    <label for="startDate" value="Start Date"/>&nbsp;
+                                    <label for="startDate" value="Start Date"/>&nbsp
                                     <input type='text'
                                         id="startDate"
                                         value="#{schedulesBean.startDateStr}"
@@ -31,14 +31,14 @@
                                         maxlength="10"
                                         required="false">
                                     </input type='text'>
-                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                    <a href="javascript:showCalendarForJSF('startDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
                                             width="16"
                                             height="16"
-                                            alt="Click here to select a start date"/></a>&nbsp;
-                                    <label for="endDate" value="End Date"/>&nbsp;
+                                            alt="Click here to select a start date"/></a>&nbsp
+                                    <label for="endDate" value="End Date"/>&nbsp
                                     <input type='text'
                                         id="endDate"
                                         value="#{schedulesBean.endDateStr}"
@@ -47,7 +47,7 @@
                                         maxlength="10"
                                         required="false">
                                     </input type='text'>
-                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                    <a href="javascript:showCalendarForJSF('endDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -63,13 +63,13 @@
                                         value="Add"
                                         action="#{schedulesBean.add()}"/>
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_REPORTS)}"> 
-                                        &nbsp;&nbsp;
+                                        &nbsp&nbsp
                                         <p:commandButton 
                                             class="reset-style"
                                             value="Reports"
                                             action="#{schedulesBean.reports()}"/>
                                     {% endif %}
-                                    &nbsp;&nbsp;
+                                    &nbsp&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

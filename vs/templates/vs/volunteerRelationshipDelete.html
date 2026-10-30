@@ -12,8 +12,8 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Remove Volunteer Relationship");
-                          doLoadProcessing();
+                        setHeader("Remove Volunteer Relationship")
+                          doLoadProcessing()
                     }
                 </script>
                 <h:outputText
@@ -25,7 +25,7 @@
                             value="Delete"
                             id="autoClickButton"
                             class="forJSF"
-                            style="visibility: hidden;"
+                            style="visibility: hidden"
                             action="#{volunteerReltionshipDeleteBean.autoDelete()}"/>
                     </h:form>
                 {% endif %}

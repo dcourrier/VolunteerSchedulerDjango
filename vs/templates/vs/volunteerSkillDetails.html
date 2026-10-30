@@ -12,7 +12,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Skill");
+                        setHeader("Volunteer Skill")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_VOLUNTEER_SKILL)}">
@@ -21,7 +21,7 @@
                             <th class="tableHeader"><h:outputText value="#{volunteerSkillBean.title()}"/></th>
                             <tr>
                                 <td>                  
-                                    <label for="expertSelect" value="Expert"/>&nbsp;
+                                    <label for="expertSelect" value="Expert"/>&nbsp
                                     <h:selectBooleanCheckbox
                                         id="expertSelect"
                                         value="#{volunteerSkillBean.expert}"/>
@@ -29,7 +29,7 @@
                             </tr>
                             <tr>
                                 <td>                  
-                                    <label for="lastAssignmentDate" value="Last Assignment Date"/>&nbsp;
+                                    <label for="lastAssignmentDate" value="Last Assignment Date"/>&nbsp
                                     <input type='text'
                                         id="lastAssignmentDate"
                                         value="#{volunteerSkillBean.lastAssignmentDate}"
@@ -37,7 +37,7 @@
                                         class="forJSF"
                                         maxlength="20"
                                         required="false"/>
-                                    <a href="javascript:showCalendarForJSF('lastAssignmentDate');">
+                                    <a href="javascript:showCalendarForJSF('lastAssignmentDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -51,15 +51,15 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{volunteerSkillBean.save()}"/>&nbsp;
+                                        action="#{volunteerSkillBean.save()}"/>&nbsp
                                     <p:commandButton 
                                         value="Delete"
                                         class="reset-style"
-                                        action="#{volunteerSkillBean.delete()}"/>&nbsp;
+                                        action="#{volunteerSkillBean.delete()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"
-                                        action="#{volunteerSkillBean.cancel()}"/>&nbsp;
+                                        action="#{volunteerSkillBean.cancel()}"/>&nbsp
                                 </td>
                             </tr>
                         </table>                        

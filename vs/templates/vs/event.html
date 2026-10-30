@@ -30,7 +30,7 @@
                                     <label 
                                         for="eventName" 
                                         value="Event Name"
-                                        class="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="eventName"
@@ -48,7 +48,7 @@
                                     <label 
                                         for="startDate" 
                                         value="Start Date"
-                                        class="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp
                                     <input type='text'
                                         id="startDate"
                                         value="#{eventBean.startDateStr}"
@@ -57,7 +57,7 @@
                                         maxlength="10"
                                         validator="#{eventBean.validateStartDate}">
                                     </input type='text'>
-                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                    <a href="javascript:showCalendarForJSF('startDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -71,7 +71,7 @@
                                     <label 
                                         for="startTime" 
                                         value="Start Time (hh:mm)"
-                                        class="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="startTime"
@@ -90,7 +90,7 @@
                                     <label 
                                         for="duration" 
                                         value="Duration (minutes)"
-                                        class="xtopLabel"/>&nbsp;
+                                        class="xtopLabel"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="duration"
@@ -109,7 +109,7 @@
                                     <label 
                                         for="locationSelector" 
                                         value="Location"
-                                        class="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp
                                     <h:selectOneMenu 
                                         id="locationSelector"
                                         value="#{eventBean.locationId}">
@@ -127,7 +127,7 @@
                                     <label 
                                         for="recurs" 
                                         value="recurs"
-                                        class="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp
                                     <h:selectOneMenu 
                                         id="recurs"
                                         immediate="true"
@@ -145,7 +145,7 @@
                                     <label 
                                         for="endDate" 
                                         value="Recurrence End Date"
-                                        class="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp
                                     <input type='text'
                                         id="endDate"
                                         value="#{eventBean.endDateStr}"
@@ -155,7 +155,7 @@
                                         required="false"
                                         validator="#{eventBean.validateEndDate}">
                                     </input type='text'>
-                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                    <a href="javascript:showCalendarForJSF('endDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -169,7 +169,7 @@
                                     <label 
                                         for="interval" 
                                         value="Interval"
-                                        class="topLabel"/>&nbsp;
+                                        class="topLabel"/>&nbsp
                                     <h:panelGrid columns="1">
                                         <input type='text'
                                             id="interval"
@@ -189,18 +189,18 @@
                                         class="reset-style" 
                                        
                                         value="Save"
-                                        action="#{eventBean.update()}"/>&nbsp; 
+                                        action="#{eventBean.update()}"/>&nbsp 
                                     <p:commandButton 
                                         class="reset-style" 
                                        
                                         value="Delete"
-                                        action="#{eventBean.delete()}"/>&nbsp; 
+                                        action="#{eventBean.delete()}"/>&nbsp 
                                     <p:commandButton 
                                         class="reset-style" 
                                        
                                         value="Cancel"
                                         action="#{eventBean.cancel2()}"
-                                        onclick="return resetEventFields();"/> 
+                                        onclick="return resetEventFields()"/> 
                                 </td>
                             </tr>
                             <vscomp:updateError 
@@ -209,7 +209,7 @@
                         </table>
                         <table align="center">
                             <tr>
-                                <td>&nbsp;</td>
+                                <td>&nbsp</td>
                             </tr>
                             <tr align="center">
                                 <td colspan="9" align="center">
@@ -325,7 +325,7 @@
                                                         <td>
                                                             <h:selectOneMenu 
                                                                 id="resources"
-                                                                onchange="setCounts(this);"
+                                                                onchange="setCounts(this)"
                                                                 value="#{eventBean.resourceId}"
                                                                 class="forJSF">
                                                                 <f:selectItems 

@@ -1,9 +1,47 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base
+@tailwind components
+@tailwind utilities
+
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;      /* Stays in place relative to the screen */
+  top: 50%;             /* Moves top edge to the middle */
+  left: 50%;            /* Moves left edge to the middle */
+  transform: translate(-50%, -50%); /* Shifts element back by half its own width/height */
+  width: 25%; /* Full width */
+  height: 25%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
 
 .autoClickButton {
-    display: none;
+    display: none
 }
 
 .errorMsg { 
@@ -344,7 +382,6 @@ th.listTableImage {
 }
 
 thead.helpMenuTable {
-
     font-size: 14px;
     font-weight: bold;
 }
@@ -445,7 +482,7 @@ td.complete inherit listTable {
 }
 
 td.canceled inherit listTable {
-    color:rosybrown
+    color:rosybrown;
 
 }
 td.listTableHeader {

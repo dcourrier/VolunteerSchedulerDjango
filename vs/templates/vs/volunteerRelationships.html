@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Relationships");
+                        setHeader("Volunteer Relationships")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_RELATIONSHIP)}">
@@ -28,7 +28,7 @@
                             {% if test="#{volunteerReltionshipsBean.hasAvailable()}">
                                 <tr>
                                     <td>
-                                        <label for="typeSelector" value="Type"/>&nbsp; 
+                                        <label for="typeSelector" value="Type"/>&nbsp 
                                         <h:selectOneMenu 
                                             id="typeSelector"
                                             value="#{volunteerReltionshipsBean.relationshipTypeId}">
@@ -37,8 +37,8 @@
                                                 var="s"
                                                 itemLabel="#{s.displayString}" 
                                                 itemValue="#{s.ID}" />
-                                        </h:selectOneMenu>&nbsp;
-                                        <label for="volSelector" value="Volunteer"/>&nbsp; 
+                                        </h:selectOneMenu>&nbsp
+                                        <label for="volSelector" value="Volunteer"/>&nbsp 
                                         <h:selectOneMenu 
                                             id="volSelector"
                                             value="#{volunteerReltionshipsBean.vol2Id}">
@@ -57,12 +57,12 @@
                                         <p:commandButton 
                                         class="reset-style"
                                             value="Add"
-                                            action="#{volunteerReltionshipsBean.add()}"/>&nbsp; 
+                                            action="#{volunteerReltionshipsBean.add()}"/>&nbsp 
                                     {% endif %}
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Find Volunteers"
-                                        action="#{volunteerReltionshipsBean.find()}"/>&nbsp; 
+                                        action="#{volunteerReltionshipsBean.find()}"/>&nbsp 
                                     <p:commandButton 
                                         value="Cancel"
                                         class="reset-style"

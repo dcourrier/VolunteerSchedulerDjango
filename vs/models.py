@@ -261,7 +261,7 @@ class DbWorkAddress(models.Model):
     def __str__(self):
         return '\nworkAddressID: ' + str(self.workAddressID) + ' ' +\
             str(self.jobTitle) + " @ " + str(self.employer) +\
-            ' deleteFlag; ' + str(self.deleteFlag)
+            ' deleteFlag ' + str(self.deleteFlag)
     
 class DbSkillRelationshipType(models.Model):
     skillRelationshipTypeID = models.AutoField(primary_key=True)
@@ -656,7 +656,7 @@ class DbTask(models.Model):
     )
     resources = models.ManyToManyField(DbProjectResource,
                                        blank=True,
-                                       related_name='tasks')
+                                       through='DbProjectResourceUsage')
     skills = models.ManyToManyField(DbSkill,
                                    blank=True,
                                     related_name='tasks')
@@ -685,8 +685,7 @@ class DbTask(models.Model):
             return str(self.taskSequence) + ' ' + str(self.taskName)
         else:
             return'None'
-
-    
+        
 class DbResource(models.Model):
     resourceID = models.AutoField(primary_key=True)
     count = models.IntegerField(default=0)
@@ -725,6 +724,11 @@ class DbResource(models.Model):
     def __str__(self):
         return self.name
 
+class DbProjectResourceUsage(models.Model):
+    resource = models.ForeignKey(DbProjectResource, on_delete=models.CASCADE)
+    task = models.ForeignKey(DbTask, on_delete=models.CASCADE)
+    count = models.IntegerField(default=1)
+    
 class DbLocation(models.Model):
     locationID = models.AutoField(primary_key=True)
     locationName = models.CharField(max_length=255, null=True, blank=True)

@@ -22,7 +22,7 @@
                                                         requiredMessage="You must supply a name"/>
                                                     <h:message for="name" errorClass="errorMsg"/>
                                                 </h:panelGrid>
-                                                &nbsp;&nbsp;&nbsp;
+                                                &nbsp&nbsp&nbsp
                                                 <label for="teams"
                                                                rendered="true"
                                                                value="Team: "/>
@@ -36,7 +36,7 @@
                                                         itemLabel="#{team.teamName}" 
                                                         itemValue="#{team.teamID}" />
                                                 </p:selectOneMenu>
-                                                &nbsp;&nbsp;&nbsp;
+                                                &nbsp&nbsp&nbsp
                                                 <label for="vols"
                                                                rendered="true"
                                                                value="Name: "/>
@@ -59,7 +59,7 @@
                                 <td width="100%" align="center">
                                     <label for="activity"
                                                    rendered="true"
-                                                   style="display: block; text-align: center; width: 100%;"
+                                                   style="display: block text-align: center width: 100%"
                                                    value="Description: "/>
                                     <p:inputTextarea 
                                         id="description"
@@ -73,12 +73,12 @@
                                     <p:commandButton 
                                         value="Save"
                                         class="reset-style"
-                                        action="#{activityDetailsBean.submit}"/>&nbsp;
+                                        action="#{activityDetailsBean.submit}"/>&nbsp
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_ACTIVITY)}">
                                         <p:commandButton 
                                             value="Delete"
                                             class="reset-style"
-                                            action="#{activityDetailsBean.delete()}"/>&nbsp;
+                                            action="#{activityDetailsBean.delete()}"/>&nbsp
                                     {% endif %}
                                     <p:commandButton 
                                         value="Cancel"

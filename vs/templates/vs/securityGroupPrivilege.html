@@ -12,7 +12,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Security Group Privilege");
+                        setHeader("Security Group Privilege")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SECURITY_GROUP_PRIVILEGE)}">
@@ -24,11 +24,11 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{securityGroupPrivilegeBean.deletePrivilege()}"/> &nbsp;
+                                        action="#{securityGroupPrivilegeBean.deletePrivilege()}"/> &nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete All"
-                                        action="#{securityGroupPrivilegeBean.deleteAllPrivileges()}"/> &nbsp;
+                                        action="#{securityGroupPrivilegeBean.deleteAllPrivileges()}"/> &nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

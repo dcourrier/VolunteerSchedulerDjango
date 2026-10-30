@@ -12,7 +12,7 @@
                      <table width='100%' class="centered">
                          <tr  width='100%'  align="center">
                              <td  align="right">
-                                 <label for="name">Name: </label>&nbsp;
+                                 <label for="name">Name: </label>&nbsp
                                   <input type='text' 
                                   			  id="name"
                                   			  name='name'
@@ -21,7 +21,7 @@
                                                maxlength="{{ nameMaxLength }}"/>
                              </td>
                              <td align="center">
-                                 <label for="startDate">Start Date: </label>&nbsp;
+                                 <label for="startDate">Start Date: </label>&nbsp
                                      <input type='text' 
                                      			id="startDate"
                                      			name="startDate"
@@ -32,7 +32,7 @@
                                                 maxlength="10"/>
                              </td>
                              <td>
-                                 <label for="finishDate">Finish Date: </label>&nbsp;
+                                 <label for="finishDate">Finish Date: </label>&nbsp
                                      <input type='text' 
                                      			id="finishDate"
                                      			name="finishDate"
@@ -54,18 +54,18 @@
 					<input type="submit" 
                 	class="reset-style"
                 	name="action" 
-                	value="Save"/>&nbsp;
+                	value="Save"/>&nbsp
 {% VSAuthorizer2 _type=DELETE_PROJECT %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Delete"/>&nbsp;
+					value="Delete"/>&nbsp
 {% VSAuthorizer2_end %}
 {% VSAuthorizer2 _type=VIEW_TASKS %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Manage Tasks"/>&nbsp;
+					value="Manage Tasks"/>&nbsp
                     {% if parentID %}
 	                    <button 
 	                    type="button" 

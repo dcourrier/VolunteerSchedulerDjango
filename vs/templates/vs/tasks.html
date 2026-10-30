@@ -1,6 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title=Tasks help='/vs/help?tasks'%}
-
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=ADD_TASK %}
    <form action='addTask'  method="POST">
         {% csrf_token %}
@@ -50,7 +52,7 @@
                        				class="reset-style"
                                      value="Add Task"
                                      action="add"/>
-                               &nbsp;&nbsp;
+                               &nbsp&nbsp
 	                    	<button 
 			                    type="button" 
 			                    onclick="window.location.href='/vs/projectEdit?id={{ projecttID }}'">

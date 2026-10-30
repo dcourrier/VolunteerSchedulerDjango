@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Schedule Edit");
+                        setHeader("Schedule Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SCHEDULE)}">
@@ -25,13 +25,13 @@
                                     <p:commandButton
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{scheduleBean.delete()}"/>&nbsp;
+                                        action="#{scheduleBean.delete()}"/>&nbsp
                                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_ADD_REPORT)}">
                                         <p:commandButton
                                             class="reset-style"
                                             value="Generate Report"
                                             rendered="#{scheduleBean.noReport()}"
-                                            action="#{scheduleBean.addReport()}"/>&nbsp;
+                                            action="#{scheduleBean.addReport()}"/>&nbsp
                                     {% endif %}
                                     <p:commandButton
                                         class="reset-style"

@@ -832,7 +832,7 @@ class Utils():
             result = False
         elif s.strip() == '':
             result = False 
-        return result;
+        return result
     
     @staticmethod 
     def isNotBlank(s):

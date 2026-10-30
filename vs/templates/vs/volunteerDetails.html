@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Details Edit");
+                        setHeader("Volunteer Details Edit")
                     }
                 </script>
                 <table align="center" cellspacing="5" border="1">
@@ -21,7 +21,7 @@
                         <tr><td>
                                 <table align="center">
                                     <th colspan="6" class="tableHeader">
-                                        Volunteer &nbsp;
+                                        Volunteer &nbsp
                                         <h:outputText 
                                             value="#{volunteerBean.title()}"/>
                                     </th>
@@ -148,12 +148,12 @@
                                                 <p:commandButton 
                                                     class="reset-style"
                                                     value="Save"
-                                                    action="#{volunteerBean.submit()}"/>&nbsp;
+                                                    action="#{volunteerBean.submit()}"/>&nbsp
                                                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_DELETE_VOLUNTEER)}">
                                                     <p:commandButton 
                                                         class="reset-style"
                                                         value="Delete"
-                                                        action="#{volunteerBean.delete()}"/>&nbsp;
+                                                        action="#{volunteerBean.delete()}"/>&nbsp
                                                 {% endif %}
                                                 <p:commandButton 
                                                     class="reset-style"

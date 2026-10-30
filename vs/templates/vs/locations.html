@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title=Locations help='/vs/help?locations'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=ADD_LOCATION %}
     <table cellpadding="5" align="center">
         <th colspan="2"><h3>Add Location</h3></th>
@@ -16,11 +19,11 @@
                                  maxlength="{{nameMaxLength}}"/>
                 </td></tr>
             <tr>
-                <td class="label">&nbsp;</td>
+                <td class="label">&nbsp</td>
                 <td>
                     <button
                     	type='submit' 
-                        class="reset-style">Save</button>&nbsp;
+                        class="reset-style">Save</button>&nbsp
                     <button 
                     type="button" 
                     onclick="window.location.href='/vs/home/'">

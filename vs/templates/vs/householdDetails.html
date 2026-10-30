@@ -13,14 +13,14 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Household Edit");
+                        setHeader("Household Edit")
                     }
                 </script>
                 <table align="center" cellspacing="5">
                     {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_HOUSEHOLD)}">
                         <tr><td>                               
                                 <table align="center">
-                                    <th colspan="6"><h3>Household&nbsp;
+                                    <th colspan="6"><h3>Household&nbsp
                                             <h:outputText value="#{householdBean.title()}"/>
                                         </h3></th>
                                     <h:form>
@@ -52,11 +52,11 @@
                                                 <p:commandButton 
                                                     class="reset-style"
                                                     value="Save"
-                                                    action="#{householdBean.submit()}"/>&nbsp;
+                                                    action="#{householdBean.submit()}"/>&nbsp
                                                 <p:commandButton 
                                                     class="reset-style"
                                                     value="Delete"
-                                                    action="#{householdBean.delete()}"/>&nbsp;
+                                                    action="#{householdBean.delete()}"/>&nbsp
                                                 <p:commandButton 
                                                     class="reset-style"
                                                     value="Cancel"

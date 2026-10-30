@@ -14,7 +14,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Security Group Edit");
+                        setHeader("Security Group Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_SECURITY_GROUP)}">
@@ -24,7 +24,7 @@
                             <tr>
                                 <td>
                                     <label for="name" 
-                                                   value="Name"/>&nbsp;
+                                                   value="Name"/>&nbsp
                                     <input type='text' id="name" 
                                                  size="30"
                                                  maxlength="#{securityGroupDetailsBean.nameLength()}"
@@ -35,7 +35,7 @@
                             <tr>
                                 <td>
                                     <label for="description" 
-                                                   value="Description"/>&nbsp;
+                                                   value="Description"/>&nbsp
                                     <input type='text' id="description" 
                                                  size="50"
                                                  maxlength="#{securityGroupDetailsBean.descriptionLength()}"
@@ -48,11 +48,11 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{securityGroupDetailsBean.save()}"/>&nbsp;
+                                        action="#{securityGroupDetailsBean.save()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{securityGroupDetailsBean.delete()}"/>&nbsp;
+                                        action="#{securityGroupDetailsBean.delete()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

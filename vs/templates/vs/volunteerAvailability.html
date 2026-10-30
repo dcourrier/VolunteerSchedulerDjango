@@ -13,7 +13,7 @@
             <ui:define name="content">
                 <script>
                     function loaded() {
-                        setHeader("Volunteer Availability Edit");
+                        setHeader("Volunteer Availability Edit")
                     }
                 </script>
                 {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_UPDATE_AVAILABILITY)}">
@@ -22,7 +22,7 @@
                             <th colspan="4"><h4>#{volunteerAvailabilityBean.title()}</h4></th>
                             <tr>
                                 <td>
-                                    <label for="startDate" value="Start Date"/>&nbsp;
+                                    <label for="startDate" value="Start Date"/>&nbsp
                                     <input type='text'
                                         id="startDate"
                                         value="#{volunteerAvailabilityBean.startDateStr}"
@@ -32,7 +32,7 @@
                                         required="false">
                                     </input type='text'>
                                 </td><td>
-                                    <a href="javascript:showCalendarForJSF('startDate');">
+                                    <a href="javascript:showCalendarForJSF('startDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -41,7 +41,7 @@
                                             alt="Click here to select a start date"/></a>
                                 </td>
                                 <td>
-                                    <label for="endDate" value="End Date"/>&nbsp;
+                                    <label for="endDate" value="End Date"/>&nbsp
                                     <input type='text'
                                         id="endDate"
                                         class="forJSF"
@@ -51,7 +51,7 @@
                                         required="false">
                                     </input type='text'>
                                 </td><td>
-                                    <a href="javascript:showCalendarForJSF('endDate');">
+                                    <a href="javascript:showCalendarForJSF('endDate')">
                                         <h:graphicImage 
                                             library="images"
                                             name="cal.gif"
@@ -65,11 +65,11 @@
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Save"
-                                        action="#{volunteerAvailabilityBean.update()}"/>&nbsp;
+                                        action="#{volunteerAvailabilityBean.update()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Delete"
-                                        action="#{volunteerAvailabilityBean.delete()}"/>&nbsp;
+                                        action="#{volunteerAvailabilityBean.delete()}"/>&nbsp
                                     <p:commandButton 
                                         class="reset-style"
                                         value="Cancel"

@@ -1,10 +1,14 @@
 class VSException(Exception):
-    def __init__(self, msg=None):
+    def __init__(self, msg=None, cause=None):
         if msg:
             super().__init__(msg)
             super().add_note(msg)
         else:
             super().__init__()
+        self.cause = cause
+        
+    def getCause(self):
+        return self.cause
  
 class AccountDeletedException(VSException):
 
@@ -36,6 +40,26 @@ class ClassCastException(VSException):
     def __init__(self, msg=None):
         super().__init__(msg)
  
+class ConfigElementNotSupportedException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
+class ConfigIndexOutOfBoundsException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
+class ConfigNodeException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
+class ConfigNodeNotElementException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+     
 class DuplicateKeyException(VSException):
 
     def __init__(self, msg=None):
@@ -62,6 +86,11 @@ class EventDateScheduleDateConflictException(VSException):
         super().__init__(msg)
  
 class EventInSameLocationException(VSException):
+
+    def __init__(self, msg=None):
+        super().__init__(msg)
+ 
+class IllegalStateException(VSException):
 
     def __init__(self, msg=None):
         super().__init__(msg)
@@ -100,6 +129,45 @@ class InvalidRequestError(VSException):
 
     def __init__(self, msg=None):
         super().__init__(msg)
+
+class MessageCarryingException(VSException):
+    
+    def __init__(self, msg=None, text=None):
+        super().__init__(text)
+        self.msg = msg
+    
+    def getMsg(self):
+        return self.msg
+    
+    def getAllMsgs(self):
+        result = []
+        m = self.getMsg()
+        if m:
+            result.append(m)
+            result.addAll(m.getChildren(True))
+        return result
+    
+    def __str__(self):
+        sb = ''
+        sb += str(self.getMessage())
+        if self.msg:
+            sb += "\n"
+            sb += str(self.msg)
+        return sb 
+    
+    def toHtmlString(self):
+        sb = "<html>"
+        sb += str(self.getMessage())
+        if self.msg:
+            sb += self.msg.toHtmlString()
+        sb += "</html>"
+        return sb
+ 
+        
+class MessageListenerInitializeException(VSException):
+   
+    def __init__(self, msg=None, cause=None):
+        super().__init__(msg, cause)
  
 class InvalidSecretException(VSException):
 

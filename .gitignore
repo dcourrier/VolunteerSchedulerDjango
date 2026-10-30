@@ -33,7 +33,7 @@ yarn-error.log*
 # ==========================================
 # 4. Node.js & Dependency Directories
 # ==========================================
-# Installed libraries (never commit these; download via package managers)
+# Installed libraries (never commit these download via package managers)
 node_modules/
 jspm_packages/
 .pnpm-store/

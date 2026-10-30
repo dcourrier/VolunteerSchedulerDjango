@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title='Households' help='/vs/help?households' %}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=VIEW_HOUSEHOLDS %}  
 {{households|safe}}
 {%VSAuthorizer_end%}  

@@ -1,5 +1,8 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title='Team Edit' help='/vs/help?teamEdit'%}
+<script type="text/javascript">
+	function loaded() {}
+</script>
 {% VSAuthorizer _type=UPDATE_TEAM %}
 <form action='/vs/teamUpdate' method='post'>
 {% csrf_token %}
@@ -20,12 +23,12 @@
                 	<input type="submit" 
                 	class="reset-style"
                 	name="action" 
-                	value="Save"/>&nbsp;
+                	value="Save"/>&nbsp
 {% VSAuthorizer2 _type=DELETE_TEAM %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Delete"/>&nbsp;
+					value="Delete"/>&nbsp
 {% VSAuthorizer2_end %}
                     <button 
 	                    type="button" 
