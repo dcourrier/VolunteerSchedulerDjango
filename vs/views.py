@@ -325,7 +325,7 @@ class AddTeamView(View):
         #print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
         try: 
             context = bean.submit()
-            tgt = '/vs/projects.html'
+            tgt = '/vs/projects'
             if toProjectEdit:
                 tgt ='/vs/projectEdit?id=' + str(oid)
             if context.get('err'):
@@ -337,7 +337,7 @@ class AddTeamView(View):
                 if toProjectEdit:
                     tgt = '/vs/projectEdit.html'
                 else:
-                    tgt = '/vs/projects.html'
+                    tgt = '/vs/projects'
                 result = render(request, tgt, context)
                 #print('AddLocationView no except'  + str(result))
                 return result
@@ -952,17 +952,17 @@ class TaskUpdateView(View):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
-        bean = TeamEditBean(request)
+        bean = TaskEditBean(request)
         try: 
             bean.submit()
-            return redirect('/vs/projects')
+            return redirect('/vs/taskEdit?id=' + str(oid))
         except Exception as err:            
             context = bean.setup()
             context['oid']= oid                  
             context['err']=True 
             context['errMsg']=str(err) 
             #print('OrganizationUpdateView handling err')
-            return render(request, "vs/teamEdit.html", context)
+            return render(request, "vs/taskEdit.html", context)
         
             
 class TeamEditView(View):

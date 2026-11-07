@@ -3,7 +3,6 @@ from dateutil.relativedelta import relativedelta
 from django.db import connection
 from  django.db.models import Q
 from django.shortcuts import get_object_or_404
-import mysql.connector
 from operator import attrgetter
 import re
 from pathlib import Path
@@ -233,13 +232,13 @@ class Activity(BusinessObject):
         avID = self.activityVolunteerID.getValue()
         if hrs > 0:
             if avID and avID > 0:
-                vol = of.getVolunteer(avid)
+                vol = of.getVolunteer(avID)
                 if vol:
                     result = vol.getCost() * hrs
             else:
                 atID = self.activityTeamID.getValue()
                 if atID and atID > 0:
-                    tm = of.getTeam(atid)
+                    tm = of.getTeam(atID)
                     if tm:
                         result = tm.getHourlyCost() * hrs
         return result 
@@ -2185,7 +2184,7 @@ class Privilege(BusinessObject):
             self.privilegeName.setValue(name)
 
     def setPrivilegeID(self, uid):
-        if not uID == self.privilegeID:
+        if not uid == self.privilegeID:
             self.privilegeID.setValue(uid)
         
     def getPrivilegeID(self):
@@ -4461,11 +4460,11 @@ class SkillRelationship(BusinessObject):
         self.validate2()
         
     def validate2(self):
-        isValID = True
+        isValid = True
         msg = None
         
-        if isValID and self.getSkillOneID() == self.getSkillTwoID():
-            isValID = False
+        if isValid and self.getSkillOneID() == self.getSkillTwoID():
+            isValid = False
             errMsg = VSMessageFactory.getRelationshipSameSkillsError()
             msg = errMsg
         if not isValid:
@@ -4991,11 +4990,11 @@ class Skill(BusinessObject):
             if sr.isAllowed():
                 sid1 = sr.getSkillOneID()
                 oID = None
-                if sid1 == sid: 
+                if sid1 == sID: 
                     oID = sr.getSkillTwoID()
                 else: 
                     oID = sr.getSkillOneID()
-                if oID == myId:
+                if oID == myID:
                     result = True
                     break
         return result
@@ -5105,11 +5104,11 @@ class Skill(BusinessObject):
         self.validate2()
         
     def validate2(self):
-        isValID = True
+        isValid = True
         msg = None
         
-        if isValID and self.getSkillOneID() == self.getSkillTwoID():
-            isValID = False
+        if isValid and self.getSkillOneID() == self.getSkillTwoID():
+            isValid = False
             errMsg = VSMessageFactory.getRelationshipSameSkillsError()
             msg = errMsg
         if not isValid:
@@ -7516,11 +7515,11 @@ class Volunteer(BusinessObject):
         if self.getVolunteerID():
             add = self.myDb.addresses.all().first()
             if add:
-             self.address = Address(add)
+                self.address = Address(add)
         if self.getVolunteerID():
-             wadd = self.myDb.workaddresses.all().first()
-             if wadd:
-                 self.workAddress = WorkAddress(wadd)
+            wadd = self.myDb.workaddresses.all().first()
+        if wadd:
+            self.workAddress = WorkAddress(wadd)
         if self.getVolunteerID() and self.myDb.login and self.myDb.login.exists():
             self.login = Login(self.myDb.login)
         if self.getVolunteerID() and self.myDb.organization:
@@ -9305,12 +9304,6 @@ class Schedule(BusinessObject):
             self.events.remove(evt)
         return result
     
-    def getScheduleID(self):
-        return self.scheduleID.getValue()
-    
-    def setScheduleID(self, d):
-        self.scheduleID.setValue(d)
-    
     def getID(self):
         return self.getScheduleID()
     
@@ -10693,6 +10686,7 @@ class ObjectFactory(VSBase):
     def getTableNames(self):
         result = []
         cnx = None
+        import mysql.connector
         try:
             cnx = mysql.connector.connect(user='root', password='root', \
                               host='127.0.0.1', \
@@ -10709,6 +10703,7 @@ class ObjectFactory(VSBase):
         return result
 
     def getTableSize(self, name):
+        import mysql.connector
         if isinstance(name, str):
             tableName = 'vs_db' + name.lower()
         elif isinstance(name,type):
@@ -10734,6 +10729,7 @@ class ObjectFactory(VSBase):
         return result
     
     def executeSqlUpdate(self, sql):
+        import mysql.connector
         result = None
         cnx = None
         try:
@@ -11215,12 +11211,14 @@ class ObjectFactory(VSBase):
                 result = Organization(qr)
         return result
     
-    def getNewTask(self,name, uid, org, sequence=None):
+    def getNewTask(self,name, uid, org, pid, sequence=None):
         orgid = self.getOrgid(org)
         dbo = DbTask.objects.create(
                                 taskCreateUser=uid,
                                 taskUpdateUser=uid,
                                 taskName=name,
+                                project_id=pid,
+                                taskStatus_id=1,
                                 organization_id=orgid)
         if sequence:
             if isinstance(sequence, str):
@@ -11560,10 +11558,32 @@ class ObjectFactory(VSBase):
             result.append(Availability(dbo))
         return result
 
-    def getActivities(self):
+    def getActivities(self,task=None, org=None, dbo=False):
         result = []
-        for dbo in DbActivity.objects.exclude(deleteFlag=True):
-            result.append(Activity(dbo))
+        dbos = []
+        if task:
+            if isinstance(task, DbTask):
+                taskID = task.taskID
+            else:
+                taskID = task.taskID.value 
+            dbs = DbActivity.objects.exclude(deleteFlag=True)\
+            .filter(task_id=taskID).order_by('name')
+            for db in dbs:
+                if db.deleteFlag == True:
+                    continue
+                dbos.append(db)
+        elif org:
+            orgid = self.getOrgid(org)
+            taskIDs = DbTask.objects.exclude(deleteFlag=True)\
+            .filter(organization_id=orgid).values('taskID')
+            dbos = DbActivity.objects.filter(task_id__in=taskIDs)
+        else:
+            dbos = DbActivity.objects.exclude(deleteFlag=True).order_by('name')
+        if dbo:
+            result = dbos
+        else:
+            for db in dbos:
+                result.append(Activity(db))
         return result
     
     def getProjectResource(self, oid=None, name=None, org=None, dbo=False):
@@ -11665,21 +11685,51 @@ class ObjectFactory(VSBase):
                 result.append(Team(db))
         return result
     
-    def getTasks(self,org=None,dbo=False):
+    def getTasks(self,proj=None,org=None,sub=True,dbo=False):
         result = []
         dbs = []
-        if org:
+        if proj:
+            pid = proj.projectID
+            if isinstance(proj,Project):
+                pid = pid.value
+            if sub:
+                dbs = DbTask.objects.exclude(deleteFlag=True).filter(project_id=pid)\
+                .order_by('taskSequence')
+            else:
+                dbs = DbTask.objects.exclude(deleteFlag=True).filter(project_id=pid)\
+                .filter(parent_id=None).order_by('taskSequence')
+        elif org:
             orgid = self.getOrgid(org)
-            dbs = DbTask.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
-            .order_by('taskSequence')
+            if sub:
+                dbs = DbTask.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
+                .order_by('taskSequence')
+            else:
+                dbs = DbTask.objects.exclude(deleteFlag=True).filter(organization_id=orgid)\
+                .filter(parent_id=None).order_by('taskSequence')
         else:
-            dbs = DbTask.objects.exclude(deleteFlag=True).order_by('taskSequence')
+            if sub:
+                dbs = DbTask.objects.exclude(deleteFlag=True).order_by('taskSequence')
+            else:
+                dbs = DbTask.objects.exclude(deleteFlag=True)\
+                .filter(parent_id=None).order_by('taskSequence')
         if dbo:
             result = dbs
         else:
             for db in dbs:
                 result.append(Task(db))
         return result
+    
+    def getSubtasks(self,task,dbo=False):
+        taskID = task.taskID
+        if not isinstance(task, DbTask):
+            taskID = taskID.value
+        dbos = DbTask.objects.exclude(deleteFlag=True).filter(parent_id = taskID)\
+        .order_by('taskSequence')
+        if dbo:
+            result = dbos
+        else:
+            for db in dbos:
+                result.append(Task(db))
     
     def getNewVolunteer(self,  h, uid, org, fName=None, lName=None):
         orgid = self.getOrgid(org)

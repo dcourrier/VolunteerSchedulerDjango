@@ -333,7 +333,9 @@ class DbSkillRelationship(models.Model):
 class DbActivity(models.Model):
     activityID = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(
+                    blank=True,
+                    null=True)
     hoursWorked = models.DecimalField(
                     max_digits=6, 
                     decimal_places=2,
@@ -346,7 +348,20 @@ class DbActivity(models.Model):
     activityCreateDate = models.DateField(auto_now_add=True)
     activityUpdateDate = models.DateField(auto_now_add=True)
     deleteFlag = models.BooleanField(default=False)
+    task = models.ForeignKey('DbTask',
+                              on_delete=models.CASCADE,
+                              null=True,
+                              blank=True,
+                              related_name='activities')
     
+    def getID(self):
+        return self.activityID
+    
+    def getStyle(self):
+        return ''
+    
+    def hasQuantity(self):
+        return False   
 
     def __str__(self):
         return self.name
@@ -639,9 +654,6 @@ class DbTask(models.Model):
                               null=True,
                               blank=True,
                               related_name='tasks')
-    activities = models.ManyToManyField(DbActivity,
-                                   blank=True,
-                                        related_name='tasks')
     project = models.ForeignKey(DbProject,
                               on_delete=models.SET_NULL,
                               null=True,
@@ -682,7 +694,10 @@ class DbTask(models.Model):
 
     def __str__(self):
         if self.taskName:
-            return str(self.taskSequence) + ' ' + str(self.taskName)
+            if self.taskSequence:
+                return str(self.taskSequence) + ' ' + str(self.taskName)
+            else:
+                return self.taskName
         else:
             return'None'
         

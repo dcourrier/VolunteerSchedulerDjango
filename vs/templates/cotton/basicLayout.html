@@ -13,6 +13,7 @@
         <script src="{% static 'vs/scripts/volsched.js' %}" defer></script>
         <script src="{% static 'vs/scripts/ts_picker.js' %}" defer></script>
         <script src="{% static 'vs/scripts/date.js' %}" defer></script>
+    {{ extraHead}}  
         <title>{{ title }}</title>
      </head>
     <body onload="loaded()">
@@ -190,5 +191,6 @@
                     <hr/>
                 </td></tr>
         </table>
+    {{ endOfBody}}  
     </body>
 </html>

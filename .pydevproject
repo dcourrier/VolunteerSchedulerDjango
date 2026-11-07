@@ -1,22 +1,284 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse-pydev version="1.0"?><pydev_project>
-        
+                
+    
+    
     <pydev_variables_property name="org.python.pydev.PROJECT_VARIABLE_SUBSTITUTION">
+                
+        <key>env_var:ChocolateyInstall</key>
+                
+        <value>C:\ProgramData\chocolatey</value>
+                
+        <key>env_var:VBOX_HWVIRTEX_IGNORE_SVM_IN_USE</key>
+                
+        <value>1</value>
+                
+        <key>PY</key>
+                
+        <value>314</value>
+                
+        <key>env_var:PROCESSOR_REVISION</key>
+                
+        <value>ba03</value>
+                
+        <key>env_var:ProgramFiles</key>
+                
+        <value>C:\Program Files</value>
+                
+        <key>env_var:USERDOMAIN_ROAMINGPROFILE</key>
+                
+        <value>LAPTOP1</value>
+                
+        <key>env_var:JAVA_HOME</key>
+                
+        <value>C:\jdk1.8.0_291</value>
+                
+        <key>env_var:PROCESSOR_ARCHITECTURE</key>
+                
+        <value>AMD64</value>
+                
+        <key>env_var:SENDGRID_API_KEY</key>
+                
+        <value>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</value>
+                
+        <key>env_var:CommonProgramFiles(x86)</key>
+                
+        <value>C:\Program Files (x86)\Common Files</value>
+                
+        <key>env_var:PATHEXT</key>
+                
+        <value>.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW</value>
+                
+        <key>env_var:USERDOMAIN</key>
+                
+        <value>LAPTOP1</value>
+                
+        <key>env_var:NUMBER_OF_PROCESSORS</key>
+                
+        <value>12</value>
+                
+        <key>env_var:windir</key>
+                
+        <value>C:\WINDOWS</value>
+                
+        <key>env_var:ProgramFiles(x86)</key>
+                
+        <value>C:\Program Files (x86)</value>
+                
+        <key>env_var:EFC_12844_4126798990</key>
+                
+        <value>1</value>
+                
+        <key>env_var:OS</key>
+                
+        <value>Windows_NT</value>
+                
+        <key>env_var:ComSpec</key>
+                
+        <value>C:\WINDOWS\system32\cmd.exe</value>
+                
+        <key>env_var:HOMEPATH</key>
+                
+        <value>\Users\dcour</value>
+                
+        <key>env_var:VS160COMCOMNTOOLS</key>
+                
+        <value>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\</value>
+                
+        <key>env_var:EFC_12844_3789132940</key>
+                
+        <value>1</value>
+                
+        <key>env_var:OneDriveConsumer</key>
+                
+        <value>C:\Users\dcour\OneDrive</value>
+                
+        <key>env_var:ProgramData</key>
+                
+        <value>C:\ProgramData</value>
+                
+        <key>env_var:SystemRoot</key>
+                
+        <value>C:\WINDOWS</value>
+                
+        <key>env_var:PUBLIC</key>
+                
+        <value>C:\Users\Public</value>
+                
+        <key>env_var:CommonProgramW6432</key>
+                
+        <value>C:\Program Files\Common Files</value>
+                
+        <key>env_var:TMP</key>
+                
+        <value>C:\Users\dcour\AppData\Local\Temp</value>
+                
+        <key>env_var:FPS_BROWSER_USER_PROFILE_STRING</key>
+                
+        <value>Default</value>
+                
+        <key>env_var:LOGONSERVER</key>
+                
+        <value>\\LAPTOP1</value>
+                
+        <key>env_var:IGCCSVC_DB</key>
+                
+        <value>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAt1MNmxD4yE2InKk+SfbKrwQAAAACAAAAAAAQZgAAAAEAACAAAAAkI8tpM1H6gjkGH4Ss/RAXWmlbMcPBmdNS2yM3bh1BDgAAAAAOgAAAAAIAACAAAADePBhhdtRlgsD9kG2QhENUJkCD3ujIsYtzYumS/F1UzmAAAABbJprwPLxsWpj3krxPoLS9PsLsoneWxqUzmSegrWiCQSLkmZ53Bi+K/DSwrDnjWh92VYAQeXa3ccpfz4G8gkv0DieqXTDzYf7Utm84fhrzqo4advlfSUclJMDp1GLmPXhAAAAABvXz88hgwTGJLydScaWTGpRkTjeF62FExFjYuzlQ/BCnhS1mq4J+nTqFR+3yZACfI0HkrzLrs/BayTjX6tjYeg==</value>
+                
+        <key>env_var:ALLUSERSPROFILE</key>
+                
+        <value>C:\ProgramData</value>
+                
+        <key>env_var:POWERSHELL_DISTRIBUTION_CHANNEL</key>
+                
+        <value>MSI:Windows 10 Home</value>
+                
+        <key>env_var:CommonProgramFiles</key>
+                
+        <value>C:\Program Files\Common Files</value>
+                
+        <key>env_var:COMPUTERNAME</key>
+                
+        <value>LAPTOP1</value>
                 
         <key>DJANGO_MANAGE_LOCATION</key>
                 
         <value>manage.py</value>
+                
+        <key>env_var:Path</key>
+                
+        <value>C:/jdk-25/bin/server;C:/jdk-25/bin;D:\Python.3.15.0\Scripts\;D:\Python.3.15.0\;D:\Python3.14\Scripts\;D:\Python3.14\;D:\Python3.9\Scripts\;D:\Python3.9\;C:Python39\Scripts\;C:Python39\;C:\jdk1.8.0_291\bin;C:\Program Files\Microsoft\jdk-11.0.12.7-hotspot\bin;C:\Program Files\Microsoft\jdk-11.0.16.101-hotspot\bin;C:\Program Files\Eclipse Foundation\jdk-8.0.302.8-hotspot\bin;C:\OracleDb19cHome\bin;C:\WINDOWS.X64_193000_db_home\bin;C:\csvn\bin\;C:\csvn\Python25\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Live\Shared;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\Dwimperl\perl\bin;C:\Dwimperl\perl\site\bin;C:\Dwimperl\c\bin;C:\Program Files\dotnet\;C:\Program Files\Git\cmd;C:\Program Files\wkhtmltopdf\bin;C:\Program Files (x86)\dotnet\;C:\apache-maven-3.8.4\bin;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Azure Data Studio\bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files (x86)\MySQL\MySQL Utilities 1.6\;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;D:\javaAPI\Derby10.14.2.0\bin;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;D:\c++\vcpkg;D:\nodejs\;C:\Program Files\PowerShell\7\;D:\MySQL Shell 9.7\bin\;C:\Users\dcour\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\PyCharm Community Edition 2020.3.3\bin;;C:\Users\dcour\.dotnet\tools;C:\Program Files\Azure Data Studio\bin;D:\VSCode\Microsoft VS Code\bin;C:\Users\dcour\AppData\Roaming\npm;C:\Users\dcour\AppData\Local\GitHubDesktop\bin;C:\Users\dcour\AppData\Local\Python\bin;C:\WINDOWS\system32;</value>
+                
+        <key>env_var:OneDrive</key>
+                
+        <value>C:\Users\dcour\OneDrive</value>
+                
+        <key>env_var:ZES_ENABLE_SYSMAN</key>
+                
+        <value>1</value>
+                
+        <key>env_var:APR_ICONV1_PATH</key>
+                
+        <value>C:\csvn\bin\iconv\</value>
+                
+        <key>env_var:SystemDrive</key>
+                
+        <value>C:</value>
+                
+        <key>env_var:ChocolateyLastPathUpdate</key>
+                
+        <value>134231666282173529</value>
+                
+        <key>env_var:DERBY_HOME</key>
+                
+        <value>D:\javaAPI\Derby10.14.2.0</value>
+                
+        <key>env_var:MAVEN_HOME</key>
+                
+        <value>C:\apache-maven-3.8.4</value>
+                
+        <key>env_var:PROCESSOR_IDENTIFIER</key>
+                
+        <value>Intel64 Family 6 Model 186 Stepping 3, GenuineIntel</value>
+                
+        <key>env_var:TEMP</key>
+                
+        <value>C:\Users\dcour\AppData\Local\Temp</value>
+                
+        <key>env_var:PSModulePath</key>
+                
+        <value>C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules;C:\Program Files (x86)\Microsoft SQL Server\150\Tools\PowerShell\Modules\</value>
+                
+        <key>env_var:ProgramW6432</key>
+                
+        <value>C:\Program Files</value>
+                
+        <key>env_var:PROCESSOR_LEVEL</key>
+                
+        <value>6</value>
+                
+        <key>env_var:DriverData</key>
+                
+        <value>C:\Windows\System32\Drivers\DriverData</value>
+                
+        <key>env_var:PyCharm Community Edition</key>
+                
+        <value>C:\Program Files\JetBrains\PyCharm Community Edition 2020.3.3\bin;</value>
+                
+        <key>env_var:EFC_12844_2283032206</key>
+                
+        <value>1</value>
+                
+        <key>env_var:USERNAME</key>
+                
+        <value>dcour</value>
+                
+        <key>env_var:LOCALAPPDATA</key>
+                
+        <value>C:\Users\dcour\AppData\Local</value>
+                
+        <key>env_var:APPDATA</key>
+                
+        <value>C:\Users\dcour\AppData\Roaming</value>
+                
+        <key>env_var:FPS_BROWSER_APP_PROFILE_STRING</key>
+                
+        <value>Internet Explorer</value>
+                
+        <key>DJANGO_SETTINGS_MODULE</key>
+                
+        <value>VolunteerScheduler.settings</value>
+                
+        <key>env_var:=::</key>
+                
+        <value>::\</value>
+                
+        <key>env_var:EFC_12844_1262719628</key>
+                
+        <value>1</value>
+                
+        <key>env_var:EFC_12844_1592913036</key>
+                
+        <value>1</value>
+                
+        <key>env_var:VCPKG_ROOT</key>
+                
+        <value>D:\c++\vcpkg</value>
+                
+        <key>env_var:HOMEDRIVE</key>
+                
+        <value>C:</value>
+                
+        <key>env_var:USERPROFILE</key>
+                
+        <value>C:\Users\dcour</value>
+                
+        <key>env_var:SESSIONNAME</key>
+                
+        <value>Console</value>
             
     </pydev_variables_property>
-        
-    <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
                 
-        <path>/${PROJECT_DIR_NAME}</path>
-            
-    </pydev_pathproperty>
-        
-    <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python interpreter</pydev_property>
-        
-    <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">python</pydev_property>
     
+    
+    <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+                                
+        
+        
+        <path>/${PROJECT_DIR_NAME}</path>
+                            
+    
+    
+    </pydev_pathproperty>
+                
+    
+    
+    <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python interpreter</pydev_property>
+                
+    
+    
+    <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
+            
+
+
 </pydev_project>
