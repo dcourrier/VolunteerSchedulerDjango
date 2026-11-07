@@ -17,9 +17,10 @@
 .modal-content {
   background-color: #fefefe;
   margin: auto;
+  width: 25%; /* Full width */
+  height: 25%; /* Full height */
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
 }
 
 /* The Close Button */

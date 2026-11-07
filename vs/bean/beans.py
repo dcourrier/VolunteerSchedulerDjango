@@ -3223,7 +3223,6 @@ class TaskEditBean(DefaultBean):
         return result
     
     def getsubtasks(self,task, org):
-    
         result = ''
         if isinstance(task, Task):
             task = task.myDb
@@ -3242,7 +3241,6 @@ class TaskEditBean(DefaultBean):
     
     
     def getActivities(self,task, org):
-    
         result = ''
         acts = self.of.getActivities(task, org=None,dbo=True)
         #print('TaskEditBean getAvailableResources ' + str(resources))
@@ -3368,7 +3366,7 @@ class TaskEditBean(DefaultBean):
         #print('taskEditBean submit ' + str(task))
         request = self.sessionData.request
         parms = request.POST.dict()
-        print(parms)
+        #print(parms)
         parm = parms.get('addActivity')
         if parm:
             try:
