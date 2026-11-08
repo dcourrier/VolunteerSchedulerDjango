@@ -1890,9 +1890,11 @@ class LocationEditBean(DefaultBean):
                     loc = self.of.getLocation(oid=oid)
                     if action == 'Save':
                         loc.setLocationName(name)
-                        loc.save()
+                        with transaction.atomic():
+                            loc.save()
                     elif action == 'Delete':
-                        loc.delete()
+                        with transaction.atomic():
+                            loc.delete()
                     else:
                         raise InvalidArgumentException('action')
             else:
@@ -1935,8 +1937,9 @@ class LocationsBean(DefaultBean):
                     error = True
                     errorMessage = "There is already a location named \"" + name + "\" in the database."
                 else:
-                    loc = self.of.getNewLocation(name, login.loginID, org)
-                    loc.save()
+                    with transaction.atomic():
+                        loc = self.of.getNewLocation(name, login.loginID, org)
+                        loc.save()
             except Exception as pe:
                 error = True
                 errorMessage = str(pe)
@@ -2262,8 +2265,9 @@ class OrganizationsBean(DefaultBean):
                     error = True
                     errorMessage = "There is already an organization named \"" + name + "\" in the database."
                 else:
-                    OrganizationBuilder().build(name, self.sessionData.getCurrentLogin())
-                    self.sessionData.orgs = self.of.getOrganizations(dbo=True,system=False)
+                    with transaction.atomic():
+                        OrganizationBuilder().build(name, self.sessionData.getCurrentLogin())
+                        self.sessionData.orgs = self.of.getOrganizations(dbo=True,system=False)
             except Exception as pe:
                 error = True
                 errorMessage = str(pe)
@@ -2380,10 +2384,12 @@ class OrganizationUpdateBean(DefaultBean):
             if action:
                 org = ObjectFactory().getOrganization(oid=oid)
                 if action == 'Save':
-                    org.setOrganizationName(name)
-                    org.save()
+                    with transaction.atomic():
+                        org.setOrganizationName(name)
+                        org.save()
                 elif action == 'Delete':
-                    org.delete()
+                    with transaction.atomic():
+                        org.delete()
                 else:
                     raise InvalidArgumentException('action')
                 self.sessionData.orgs = []
@@ -2775,12 +2781,13 @@ class ProjectResourcesBean(DefaultBean):
                     error = True
                     errorMessage = "There is already a project resource named \"" + name + "\" in the database."
                 else:
-                    pr = self.of.getNewProjectResource(name, login.loginID, org)
-                    if count:
-                        pr.setCount(count)
-                    if cost:
-                        pr.setCost(cost)
-                    pr.save()
+                    with transaction.atomic():
+                        pr = self.of.getNewProjectResource(name, login.loginID, org)
+                        if count:
+                            pr.setCount(count)
+                        if cost:
+                            pr.setCost(cost)
+                        pr.save()
             except Exception as pe:
                 super().handleException(pe)
                 error = True
@@ -2828,6 +2835,7 @@ class ProjectResourceEditBean(DefaultBean):
         result['oid'] = oid
         result['name'] = res.name
         result['amount'] = res.count
+        result['cost'] = res.cost
         result['orgID'] = orgid
         result['nameMaxLength'] = Resource.NAME_MAXIMUM_LENGTH
         return result
@@ -2838,6 +2846,7 @@ class ProjectResourceEditBean(DefaultBean):
         action = request.POST.get('action') 
         name = request.POST.get('name') 
         amount = request.POST.get('amount') 
+        cost = request.POST.get('cost') 
         #print('LocationEditBean oid ' + str(oid) + ' action ' + str(action) + ' name ' + str(name))
         if oid:
             if name and len(name.strip()) > 1 and amount and Utils.isNumeric(amount,False):
@@ -2847,9 +2856,12 @@ class ProjectResourceEditBean(DefaultBean):
                         if action == 'Save':
                             res.setName(name)
                             res.setCount(amount)
-                            res.save()
+                            res.setCost(cost)
+                            with transaction.atomic():  
+                                res.save()
                         elif action == 'Delete':
-                            res.delete()
+                            with transaction.atomic():
+                                res.delete()
                         else:
                             raise InvalidArgumentException('action')
                     else:
@@ -2900,9 +2912,11 @@ class ResourceEditBean(DefaultBean):
                         if action == 'Save':
                             res.setName(name)
                             res.setCount(amount)
-                            res.save()
+                            with transaction.atomic():
+                                res.save()
                         elif action == 'Delete':
-                            res.delete()
+                            with transaction.atomic():
+                                res.delete()
                         else:
                             raise InvalidArgumentException('action')
                     else:
@@ -2951,9 +2965,10 @@ class ResourcesBean(DefaultBean):
                     error = True
                     errorMessage = "There is already a resource named \"" + name + "\" in the database."
                 else:
-                    res = self.of.getNewResource(name, login.loginID, org)
-                    res.setCount(amount)
-                    res.save()
+                    with transaction.atomic():
+                        res = self.of.getNewResource(name, login.loginID, org)
+                        res.setCount(amount)
+                        res.save()
             except Exception as pe:
                 error = True
                 errorMessage = str(pe)
@@ -3017,8 +3032,9 @@ class SkillsBean(DefaultBean):
                     error = True
                     errorMessage = "There is already a skill named \"" + name + "\" in the database."
                 else:
-                    skill = self.of.getNewSkill(name, login.loginID, org)
-                    skill.save()
+                    with transaction.atomic():
+                        skill = self.of.getNewSkill(name, login.loginID, org)
+                        skill.save()
             except Exception as pe:
                 error = True
                 errorMessage = str(pe)
@@ -3099,9 +3115,11 @@ class SkillEditBean(DefaultBean):
                     skill = ObjectFactory().getSkill(oid=oid)
                     if action == 'Save':
                         skill.setSkillName(name)
-                        skill.save()
+                        with transaction.atomic():
+                            skill.save()
                     elif action == 'Delete':
-                        skill.delete()
+                        with transaction.atomic():
+                            skill.delete()
                     else:
                         raise InvalidArgumentException('action')
             else:
@@ -3397,10 +3415,10 @@ class TaskEditBean(DefaultBean):
                     act.activityCreateUser = lid
                     act.activityUpdateUser = lid
                     act.task_id = task.taskID
-                    act.save()
+                    with transaction.atomic():
+                        act.save()
                 except Exception as err:
                     super().handleException(err) 
-                
                 
             parm = parms.get('addResource')
             if parm:
@@ -3414,10 +3432,10 @@ class TaskEditBean(DefaultBean):
                     res.resourceCreateUser = lid
                     res.resourceUpdateUser = lid
                     res.organization_id = orgid
-                    res.save()
+                    with transaction.atomic():
+                        res.save()
                 except Exception as err:
                     super().handleException(err)
-                
                 
             parm = parms.get('addSubtask')
             if parm:
@@ -3432,7 +3450,8 @@ class TaskEditBean(DefaultBean):
                     subtask.taskUpdateUser = lid
                     subtask.organization_id = orgid
                     subtask.parent_id=task.taskID
-                    subtask.save()
+                    with transaction.atomic():
+                        subtask.save()
                 except Exception as err:
                     super().handleException(err)  
     
@@ -3553,7 +3572,8 @@ class TaskEditBean(DefaultBean):
                 dirty = True
                 
             if dirty:
-                task.save()
+                with transaction.atomic():
+                    task.save()
         
         pid = task.parent_id
         #print(pid)
@@ -3664,8 +3684,8 @@ class TeamsBean(DefaultBean):
                     lid = login.loginID
                     if isinstance(lid,Attribute):
                         lid = lid.value
-                    team = self.of.getNewTeam(name, lid, org)
                     with transaction.atomic():
+                        team = self.of.getNewTeam(name, lid, org)
                         team.save()
             except Exception as pe:
                 super().handleException(pe)
@@ -3718,9 +3738,11 @@ class TeamEditBean(DefaultBean):
                     team = ObjectFactory().getTeam(oid=oid)
                     if action == 'Save':
                         team.setTeamName(name)
-                        team.save()
+                        with transaction.atomic():
+                            team.save()
                     elif action == 'Delete':
-                        team.delete()
+                        with transaction.atomic():
+                            team.delete()
                     else:
                         raise InvalidArgumentException('action')
             else:

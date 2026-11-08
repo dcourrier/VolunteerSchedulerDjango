@@ -1,21 +1,23 @@
 from django.db.models import F
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404,render,redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.urls import reverse
 from django.db import IntegrityError, transaction
-from django.views import generic,View
+from django.views import generic, View
 from loguru import logger
 from django.utils import timezone
 import traceback
 from vs.models import *
 from vscode.base.business_objects import *
-from vscode.utils.utils import ValuesHolder,Utils
+from vscode.utils.utils import ValuesHolder, Utils
 from vs.bean.beans import *
 from vscode.loader.loaders import LoaderManager
 
+
 def dashboard_view(request):
     return render(request, "dashboard.html")
+
 
 def initial(request):
     result = "vs/loginHtml"
@@ -23,9 +25,10 @@ def initial(request):
         LoaderManager().load()
     sd = SessionData()
     if not sd.organization:
-        #print(len(sd.orgs))
+        # print(len(sd.orgs))
         result = 'vs/organizationSelect'
     return redirect(result)
+
 
 def logout(request):
         ValuesHolder.setCurrentLogin(None)
@@ -36,11 +39,12 @@ def logout(request):
            
            
 class AddLocationView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddLocationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -51,31 +55,32 @@ class AddLocationView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/locations.html', context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect('/vs/locations')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddLocationView except'  + str(context))
             return render(request, 'vs/locations.html', context)
   
                     
 class AddProjectView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         oid = request.POST.get('oid')
         name = request.POST.get('name')
         finishDate = request.POST.get('finishDate')
         startDate = request.POST.get('startDate')
         
-        #print('AddLocationView post')
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -85,34 +90,35 @@ class AddProjectView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
-                context['name']=name
-                context['oid']=oid
-                context['finishDate']=finishDate
-                context['startDate']=startDate
+                context['err'] = True
+                context['errMsg'] = emsg
+                context['name'] = name
+                context['oid'] = oid
+                context['finishDate'] = finishDate
+                context['startDate'] = startDate
                 result = render(request, 'vs/projects.html', context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect('/vs/projects')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            context['name']=name
-            context['oid']=oid
-            context['finishDate']=finishDate
-            context['startDate']=startDate
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            context['name'] = name
+            context['oid'] = oid
+            context['finishDate'] = finishDate
+            context['startDate'] = startDate
+            # print('AddLocationView except'  + str(context))
             return render(request, 'vs/projects.html', context)
    
                     
 class AddOrganizationView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddOrganizationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddOrganizationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -123,26 +129,27 @@ class AddOrganizationView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/organizations.html', context)
-                #print('AddOrganizationView no except'  + str(result))
+                # print('AddOrganizationView no except'  + str(result))
                 return result
             return redirect('/vs/organizations')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddOrganizationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddOrganizationView except'  + str(context))
             return render(request, 'vs/organizations.html', context)
         
            
 class AddProjectResourceView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddLocationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -154,26 +161,27 @@ class AddProjectResourceView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = projBean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/projects.html', context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect('/vs/projects')
-        except Exception as err:            
+        except Exception as err: 
             context = projBean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddLocationView except'  + str(context))
             return render(request, 'vs/projects.html', context)
      
                     
 class AddResourceView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddLocationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -184,26 +192,27 @@ class AddResourceView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/resources.html', context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect('/vs/locations')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddLocationView except'  + str(context))
             return render(request, 'vs/resources.html', context)
            
            
 class AddSkillView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddskillView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddskillView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -214,26 +223,27 @@ class AddSkillView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/skills.html', context)
-                #print('AddskillView no except'  + str(result))
+                # print('AddskillView no except'  + str(result))
                 return result
             return redirect('/vs/skills')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddskillView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddskillView except'  + str(context))
             return render(request, 'vs/skills.html', context)
           
                     
 class AddSubprojectView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddLocationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -244,31 +254,31 @@ class AddSubprojectView(View):
         toProjectEdit = False 
         if cameFromProjectEdit and cameFromProjectEdit.lower() == 'true':
             toProjectEdit = True
-        #print('AddSubprojectView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
+        # print('AddSubprojectView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
         try: 
             context = bean.submit()
             tgt = '/vs/projects'
             if toProjectEdit:
-                tgt ='/vs/projectEdit?id=' + str(oid)
+                tgt = '/vs/projectEdit?id=' + str(oid)
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = projBean.setup()
                 context['oid'] = oid
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 if toProjectEdit:
                     tgt = 'vs/projectEdit.html'
                 result = render(request, tgt, context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect(tgt)
         except Exception as err:
-            #projBean.handleException(err)            
+            # projBean.handleException(err)            
             context = projBean.setup()
             context['oid'] = oid
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddLocationView except'  + str(context))
             if toProjectEdit:
                 tgt = 'vs/projectEdit.html'
             else:
@@ -277,8 +287,9 @@ class AddSubprojectView(View):
  
                     
 class AddTaskView(View):
+
     def post(self, request, *args, **kwargs):
-        #print('AddOrganizationView post')
+        # print('AddOrganizationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -288,30 +299,30 @@ class AddTaskView(View):
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = bean.setup()
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 result = render(request, 'vs/tasks.html', context)
-                #print('AddOrganizationView no except'  + str(result))
+                # print('AddOrganizationView no except'  + str(result))
                 return result
             return redirect('/vs/tasks')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddOrganizationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddOrganizationView except'  + str(context))
             return render(request, 'vs/tasks.html', context)
-     
     
-    def get(self,request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
      
    
 class AddTeamView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('AddLocationView post')
+    def post(self, request, *args, **kwargs):
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -322,33 +333,33 @@ class AddTeamView(View):
         toProjectEdit = False 
         if cameFromProjectEdit and cameFromProjectEdit.lower() == 'true':
             toProjectEdit = True
-        #print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
+        # print('AddTeamView ' + str(toProjectEdit) + ' ' + str(cameFromProjectEdit))
         try: 
             context = bean.submit()
             tgt = '/vs/projects'
             if toProjectEdit:
-                tgt ='/vs/projectEdit?id=' + str(oid)
+                tgt = '/vs/projectEdit?id=' + str(oid)
             if context.get('err'):
                 emsg = context.get('errMsg')           
                 context = projBean.setup()
                 context['oid'] = oid
-                context['err']=True
-                context['errMsg']=emsg
+                context['err'] = True
+                context['errMsg'] = emsg
                 if toProjectEdit:
                     tgt = '/vs/projectEdit.html'
                 else:
                     tgt = '/vs/projects'
                 result = render(request, tgt, context)
-                #print('AddLocationView no except'  + str(result))
+                # print('AddLocationView no except'  + str(result))
                 return result
             return redirect(tgt)
         except Exception as err:
             projBean.handleException(err)            
             context = projBean.setup()
             context['oid'] = oid
-            context['err']=True
-            context['errMsg']=str(err)
-            #print('AddLocationView except'  + str(context))
+            context['err'] = True
+            context['errMsg'] = str(err)
+            # print('AddLocationView except'  + str(context))
             if toProjectEdit:
                 tgt = '/vs/projectEdit.html'
             else:
@@ -357,8 +368,9 @@ class AddTeamView(View):
 
    
 class AssignResourceView(View):
+
     def get(self, request, *args, **kwargs):
-        #print('AddLocationView post')
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -376,17 +388,18 @@ class AssignResourceView(View):
             bean.handleException(err) 
             context = bean.setup()         
             context['err'] = True
-            context['errMsg']=str(err)
+            context['errMsg'] = str(err)
             tgt = 'vs/projectEdit.html'
             return render(request, tgt, context)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
  
    
 class AssignTeamView(View):
+
     def get(self, request, *args, **kwargs):
-        #print('AddLocationView post')
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -397,8 +410,8 @@ class AssignTeamView(View):
         projectID = request.GET.get('projectID')
         teamID = request.GET.get('id')
         try:
-            proj = bean.of.getProject(oid=projectID,dbo=True)
-            team = bean.of.getTeam(oid=teamID,dbo=True)
+            proj = bean.of.getProject(oid=projectID, dbo=True)
+            team = bean.of.getTeam(oid=teamID, dbo=True)
             proj.teams.add(team)
             proj.save()
             return redirect('/vs/projectEdit?id=' + str(projectID))
@@ -406,18 +419,18 @@ class AssignTeamView(View):
             bean.handleException(err) 
             context = bean.setup()         
             context['err'] = True
-            context['errMsg']=str(err)
+            context['errMsg'] = str(err)
             tgt = 'vs/projectEdit.html'
             return render(request, tgt, context)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
  
         
 class DummyView(View):
         
-    def post(self,request, *args, **kwargs):
-        return render(request,"vs/dummy.html")
+    def post(self, request, *args, **kwargs):
+        return render(request, "vs/dummy.html")
     
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -425,19 +438,20 @@ class DummyView(View):
 
 class HelpView(View):
         
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         bean = HelpBean(request)
-        return render(request,bean.getURL())
+        return render(request, bean.getURL())
     
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
 
          
 class Home(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         context = {}
         try:
             bean = HomeBean(request)
@@ -450,10 +464,11 @@ class Home(View):
 
          
 class HouseholdsView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         bean = HomeBean(request)
         if bean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -463,7 +478,7 @@ class HouseholdsView(View):
             
 class LocationEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -481,10 +496,11 @@ class LocationEditView(View):
    
                 
 class LocationsView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -494,11 +510,12 @@ class LocationsView(View):
  
                 
 class LocationUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('LocationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('LocationUpdateView')
         oid = request.POST.get('oid')
         SessionData().oid = oid
         hBean = HomeBean(request)
@@ -510,23 +527,24 @@ class LocationUpdateView(View):
                 bean.submit()
             return redirect('/vs/locations')
         except Exception as err:
-            #traceback.print_exc()   
+            # traceback.print_exc()   
             context = bean.setup()
-            context['oid']= oid                  
-            context['err']=True 
-            context['errMsg']=str(err)
+            context['oid'] = oid                  
+            context['err'] = True 
+            context['errMsg'] = str(err)
             context['nameMaxLength'] = Location.NAME_LENGTH
-            #print('LocationUpdateView handling err')
+            # print('LocationUpdateView handling err')
             return render(request, "vs/locationEdit.html", context)
 
 
 class LoginView(View):
-    def post(self,request, *args, **kwargs):
+
+    def post(self, request, *args, **kwargs):
         loginName = request.POST.get('login')
         pwd = request.POST.get('password')
         try:
-            LoginBean(request).attempt(loginName,pwd)
-            #print(target)
+            LoginBean(request).attempt(loginName, pwd)
+            # print(target)
             return redirect('/vs/home')
         except InvalidPasswordException:
             msg = 'The password is invalid'
@@ -557,7 +575,7 @@ class LoginView(View):
           
 class OrganizationEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -575,10 +593,11 @@ class OrganizationEditView(View):
    
         
 class OrganizationsView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -588,10 +607,11 @@ class OrganizationsView(View):
             
         
 class OrganizationSelectView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         try:
             hBean = HomeBean(request)
             if hBean.isVolunteerUser():
@@ -600,15 +620,16 @@ class OrganizationSelectView(View):
             pass
         bean = OrganizationSelectionBean(request)
         context = bean.setup()
-        #print(context)
+        # print(context)
         return render(request, "vs/organizationSelect.html", context)
           
           
 class OrganizationSelectedView(View):
+
     def get(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         try:
             hBean = HomeBean(request)
             if hBean.isVolunteerUser():
@@ -621,11 +642,12 @@ class OrganizationSelectedView(View):
    
         
 class OrganizationUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('OrganizationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('OrganizationUpdateView')
         oid = request.POST.get('oid')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
@@ -635,17 +657,18 @@ class OrganizationUpdateView(View):
             with transaction.atomic():
                 bean.submit()
             return redirect('/vs/organizations')
-        except Exception as err:            
+        except Exception as err: 
             bean = OrganizationEditBean(request)
             context = bean.setup(oid)
-            context['oid']= oid                  
-            context['err']=True 
-            context['errMsg']=str(err) + ' bug'
-            #print('OrganizationUpdateView handling err')
+            context['oid'] = oid                  
+            context['err'] = True 
+            context['errMsg'] = str(err) + ' bug'
+            # print('OrganizationUpdateView handling err')
             return render(request, "vs/organizationEdit.html", context)
 
             
 class ProjectEditView(View):
+
     def get(self, request, *args, **kwargs):
         try:
             hBean = HomeBean(request)
@@ -659,16 +682,16 @@ class ProjectEditView(View):
         context = bean.setup()                  
         return  render(request, "vs/projectEdit.html", context)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
-    
     
                   
 class ProjectsView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -678,12 +701,13 @@ class ProjectsView(View):
 
                 
 class ProjectUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         sd = SessionData()
-        #print('LocationUpdateView')
+        # print('LocationUpdateView')
         oid = request.POST.get('oid')
         name = request.POST.get('name')
         startDate = request.POST.get('startDate')
@@ -695,27 +719,27 @@ class ProjectUpdateView(View):
         bean = ProjectEditBean(request)
         try: 
             bean.submit()
-            #print('ProjectUpdateView handling success')
+            # print('ProjectUpdateView handling success')
             tgt = '/vs/projects'
             if sd.cameFromProjectEdit:
-                tgt ='/vs/projectEdit?id=' + str(sd.projectID)
+                tgt = '/vs/projectEdit?id=' + str(sd.projectID)
             return redirect(tgt)
         except Exception as err:
-            #traceback.print_exc()   
+            # traceback.print_exc()   
             context = bean.setup(oid)
-            context['oid']= oid  
-            context['name']= name     
-            context['startDate']= startDate
-            context['finishDate']= finishDate                       
-            context['err']=True 
-            context['errMsg']=repr(err)
-            #print('ProjectUpdateView handling err ' + str(context))
+            context['oid'] = oid  
+            context['name'] = name     
+            context['startDate'] = startDate
+            context['finishDate'] = finishDate                       
+            context['err'] = True 
+            context['errMsg'] = repr(err)
+            # print('ProjectUpdateView handling err ' + str(context))
             return render(request, "vs/projectEdit.html", context)
  
             
 class ProjectResourceEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -733,11 +757,12 @@ class ProjectResourceEditView(View):
 
                 
 class ProjectResourceUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('LocationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('LocationUpdateView')
         oid = request.POST.get('oid')
         name = request.POST.get('name')
         amount = request.POST.get('amount')
@@ -752,18 +777,19 @@ class ProjectResourceUpdateView(View):
         except Exception as err:
             traceback.print_exc()   
             context = bean.setup()
-            context['oid']= oid  
-            context['name']= name     
-            context['amount']= amount                     
-            context['err']=True 
-            context['errMsg']=str(err)
-            #print('LocationUpdateView handling err')
+            context['oid'] = oid  
+            context['name'] = name     
+            context['amount'] = amount                     
+            context['err'] = True 
+            context['errMsg'] = str(err)
+            # print('LocationUpdateView handling err')
             return render(request, "vs/projectResourceEdit.html", context)
  
    
 class ReleaseResourceView(View):
+
     def get(self, request, *args, **kwargs):
-        #print('AddLocationView post')
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -781,17 +807,17 @@ class ReleaseResourceView(View):
             bean.handleException(err) 
             context = bean.setup()         
             context['err'] = True
-            context['errMsg']=str(err)
+            context['errMsg'] = str(err)
             tgt = 'vs/projectEdit.html'
             return render(request, tgt, context)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
  
             
 class ResourceEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -809,10 +835,11 @@ class ResourceEditView(View):
    
                
 class ResourcesView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -822,11 +849,12 @@ class ResourcesView(View):
 
                 
 class ResourceUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('LocationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('LocationUpdateView')
         oid = request.POST.get('oid')
         name = request.POST.get('name')
         amount = request.POST.get('amount')
@@ -840,20 +868,20 @@ class ResourceUpdateView(View):
                 bean.submit()
             return redirect('/vs/resources')
         except Exception as err:
-            #traceback.print_exc()   
+            # traceback.print_exc()   
             context = bean.setup()
-            context['oid']= oid  
-            context['name']= name     
-            context['amount']= amount                     
-            context['err']=True 
-            context['errMsg']=str(err)
-            #print('LocationUpdateView handling err')
+            context['oid'] = oid  
+            context['name'] = name     
+            context['amount'] = amount                     
+            context['err'] = True 
+            context['errMsg'] = str(err)
+            # print('LocationUpdateView handling err')
             return render(request, "vs/resourceEdit.html", context)
        
             
 class SkillEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -871,10 +899,11 @@ class SkillEditView(View):
    
                 
 class SkillsView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -884,11 +913,12 @@ class SkillsView(View):
       
                 
 class SkillUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('OrganizationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('OrganizationUpdateView')
         oid = request.POST.get('oid')
         SessionData().oid = oid
         hBean = HomeBean(request)
@@ -899,20 +929,21 @@ class SkillUpdateView(View):
             with transaction.atomic():
                 bean.submit()
             return redirect('/vs/skills')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['oid']= oid                  
-            context['err']=True 
-            context['errMsg']=str(err) 
-            #print('OrganizationUpdateView handling err')
+            context['oid'] = oid                  
+            context['err'] = True 
+            context['errMsg'] = str(err) 
+            # print('OrganizationUpdateView handling err')
             return render(request, "vs/skillEdit.html", context)
 
         
 class TasksView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -923,7 +954,7 @@ class TasksView(View):
             
 class TaskEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -941,11 +972,12 @@ class TaskEditView(View):
      
                 
 class TaskUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('OrganizationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('OrganizationUpdateView')
         oid = request.POST.get('oid')
         SessionData().oid = oid
         hBean = HomeBean(request)
@@ -954,20 +986,20 @@ class TaskUpdateView(View):
         bean = TaskEditBean(request)
         try: 
             whereToGo = bean.submit()
-            #print(whereToGo)
+            # print(whereToGo)
             return redirect(whereToGo)
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['oid']= oid                  
-            context['err']=True 
-            context['errMsg']=str(err) 
-            #print('OrganizationUpdateView handling err')
+            context['oid'] = oid                  
+            context['err'] = True 
+            context['errMsg'] = str(err) 
+            # print('OrganizationUpdateView handling err')
             return render(request, "vs/taskEdit.html", context)
         
             
 class TeamEditView(View):
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return  self.get(request, *args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -985,11 +1017,12 @@ class TeamEditView(View):
      
                 
 class TeamUpdateView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        #print('OrganizationUpdateView')
+    def post(self, request, *args, **kwargs):
+        # print('OrganizationUpdateView')
         oid = request.POST.get('oid')
         projectID = SessionData().projectID
         SessionData().oid = oid
@@ -1000,18 +1033,19 @@ class TeamUpdateView(View):
         try: 
             bean.submit()
             return redirect('/vs/projects')
-        except Exception as err:            
+        except Exception as err: 
             context = bean.setup()
-            context['oid']= oid                  
-            context['err']=True 
-            context['errMsg']=str(err) 
-            #print('OrganizationUpdateView handling err')
+            context['oid'] = oid                  
+            context['err'] = True 
+            context['errMsg'] = str(err) 
+            # print('OrganizationUpdateView handling err')
             return render(request, "vs/teamEdit.html", context)
 
    
 class UnassignTeamView(View):
+
     def get(self, request, *args, **kwargs):
-        #print('AddLocationView post')
+        # print('AddLocationView post')
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
@@ -1022,8 +1056,8 @@ class UnassignTeamView(View):
         projectID = request.GET.get('projectID')
         teamID = request.GET.get('id')
         try:
-            proj = bean.of.getProject(oid=projectID,dbo=True)
-            team = bean.of.getTeam(oid=teamID,dbo=True)
+            proj = bean.of.getProject(oid=projectID, dbo=True)
+            team = bean.of.getTeam(oid=teamID, dbo=True)
             proj.teams.remove (team)
             proj.save()
             return redirect('/vs/projectEdit?id=' + str(projectID))
@@ -1031,19 +1065,20 @@ class UnassignTeamView(View):
             bean.handleException(err) 
             context = bean.setup()         
             context['err'] = True
-            context['errMsg']=str(err)
+            context['errMsg'] = str(err)
             tgt = 'vs/projectEdit.html'
             return render(request, tgt, context)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
      
       
 class VolunteersView(View):
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         bean = HomeBean(request)
         if bean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
