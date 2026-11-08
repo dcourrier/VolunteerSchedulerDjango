@@ -3723,4 +3723,3 @@ class TeamEditBean(DefaultBean):
                 raise MissingArgumentException('name must not be blank or all spaces')
         else:
             raise MissingParameterException('oid not provided')     
-               

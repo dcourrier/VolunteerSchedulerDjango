@@ -416,6 +416,7 @@ td.center {
 }
 
 td.centered inherit center {
+    text-align: center;
 }
 
 td.header {

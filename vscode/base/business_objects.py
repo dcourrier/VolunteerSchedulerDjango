@@ -1,7 +1,7 @@
 from datetime import datetime as DT, date
 from dateutil.relativedelta import relativedelta
 from django.db import connection
-from  django.db.models import Q
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from operator import attrgetter
 import re
@@ -135,7 +135,6 @@ class BusinessObject(BusinessObjectBase):
             raise InvalidArgumentException(AttributeMessageFactory.None_ERROR)
         self.message += ('\n' + m)
         
-
 
 class ResourceAvailability():
 
