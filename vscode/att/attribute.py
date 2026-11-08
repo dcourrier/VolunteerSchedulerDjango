@@ -963,7 +963,8 @@ class CurrencyAttribute(Attribute):
             self.value = None
         else:
             if isinstance(newV, str):
-                newV = Decimal(newV).quantize(Decimal(0.01), rounding=ROUND_HALF_UP)
+                dec = Decimal(newV)
+                newV = dec.quantize(Decimal(0.00), rounding=ROUND_HALF_UP)
             elif isinstance(newV, float):
                 newV = Decimal(str(newV)) 
             elif isinstance(newV, int):

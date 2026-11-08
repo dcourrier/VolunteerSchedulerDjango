@@ -2754,6 +2754,7 @@ class ProjectResourcesBean(DefaultBean):
     def submit(self):
         name = self.sessionData.request.POST.get('projectResourceName')
         count = self.sessionData.request.POST.get('count')
+        cost = self.sessionData.request.POST.get('cost')
         if not self.sessionData.context:
             self.sessionData.context = {}
         login = self.sessionData.getCurrentLogin()
@@ -2777,8 +2778,11 @@ class ProjectResourcesBean(DefaultBean):
                     pr = self.of.getNewProjectResource(name, login.loginID, org)
                     if count:
                         pr.setCount(count)
+                    if cost:
+                        pr.setCost(cost)
                     pr.save()
             except Exception as pe:
+                super().handleException(pe)
                 error = True
                 errorMessage = str(pe)
         if error:

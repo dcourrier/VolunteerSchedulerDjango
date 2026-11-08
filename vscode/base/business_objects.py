@@ -11659,7 +11659,7 @@ class ObjectFactory(VSBase):
         try:
             orgid = self.getOrgid(org)
             dbos = DbProjectResource.objects.exclude(deleteFlag=True)\
-            .filter(organization_id=orgid)
+            .filter(organization_id=orgid).order_by('name')
             for db in dbos:
                 if dbo:
                     result.append(db)

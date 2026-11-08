@@ -66,7 +66,7 @@
 	</td></tr>
 	{% VSAuthorizer_end %}
 	<tr><td>
-		<table align='center'>
+		<table align='center' width='100%'>
 			<tr>
 			{% VSAuthorizer _type=ADD_TEAM %}
 				<td align='center'>
@@ -118,6 +118,16 @@
 		                     pattern="\d{1,5}" 
 		                     size='5'
 		                     title="Must be numeric 1 - 99999"/> 
+		                     &nbsp;&nbsp;
+		                     <label for='cost'>Cost: </label>
+		                     <input type="text" 
+		                     id="cost" 
+		                     name="cost" 
+		                     inputmode="numeric" 
+							 placeholder="$0.00" 
+							 pattern="^\$?[1-9]\d{0,2}(,\d{3})*(\.\d{1,2})?$|^^\$?0(\.\d{1,2})?$" 
+							 title="Please enter a valid cash amount (e.g., 100 or $1,500.50)"
+		                     size='5' /> 
 					  		</td>
 				  		</tr>
 				  		<tr><td align='center'>
