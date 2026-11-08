@@ -417,7 +417,7 @@ class AssignTeamView(View):
 class DummyView(View):
         
     def post(self,request, *args, **kwargs):
-        return redirect("/vs/home")
+        return render(request,"vs/dummy.html")
     
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
@@ -947,15 +947,15 @@ class TaskUpdateView(View):
     def post(self,request, *args, **kwargs):
         #print('OrganizationUpdateView')
         oid = request.POST.get('oid')
-        projectID = SessionData().projectID
         SessionData().oid = oid
         hBean = HomeBean(request)
         if hBean.isVolunteerUser():
             return render(request, 'vs/volunteerHome')
         bean = TaskEditBean(request)
         try: 
-            bean.submit()
-            return redirect('/vs/taskEdit?id=' + str(oid))
+            whereToGo = bean.submit()
+            #print(whereToGo)
+            return redirect(whereToGo)
         except Exception as err:            
             context = bean.setup()
             context['oid']= oid                  

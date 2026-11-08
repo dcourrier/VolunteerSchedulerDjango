@@ -2437,31 +2437,43 @@ class ProjectEditBean(DefaultBean):
     def getResourceCostsTable(self,project, org):
         s = ''
         costs = {}
-        print('getResourceCostsTable')
+        #print('getResourceCostsTable')
         for tsk in self.of.getTasks(proj=project,dbo=True):
-            print(tsk)
+            #print(tsk)
             for res in tsk.resources.all():
-                print(res)
+                #print(res)
+                usg = [0,0.00]
                 count = 0
-                for pru in DbProjectResourceUsage.objects.filter(task_id=tsk.taskID):
+                for pru in DbProjectResourceUsage.objects.filter(task_id=tsk.taskID)\
+                .filter(resource_id=res.resourceID):
                     count += pru.count
-                if count:
-                    usg = costs.get(res.name)
-                    if usg:
-                        costs[res.name] = (count * res.cost) + usg
-                    else:
-                        costs[res.name] = (count * res.cost)
-                print()
+                    if count:
+                        usg = costs.get(res.name)
+                        if usg:
+                            newUsg = [count + usg[0], (count * res.cost) + usg[1]] 
+                            costs[res.name] = newUsg
+                        else:
+                            costs[res.name] = [count, count * res.cost]
+        #print(costs)
         if costs:
             costs = dict(sorted(costs.items()))
-            s = '\n<table class="listTable">\n'
-            for name,cost in costs:
-                s += '<tr><td>'
+            s = '\n<div class="table-container">'
+            s += '\n<table  class="scrollableFixedHeader" border=1>'
+            s += '\n<thead class="scrollableFixedHeader">'
+            s += '\n<tr class="header-row-1"><th colspan=3>Resource Usage</th></tr>'
+            s += '\n<tr class="header-row-2"><th>Item</th><th>Count</th><th>Cost</th></tr>'
+            s += '</thead>\n<tbody>'
+            for name in costs:
+                usg = costs[name]
+                #print(usg)
+                s += '\n<tr><td>'
                 s += name
                 s += '</td><td>'
-                s += str(cost)
-                s += '</td></tr>\n'
-            s += '</table>'
+                s += str(usg[0])
+                s += '</td><td>'
+                s += str(usg[1])
+                s +='</td></tr>'
+            s += '\n</tbody>\n</table>\n</div>'
             return s
     
     def getAssignedTeamsTable(self,project, org):
@@ -3236,7 +3248,7 @@ class TaskEditBean(DefaultBean):
                                 height=140,
                                 items=srtd,
                                 #extra=" onclick='checkForModal(this);return false;'",
-                                dest='subtaskEdit?cameFrom=task&taskID=' + str(task.taskID))
+                                dest='taskEdit?cameFrom=task&taskID=' + str(task.taskID))
         return result 
     
     
@@ -3367,173 +3379,185 @@ class TaskEditBean(DefaultBean):
         request = self.sessionData.request
         parms = request.POST.dict()
         #print(parms)
-        parm = parms.get('addActivity')
+        parm = parms.get('Cancel')
         if parm:
-            try:
-                actName = parms.get('activity')
-                act = DbActivity()
-                act.name = actName
-                lid = super().getCurrentLoginId()
-                act.activityCreateUser = lid
-                act.activityUpdateUser = lid
-                act.task_id = task.taskID
-                act.save()
-            except Exception as err:
-                super().handleException(err) 
-            
-            
-        parm = parms.get('addResource')
-        if parm:
-            try:
-                resName = parms.get('newResource')
-                resQty = parms.get('newResourceQuantity')
-                res = DbProjectResource()
-                res.name = resName
-                res.count = resQty
-                lid = super().getCurrentLoginId()
-                res.resourceCreateUser = lid
-                res.resourceUpdateUser = lid
-                res.organization_id = orgid
-                res.save()
-            except Exception as err:
-                super().handleException(err)
-            
-            
-        parm = parms.get('addSubtask')
-        if parm:
-            try:
-                seq = parms.get('newTaskSequence')
-                taskName = parms.get('subtask')
-                subtask = DbTask()
-                subtask.taskSequence=seq
-                subtask.taskName = taskName
-                lid = super().getCurrentLoginId()
-                subtask.taskCreateUser = lid
-                subtask.taskUpdateUser = lid
-                subtask.organization_id = orgid
-                subtask.parent_id=task.taskID
-                subtask.save()
-            except Exception as err:
-                super().handleException(err)  
-
-        sequence = parms.get('sequence')
-        seq = int(sequence)
-        #print('seq ' + str(seq))
-        if sequence and seq != task.taskSequence:
-            task.taskSequence = seq
-            dirty = True
-        #print('taskEditBean submit sequence ' + str(sequence))
-        
-        name = parms.get('name')    
-        
-        if name and name != task.taskName:
-            task.taskName = name
-            dirty = True
-        #print('taskEditBean submit name ' + str(name))
-               
-        statusID = parms.get('taskStatus')
-        if statusID and int(statusID) !=  task.taskStatus_id:
-            task.taskStatus_id = int(statusID)
-            dirty = True
-        #print('taskEditBean submit statusID ' + str(statusID))
-        
-        estimatedEffort = parms.get('estimatedEffort')
-        if estimatedEffort:
-            iEffort = int(estimatedEffort)
-            if iEffort != task.estimatedTaskEffort:
-                task.estimatedTaskEffort = iEffort
-                dirty = True
+            pass
         else:
-            task.estimatedTaskEffort = None
-            dirty = True
-            
-        plannedTaskStart = parms.get('plannedTaskStart')
-        if plannedTaskStart:
-            try:
-                pStart = DT.strptime(plannedTaskStart, "%m/%d/%Y").date()
-                if pStart != task.plannedTaskStart:
-                    task.plannedTaskStart = pStart
-                    dirty = True
-            except:
-                raise Exception('Planned Task start  must be formatted mm/dd/yyyy')
-        #print('taskEditBean submit plannedTaskStart ' + str(plannedTaskStart))
-            
-        plannedTaskFinish = parms.get('plannedTaskFinish')
-        if plannedTaskFinish:
-            try:
-                pFinish = DT.strptime(plannedTaskFinish, "%m/%d/%Y").date()
-                if pFinish != task.plannedTaskFinish:
-                    task.plannedTaskFinish = pFinish
-                    dirty = True
-            except:
-                raise Exception('Planned task finish  must be formatted mm/dd/yyyy')
-        
-        actualTaskEffort = parms.get('actualTaskEffort')
-        if actualTaskEffort:
-            iEffort = int(actualTaskEffort)
-            if iEffort != task.actualTaskEffort:
-                task.actualTaskEffort = iEffort
+            parm = parms.get('addActivity')
+            if parm:
+                try:
+                    actName = parms.get('activity')
+                    act = DbActivity()
+                    act.name = actName
+                    lid = super().getCurrentLoginId()
+                    act.activityCreateUser = lid
+                    act.activityUpdateUser = lid
+                    act.task_id = task.taskID
+                    act.save()
+                except Exception as err:
+                    super().handleException(err) 
+                
+                
+            parm = parms.get('addResource')
+            if parm:
+                try:
+                    resName = parms.get('newResource')
+                    resQty = parms.get('newResourceQuantity')
+                    res = DbProjectResource()
+                    res.name = resName
+                    res.count = resQty
+                    lid = super().getCurrentLoginId()
+                    res.resourceCreateUser = lid
+                    res.resourceUpdateUser = lid
+                    res.organization_id = orgid
+                    res.save()
+                except Exception as err:
+                    super().handleException(err)
+                
+                
+            parm = parms.get('addSubtask')
+            if parm:
+                try:
+                    seq = parms.get('newTaskSequence')
+                    taskName = parms.get('subtask')
+                    subtask = DbTask()
+                    subtask.taskSequence=seq
+                    subtask.taskName = taskName
+                    lid = super().getCurrentLoginId()
+                    subtask.taskCreateUser = lid
+                    subtask.taskUpdateUser = lid
+                    subtask.organization_id = orgid
+                    subtask.parent_id=task.taskID
+                    subtask.save()
+                except Exception as err:
+                    super().handleException(err)  
+    
+            sequence = parms.get('sequence')
+            seq = int(sequence)
+            #print('seq ' + str(seq))
+            if sequence and seq != task.taskSequence:
+                task.taskSequence = seq
                 dirty = True
-        else:
-            task.actualTaskEffort = None
-            dirty = True
+            #print('taskEditBean submit sequence ' + str(sequence))
             
-        actualTaskStart = parms.get('actualTaskStart')
-        if actualTaskStart:
-            try:
-                pStart = DT.strptime(actualTaskStart, "%m/%d/%Y").date()
-                if pStart != task.actualTaskStart:
-                    task.actualTaskStart = pStart
-                    dirty = True
-            except:
-                raise Exception('Actual Task start  must be formatted mm/dd/yyyy')
-        #print('taskEditBean submit plannedTaskStart ' + str(plannedTaskStart))
+            name = parms.get('name')    
             
-        actualTaskFinish = parms.get('actualTaskFinish')
-        if actualTaskFinish:
-            try:
-                pFinish = DT.strptime(actualTaskFinish, "%m/%d/%Y").date()
-                if pFinish != task.actualTaskFinish:
-                    task.actualTaskFinish = pFinish
+            if name and name != task.taskName:
+                task.taskName = name
+                dirty = True
+            #print('taskEditBean submit name ' + str(name))
+                   
+            statusID = parms.get('taskStatus')
+            if statusID and int(statusID) !=  task.taskStatus_id:
+                task.taskStatus_id = int(statusID)
+                dirty = True
+            #print('taskEditBean submit statusID ' + str(statusID))
+            
+            estimatedEffort = parms.get('estimatedEffort')
+            if estimatedEffort:
+                iEffort = int(estimatedEffort)
+                if iEffort != task.estimatedTaskEffort:
+                    task.estimatedTaskEffort = iEffort
                     dirty = True
-            except:
-                raise Exception('Actual task finish  must be formatted mm/dd/yyyy')
+            else:
+                task.estimatedTaskEffort = None
+                dirty = True
+                
+            plannedTaskStart = parms.get('plannedTaskStart')
+            if plannedTaskStart:
+                try:
+                    pStart = DT.strptime(plannedTaskStart, "%m/%d/%Y").date()
+                    if pStart != task.plannedTaskStart:
+                        task.plannedTaskStart = pStart
+                        dirty = True
+                except:
+                    raise Exception('Planned Task start  must be formatted mm/dd/yyyy')
+            #print('taskEditBean submit plannedTaskStart ' + str(plannedTaskStart))
+                
+            plannedTaskFinish = parms.get('plannedTaskFinish')
+            if plannedTaskFinish:
+                try:
+                    pFinish = DT.strptime(plannedTaskFinish, "%m/%d/%Y").date()
+                    if pFinish != task.plannedTaskFinish:
+                        task.plannedTaskFinish = pFinish
+                        dirty = True
+                except:
+                    raise Exception('Planned task finish  must be formatted mm/dd/yyyy')
+            
+            actualTaskEffort = parms.get('actualTaskEffort')
+            if actualTaskEffort:
+                iEffort = int(actualTaskEffort)
+                if iEffort != task.actualTaskEffort:
+                    task.actualTaskEffort = iEffort
+                    dirty = True
+            else:
+                task.actualTaskEffort = None
+                dirty = True
+                
+            actualTaskStart = parms.get('actualTaskStart')
+            if actualTaskStart:
+                try:
+                    pStart = DT.strptime(actualTaskStart, "%m/%d/%Y").date()
+                    if pStart != task.actualTaskStart:
+                        task.actualTaskStart = pStart
+                        dirty = True
+                except:
+                    raise Exception('Actual Task start  must be formatted mm/dd/yyyy')
+            #print('taskEditBean submit plannedTaskStart ' + str(plannedTaskStart))
+                
+            actualTaskFinish = parms.get('actualTaskFinish')
+            if actualTaskFinish:
+                try:
+                    pFinish = DT.strptime(actualTaskFinish, "%m/%d/%Y").date()
+                    if pFinish != task.actualTaskFinish:
+                        task.actualTaskFinish = pFinish
+                        dirty = True
+                except:
+                    raise Exception('Actual task finish  must be formatted mm/dd/yyyy')
+            
+            selectedSkills = request.POST.getlist('taskSkills')
+            if len(selectedSkills) > 0:
+                ids = []
+                for s in selectedSkills:
+                    ids.append(int(s))
+                task.skills.set(ids)
+                dirty = True
+            elif len(task.skills.all()) > 0:
+                task.skills.clear()
+                dirty = True
+                
+            selectedTeams =  request.POST.getlist('teams')
+            if len(selectedTeams) > 0:
+                ids = []
+                for s in selectedTeams:
+                    ids.append(int(s))
+                task.teams.set(ids)
+                dirty = True
+            elif len(task.teams.all()) > 0:
+                task.teams.clear()
+                dirty = True
+                
+            selectedVols =  request.POST.getlist('volunteers')
+            if len(selectedVols) > 0:
+                ids = []
+                for s in selectedVols:
+                    ids.append(int(s))
+                task.volunteers.set(ids)
+                dirty = True
+            elif len(task.volunteers.all()) > 0:
+                task.volunteers.clear()
+                dirty = True
+                
+            if dirty:
+                task.save()
         
-        selectedSkills = request.POST.getlist('taskSkills')
-        if len(selectedSkills) > 0:
-            ids = []
-            for s in selectedSkills:
-                ids.append(int(s))
-            task.skills.set(ids)
-            dirty = True
-        elif len(task.skills.all()) > 0:
-            task.skills.clear()
-            dirty = True
-            
-        selectedTeams =  request.POST.getlist('teams')
-        if len(selectedTeams) > 0:
-            ids = []
-            for s in selectedTeams:
-                ids.append(int(s))
-            task.teams.set(ids)
-            dirty = True
-        elif len(task.teams.all()) > 0:
-            task.teams.clear()
-            dirty = True
-            
-        selectedVols =  request.POST.getlist('volunteers')
-        if len(selectedVols) > 0:
-            ids = []
-            for s in selectedVols:
-                ids.append(int(s))
-            task.volunteers.set(ids)
-            dirty = True
-        elif len(task.volunteers.all()) > 0:
-            task.volunteers.clear()
-            dirty = True
-            
-        if dirty:
-            task.save()
+        pid = task.parent_id
+        #print(pid)
+        result = '/vs/tasks'    
+        if pid:
+            result = '/vs/taskEdit?id=' + str(pid)
+        #print(result)
+        return result
         
 class TasksBean(DefaultBean):
     

@@ -1,5 +1,50 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title=Project Edit help='/vs/help?projects'%}
+<c-slot name='extraHead'>
+
+  <style>
+    /* 1. The Scrollable Wrapper Container */
+    div.table-container {
+      max-height: 148px;    /* Limits height to force vertical scrollbar */
+      overflow-y: auto;     /* Enables vertical scrolling */
+      overflow-x: auto;     /* Enables horizontal scrolling if content is wide */
+      width: 100%;
+    }
+
+    /* Base Table Styling */
+    table.scrollableFixedHeader {
+      border-collapse: collapse;
+      width: 100%;
+      font-family: sans-serif;
+    }
+
+   td.scrollableFixedHeader {
+      padding: 12px 15px;
+      text-align: center;
+      border: 1px solid rgb(0, 0, 0);
+    }
+
+    /* 2. Global Sticky Header Rules */
+        thead th.scrollableFixedHeader {
+      	position: sticky;
+    	background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
+        z-index: 2;                /* Keeps headers above scrolling body cells */
+    }
+
+    /* 3. Row-Specific Top Offsets (The Magic Link) */
+    .header-row-1 th {
+        top: 0;
+        height: 45px;
+    	background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
+    }
+
+    .header-row-2 th {
+        top: 45px; /* Must equal the exact height of the first row */
+   		background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
+    }
+
+  </style>
+</c-slot>
 <script type="text/javascript">
 	function loaded() {}
 </script>
@@ -87,7 +132,9 @@
                 </td></tr>
         </form>
     </table>
-<table width='100%' align='center'><tr><td width='66%' align=right>
+<table width='100%' align='center'>
+	<tr>
+		<td width='66%' align=right>
 {% VSAuthorizer_end %}
 <table width='100%' align='center'>
 {% VSAuthorizer _type=ADD_TEAM %}
@@ -137,8 +184,12 @@
 {% VSAuthorizer_end %}
 </tr>
 {% VSAuthorizer _type=UPDATE_TEAM%}
-	<tr><td>{{ availableTeams|safe }}</td><td>{{ assignedTeams|safe }}</td>
-	<td>{{ ResourceCosts|safe }}</td></tr>	
+<tr align='center'><td colspan=2>
+	<table align='center' width='100%'>
+	<tr valign='top' ><td align='right' width='33%'>{{ availableTeams|safe }}</td>
+	<td align='center' width='33%'>{{ assignedTeams|safe }}</td>
+	<td valign='top' align='left'>{{ ResourceCosts|safe }}</td></tr></table>
+</td></tr>	
 {% VSAuthorizer_end %}
 </table>
 {% endcotton %}
