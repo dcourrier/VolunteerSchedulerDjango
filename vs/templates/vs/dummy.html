@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scrollable Table with 2 Fixed Headers</title>
+  <style>
+    /* 1. The Scrollable Wrapper Container */
+    .table-container {
+      max-height: 400px;    /* Limits height to force vertical scrollbar */
+      overflow-y: auto;     /* Enables vertical scrolling */
+      overflow-x: auto;     /* Enables horizontal scrolling if content is wide */
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    /* Base Table Styling */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-family: sans-serif;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    /* 2. Global Sticky Header Rules */
+    thead th {
+      position: sticky;
+      background-color: #f4f4f4; /* Background color is mandatory to prevent underlying data from bleeding through */
+      z-index: 2;                /* Keeps headers above scrolling body cells */
+    }
+
+    /* 3. Row-Specific Top Offsets (The Magic Link) */
+    .header-row-1 th {
+      top: 0;
+      background-color: #2c3e50;
+      color: white;
+    }
+
+    .header-row-2 th {
+      top: 45px; /* Must equal the exact height of the first row */
+      background-color: #34495e;
+      color: white;
+    }
+
+    /* Optional: Style body rows for readability */
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <!-- FIRST FIXED ROW -->
+        <tr class="header-row-1">
+          <th colspan="2">Category Info</th>
+          <th colspan="2">Financial Details</th>
+        </tr>
+        <!-- SECOND FIXED ROW -->
+        <tr class="header-row-2">
+          <th>ID</th>
+          <th>Name</th>
+          <th>Quarterly Revenue</th>
+          <th>Net Profit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Mock Data Rows to Force Scrolling -->
+        <tr><td>001</td><td>Alpha Corp</td><td>$12,000</td><td>$2,500</td></tr>
+        <tr><td>002</td><td>Beta LLC</td><td>$15,000</td><td>$3,100</td></tr>
+        <tr><td>003</td><td>Gamma Inc</td><td>$9,400</td><td>$1,200</td></tr>
+        <tr><td>004</td><td>Delta Co</td><td>$22,000</td><td>$6,400</td></tr>
+        <tr><td>005</td><td>Epsilon Ltd</td><td>$18,500</td><td>$4,200</td></tr>
+        <tr><td>006</td><td>Zeta Partners</td><td>$11,000</td><td>$1,800</td></tr>
+        <tr><td>007</td><td>Eta Global</td><td>$14,200</td><td>$2,900</td></tr>
+        <tr><td>008</td><td>Theta Systems</td><td>$31,000</td><td>$9,500</td></tr>
+        <tr><td>009</td><td>Iota Tech</td><td>$8,900</td><td>$950</td></tr>
+        <tr><td>010</td><td>Kappa Media</td><td>$16,400</td><td>$3,300</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
