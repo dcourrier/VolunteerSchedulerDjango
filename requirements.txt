@@ -1,4 +1,5 @@
-AccessControl==7.3
+--only-binary numpy,pandas,cryptography,mysqlclient
+AccessControl==7.7
 Acquisition==6.2
 adminlte-django==0.2.0
 apipkg==3.0.2
@@ -90,12 +91,12 @@ MultiMapping==5.1
 multipart==1.3.1
 mysql==0.0.3
 mysql-connector-python==9.7.0
-mysqlclient==2.2.8
-numpy==2.5.1
+mysqlclient==2.3.0
+numpy==2.5.4
 oauthlib==3.3.1
 openpyxl==3.1.5
 packaging==26.2
-pandas==3.0.3
+pandas==3.1.1
 PasteDeploy==3.1.0
 path==17.1.1
 path.py==12.5.0

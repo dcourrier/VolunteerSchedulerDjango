@@ -3036,6 +3036,7 @@ class SkillsBean(DefaultBean):
                         skill = self.of.getNewSkill(name, login.loginID, org)
                         skill.save()
             except Exception as pe:
+                super().handleException(pe)
                 error = True
                 errorMessage = str(pe)
         if error:

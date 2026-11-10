@@ -316,6 +316,7 @@ class TaskStatus(ValueTable):
             if isinstance(att, Attribute):
                 a = att.value
             self.myDb.__dict__[name] = a
+        self.myDb.deleteFlag = self.deleteFlag.value
     
     def fromDb(self):
         for name,att in self.myDb.__dict__.items():
@@ -341,8 +342,14 @@ class TaskStatus(ValueTable):
         self.fromDb()
     
     def delete(self):
-            self.deleteFlag.value = True
-            self.save()
+        #print('Task Status delete() entry')
+        self.deleteFlag.value = True
+        self.myDb.deleteFlag = True
+        self.save()
+        self.myDb.deleteFlag = True
+        self.myDb.save()
+        self.fromDb()
+        #print('\nTask Status delete() exit: ' + str(self.myDb.deleteFlag))
     
     def remove(self):
             self.myDb.delete()

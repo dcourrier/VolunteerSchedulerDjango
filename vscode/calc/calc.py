@@ -106,7 +106,7 @@ class EventRejecter(VSBase):
         assignments.extend(self.of.getVolunteerSkillAssignments())
         for sei in self.of.getEvents(schedule=self.schedule):
             self.resetSkillDates(sei, assignments)
-        self.of.rejectEvents(self.start, self.end, self.org, self.loginId)
+        self.of.rejectEvents(self.start, self.end, self.org, self.loginID)
         for vsa in assignments:
             vsa.delete()
 

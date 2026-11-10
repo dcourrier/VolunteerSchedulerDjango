@@ -7515,6 +7515,7 @@ class Volunteer(BusinessObject):
             add = self.myDb.addresses.all().first()
             if add:
                 self.address = Address(add)
+        wadd = None
         if self.getVolunteerID():
             wadd = self.myDb.workaddresses.all().first()
         if wadd:
@@ -10641,7 +10642,7 @@ class ObjectFactory(VSBase):
     def getDeletedTeams(self, org):
         result = []
         if org:
-            orgid = self.getOrgd(org)
+            orgid = self.getOrgid(org)
             objs = DbTeam.objects.filter(deleteFlag=True).filter(organization_id=orgid)
             for obj in objs:
                 result.append(Team(obj))
@@ -11967,6 +11968,21 @@ class ObjectFactory(VSBase):
         schedule.save()
         schedule.delete()
         return schedule
+    
+    def rejectEvents(self, start, end, org, uid):
+        pass   
+    
+    def rejectScheduleEvents(self, schedule, org, uid):
+        schedule.validateReject()
+        self.rejectEvents(schedule.getScheduleStartDate(), 
+                     schedule.getScheduleEndDate(), org, uid)
+        try:
+            self.deleteReport(self.getReport(schedule), uid)
+            schedule.setScheduleStatusID(3)
+            schedule.setScheduleUpdateUser(uid)
+            schedule.delete()
+        except InvalidAttributeValueException as iave:
+            raise PersistenceException(iave)
         
     def acceptEvent(self, evt, uid):
         #print(evt)
