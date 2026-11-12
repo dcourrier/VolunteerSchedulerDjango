@@ -4012,7 +4012,7 @@ class ObjectFactoryTests(VSTestBase):
             household.setHouseholdLastName(name)
             household.setStreet('1 n Elm')
             household.save()
-            vol = of.getNewVolunteer(household, 1,org)
+            vol = of.getNewVolunteer(household, 1,org,'first',name)
             vol.setVolunteerFirstName('1')
             vol.setVolunteerLastName(name)
             vol.save()

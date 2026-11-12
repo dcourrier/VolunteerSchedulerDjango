@@ -1,0 +1,21 @@
+from django.test import TestCase
+from django.utils import timezone
+from datetime import datetime as DT
+from vscode.loader.loaders import *
+from vscode.base.base import *
+from vscode.base.business_objects  import *
+from vs.models import *
+from loguru import logger
+
+class VolunteerSchedulerTestDataLoaderTests(TestCase):
+    
+    def test_1(self):
+        print('\n loading')
+        err = None
+        try:
+            TestDataLoader().load()
+            print('\n done loading')
+        except Exception as e:
+            logger.opt(exception=True).debug(e)
+            err = e
+        assert not err, 'got an exception'

@@ -10,6 +10,16 @@ from vscode.val.vals import ValueTableManager
 
 class VolunteerSchedulerAttributeTests(TestCase):
     
+    def test_1(self):
+        err = None
+        try:
+            LoaderManager().load()
+            TestDataLoader().load()
+        except Exception as e:
+            logger.opt(exception=True).debug(e)
+            err = e
+        assert not err, 'got an exception'
+    
     def testBooleanAttribute(self): 
         self.boolAtt = BooleanAttribute(
             name = 'boolAtt',

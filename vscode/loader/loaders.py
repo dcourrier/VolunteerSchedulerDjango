@@ -1430,8 +1430,16 @@ class TestDataLoader(VSBase):
         pass
     
     def load(self):
-        dbo = DbOrganization.objects.filter(organizationName='Volunteer Scheduler').first()
-        org = Organization(dbo) 
+        from vscode.base.business_objects import ObjectFactory,Password,Address,\
+        Household,Volunteer,Relationship,Location,WorkAddress,Resource,Skill,\
+        Location,EventRecurrence,ScheduleEvent,Job,EventJoinToResource,\
+        VolunteerSkill,EventPreference,Availability,EventRecurrence
+        from vs.models import DbAddress,DbHousehold,DbVolunteer,DbRelationship,\
+        DbLocation,DbWorkAddress,DbResource,DbSkill,DbLocation,DbEventRecurrence,\
+        DbScheduleEvent,DbJob,DbEventJoinToResource,DbVolunteerSkill,DbEventPreference,\
+        DbAvailability,DbEventRecurrence
+        of = ObjectFactory()
+        org = of.getOrganization(name='Volunteer Scheduler') 
         pwd = Password(DbPassword())
         pwd.setPassword("gronk")
         pwd.setPasswordCreateUser(1)
@@ -1441,7 +1449,6 @@ class TestDataLoader(VSBase):
         pwd.setPasswordLoginID(1)
         pwd.save()
         add = Address(DbAddress())
-        add.setOrganization(org)
         add.setAddressCreateUser(1)
         add.setAddressUpdateUser(1)
         add.save()
@@ -1469,7 +1476,7 @@ class TestDataLoader(VSBase):
         v = DbVolunteer.objects.filter(volunteerFirstName='Tom')\
         .filter(volunteerLastName='Jones').first()
         if not v:
-            v = Volunteer(DbVolunteer())
+            v = Volunteer(myDb=DbVolunteer())
             v.household = hi1
             v.setOrganization(org)
             v.setVolunteerFirstName("Tom")
@@ -1477,271 +1484,278 @@ class TestDataLoader(VSBase):
             v.setVolunteerCreateUser(1)
             v.setVolunteerUpdateUser(1)
             v.save()
-        skip = False
-        if skip:
-            add = Address(DbAddress())
-            add.setAddressCreateUser(1)
-            add.setAddressUpdateUser(1)
-            add.setOrganization(org)
-            add.setStreet("Will Smith")
-            add.save()
-            hi2 = Household(DbHousehold())
-            hi2.address= add
-            hi2.setOrganization(org)
-            hi2.setHouseholdFirstName("Will")
-            hi2.setHouseholdLastName("Smith")
-            hi2.setHouseholdCreateUser(1)
-            hi2.setHouseholdUpdateUser(1)
-            hi2.save()
-            v = Volunteer(DbVolunteer())
-            v.household = hi2
+        add = Address(DbAddress())
+        add.setAddressCreateUser(1)
+        add.setAddressUpdateUser(1)
+        add.setStreet("Will Smith")
+        add.save()
+        hi2 = Household(DbHousehold())
+        hi2.address= add
+        hi2.setOrganization(org)
+        hi2.setHouseholdFirstName("Will")
+        hi2.setHouseholdLastName("Smith")
+        hi2.setHouseholdCreateUser(1)
+        hi2.setHouseholdUpdateUser(1)
+        hi2.save()
+        v = Volunteer(myDb=DbVolunteer())
+        v.household = hi2
+        v.setOrganization(org)
+        v.setVolunteerFirstName("Will")
+        v.setVolunteerLastName("Smith")
+        v.setVolunteerCreateUser(1)
+        v.setVolunteerUpdateUser(1)
+        v.save()
+        add = Address(DbAddress())
+        add.setStreet("Booker T. Washington")
+        add.setAddressCreateUser(1)
+        add.setAddressUpdateUser(1)
+        add.save()
+        hi3 = Household(DbHousehold())
+        hi3.address = add
+        hi3.setOrganization(org)
+        hi3.setHouseholdFirstName("Booker T.")
+        hi3.setHouseholdLastName("Washington")
+        hi3.setHouseholdCreateUser(1)
+        hi3.setHouseholdUpdateUser(1)
+        hi3.save()
+        v = Volunteer(myDb=DbVolunteer())
+        v.household = hi3
+        v.setOrganization(org)
+        v.setVolunteerFirstName("Booker T.")
+        v.setVolunteerLastName("Washington")
+        v.setVolunteerCreateUser(1)
+        v.setVolunteerUpdateUser(1)
+        v.save()
+        r = Relationship(DbRelationship())
+        r.setRelationshipType(of.getRelationshipType(3))
+        v = Volunteer(myDb=DbVolunteer())
+        v.setHousehold(hi3)
+        add = Address(DbAddress())
+        add.setAddressCreateUser(1)
+        add.setAddressUpdateUser(1)
+        add.setAddressLineTwo("George Washington")
+        add.save()
+        v.setAddress(add)
+        v.setVolunteerFirstName("George")
+        v.setVolunteerLastName("Washington")
+        v.setVolunteerCreateUser(1)
+        v.setVolunteerUpdateUser(1)
+        v.setOrganization(org)
+        v.save()
+        wa = WorkAddress(DbWorkAddress())
+        add = Address(DbAddress())
+        add.setAddressCreateUser(1)
+        add.setAddressUpdateUser(1)
+        add.save()
+        wa.setAddress(add)
+        wa.setEmployer("Megabucks, Inc.")
+        wa.setJobTitle("Lackey")
+        wa.setWaCreateUser(1)
+        wa.setWaUpdateUser(1)
+        wa.setStreet("Megabucks Drive")
+        wa.save()
+        v.setWorkAddress(wa)
+        v.save()
+        #print('\n v1 ' + str(v.getVolunteerID()))
+        r.setVolunteerOne(v)
+        #print('r v1 ' + str(r.myDb.volunteerOne_id))
+        v2 = Volunteer(myDb=DbVolunteer())
+        v2.setHousehold(hi1)
+        v2.setOrganization(org)
+        v2.setVolunteerFirstName("Mrs")
+        v2.setVolunteerLastName("Jones")
+        v2.setVolunteerCreateUser(1)
+        v2.setVolunteerUpdateUser(1)
+        v2.save()
+        r.setVolunteerTwo(v2)
+        r.setRelationshipCreateUser(1)
+        r.setRelationshipUpdateUser(1)
+        #print('r v1 ' + str(r.myDb.volunteerOne_id))
+        r.save()
+        v = None
+        for i in range(5):
+            v = Volunteer(myDb=DbVolunteer())
+            v.setHousehold(hi2)
             v.setOrganization(org)
-            v.setVolunteerFirstName("Will")
+            v.setVolunteerFirstName("Will #" + str(i))
             v.setVolunteerLastName("Smith")
             v.setVolunteerCreateUser(1)
             v.setVolunteerUpdateUser(1)
-            v.save()
-            add = Address(DbAddress())
-            add.setOrganization(org)
-            add.setStreet("Booker T. Washington")
-            add.setAddressCreateUser(1)
-            add.setAddressUpdateUser(1)
-            add.setOrganization(org)
-            add.save()
-            hi3 = Household(DbHousehold())
-            hi3.address = add
-            hi3.setOrganization(org)
-            hi3.setHouseholdFirstName("Booker T.")
-            hi3.setHouseholdLastName("Washington")
-            hi3.setHouseholdCreateUser(1)
-            hi3.setHouseholdUpdateUser(1)
-            hi3.save()
-            v = Volunteer(DbVolunteer())
-            v.household = hi3
-            v.setOrganization(org)
-            v.setVolunteerFirstName("Booker T.")
-            v.setVolunteerLastName("Washington")
-            v.setVolunteerCreateUser(1)
-            v.setVolunteerUpdateUser(1)
-            v.save()
-            r = Relationship(DbRelationship())
-            r.setRelationshipTypeID(3)
-            v = Volunteer(DbVolunteer())
-            v.setHousehold(hi3)
-            add = Address(DbAddress())
-            add.setAddressCreateUser(1)
-            add.setAddressUpdateUser(1)
-            add.setOrganization(org)
-            add.setAddressLineTwo("George Washington")
-            add.save()
-            v.setAddress(add)
-            v.setVolunteerFirstName("George")
-            v.setVolunteerLastName("Washington")
-            v.setVolunteerCreateUser(1)
-            v.setVolunteerUpdateUser(1)
             v.setOrganization(org)
             v.save()
-            wa = WorkAddress(DbWorkAddress())
-            add = Address(DbAddress())
-            add.setAddressCreateUser(1)
-            add.setAddressUpdateUser(1)
-            add.setOrganization(org)
-            add.save()
-            wa.setAddress(add)
-            wa.setEmployer("Megabucks, Inc.")
-            wa.setJobTitle("Lackey")
-            wa.setWaCreateUser(1)
-            wa.setWaUpdateUser(1)
-            wa.setStreet("Megabucks Drive")
-            wa.save()
-            v.setWorkAddress(wa)
-            v.save()
-            r.setVolunteerOne(v)
-            v = Volunteer(DbVolunteer())
-            v.setHousehold(hi1)
-            v.setOrganization(org)
-            v.setVolunteerFirstName("Mrs")
-            v.setVolunteerLastName("Jones")
-            v.setVolunteerCreateUser(1)
-            v.setVolunteerUpdateUser(1)
-            v.save()
-            r.setVolunteerTwo(v)
-            r.setRelationshipCreateUser(1)
-            r.setRelationshipUpdateUser(1)
-            r.save()
-            for i in range(5):
-                v = Volunteer(DbVolunteer())
-                v.setHousehold(hi2)
-                v.setOrganization(org)
-                v.setVolunteerFirstName("Will #" + str(i))
-                v.setVolunteerLastName("Smith")
-                v.setVolunteerCreateUser(1)
-                v.setVolunteerUpdateUser(1)
-                v.setOrganization(org)
-                v.save()
-            resourceNames = [
-                "Lectionary",
-                "Candle",
-                "Lighter",
-                "Crucifix",
-                "Organ",
-                "Anvil",
-                "Hammer",
-                "Saw",
-                "Piano",
-                "Fire Extinguisher"
+        resourceNames = [
+            "Lectionary",
+            "Candle",
+            "Lighter",
+            "Crucifix",
+            "Organ",
+            "Anvil",
+            "Hammer",
+            "Saw",
+            "Piano",
+            "Fire Extinguisher"
+        ]
+        res = None
+        for name in resourceNames:
+            res = Resource(DbResource())
+            res.setOrganization(org)
+            res.setCount(1)
+            res.setName(name)
+            res.setResourceCreateUser(1)
+            res.setResourceUpdateUser(1)
+            res.save()
+        skillNames = [
+            "Teacher",
+            "Principal",
+            "Cook",
+            "School Administrative Assistant",
+            "Master of Ceremonies",
+            "Motivational Speaker",
+            "Education Committee Chair",
+            "Building Committee Chair",
+            "Finance Council Chair",
+            "Fundraising Committee Chair",
+            "Social Civic Committee Chair",
+            "Social Justice Committee Chair",
+            "Liturgy Committee Chair",
+            "Music Minister",
+            "Decorator",
+            "Pastor",
+            "Priest",
+            "Parish Administrative Assistant",
+            "Parish Administrator",
+            "Youth Minister",
+            "Religious Education Director",
+            "Deacon",
+            "Cantor",
+            "Server",
+            "Usher",
+            "Organist",
+            "Plumber",
+            "Attorney",
+            "CPA",
+            "Carpenter",
+            "Electrician",
+            "Roofer",
+            "Painter",
+            "Lector",
+            "Fireman"]
+        s = DbSkill.objects.filter(skillName="Pastor").first()
+        if not s:
+            for skillName in skillNames:
+                s = Skill(DbSkill())
+                s.setOrganization(org)
+                s.setSkillName(skillName)
+                s.setSkillCreateUser(1)
+                s.setSkillUpdateUser(1)
+                s.save()
+        l = DbLocation.objects.filter(locationName='Church').first()
+        if not l:
+            locationNames = [
+                "Church",
+                "Church Hall",
+                "Park",
+                "Joe's Bar and Grill",
+                "Piggy's Pen"
             ]
-            res = None
-            for name in resourceNames:
-                res = Resource(DbResource())
-                res.setOrganization(org)
-                res.setCount(1)
-                res.setName(name)
-                res.setResourceCreateUser(1)
-                res.setResourceUpdateUser(1)
-                res.save()
-            skillNames = [
-                "Teacher",
-                "Principal",
-                "Cook",
-                "School Administrative Assistant",
-                "Master of Ceremonies",
-                "Motivational Speaker",
-                "Education Committee Chair",
-                "Building Committee Chair",
-                "Finance Council Chair",
-                "Fundraising Committee Chair",
-                "Social Civic Committee Chair",
-                "Social Justice Committee Chair",
-                "Liturgy Committee Chair",
-                "Music Minister",
-                "Decorator",
-                "Pastor",
-                "Priest",
-                "Parish Administrative Assistant",
-                "Parish Administrator",
-                "Youth Minister",
-                "Religious Education Director",
-                "Deacon",
-                "Cantor",
-                "Server",
-                "Usher",
-                "Organist",
-                "Plumber",
-                "Attorney",
-                "CPA",
-                "Carpenter",
-                "Electrician",
-                "Roofer",
-                "Painter",
-                "Lector",
-                "Fireman"]
-            s = DbSkill.objects.filter(skillName="Pastor").first()
-            if not s:
-                for skillName in skillNames:
-                    s = Skill(DbSkill())
-                    s.setOrganization(org)
-                    s.setSkillName(skillName)
-                    s.setSkillCreateUser(1)
-                    s.setSkillUpdateUser(1)
-                    s.save()
-            l = DbLocation.objects.filter(locationName='Church').first()
-            if not l:
-                locationNames = [
-                    "Church",
-                    "Church Hall",
-                    "Park",
-                    "Joe's Bar and Grill",
-                    "Piggy's Pen"
-                ]
             loc = None
+            if not org.getOrganizationID(): #kluge
+                org = of.getOrganization(name='Volunteer Scheduler') 
             for locName in locationNames:
-                loc = Location(DbLocation())
-                loc.setOrganization(org)
-                loc.setLocationName(locName)
-                loc.setLocationCreateUser(1)
-                loc.setLocationUpdateUser(1)
-                loc.save()
-            eri = EventRecurrence(DbEventRecurrence)
-            eri.setCreateUser(1)
-            eri.setUpdateUser(1)
-            eri.setIntervalAmount(1)
-            dt = DT.strptime('2026-06-01', "%Y-%m-%d")
-            eri.setEndDate(dt)
-            dt = DT.strptime('2026-05-01', "%Y-%m-%d")
-            eri.setStartDate(dt)
-            eri.setTypeID(5)
-            eri.save(eri)
-            ev = ScheduleEvent(DbScheduleEvent())
-            ev.setOrganization(org)
-            ev.setEventName("July 4 Fireworks")
-            ev.setEventDuration(90)
-            dt = DT.strptime('2026-07-04', "%Y-%m-%d")
-            ev.setEventDate(dt)
-            ev.setEventStartTime("21:00:00")
-            ev.setEventCreateUser(1)
-            ev.setEventUpdateUser(1)
-            ev.setLocation(loc)
-            ev.setRecurrence(eri)
-            ev.save()
-            j = Job(DbJob())
-            j.setJobCreateUser(1)
-            j.setJobUpdateUser(1)
-            j.setSkill(s)
-            j.setEventID(ev.getID())
-            j.save()
-            ev.addJob(j)
-            ejr = EventJoinToResource(DbEventJoinToResource())
-            ejr.setResource(res)
-            ejr.setEvent(ev)
-            ejr.setCreateUser(1)
-            ejr.setUpdateUser(1)
-            ejr.save()
-            ev.addResource(ejr)
-            ev.addResource(res)
-            ev.save()
-            vsi = VolunteerSkill(DbVolunteerSkill)
-            vsi.setVsCreateUser(1)
-            vsi.setVsUpdateUser(1)
-            vsi.setSkill(s)
-            vsi.setVolunteer(v)
-            vsi.setExpert(True)
-            v.addSkill(vsi)
-            vsi.save()
-            ep = EventPreference(DbEventPreference())
-            ep.setEvent(ev)
-            ep.setVolunteer(v)
-            ep.setPreferenceCreateUser(1)
-            ep.setPreferenceUpdateUser(1)
-            ep.save()
-            av = Availability(DbAvailability())
-            av.setAvailabilityCreateUser(1)
-            av.setAvailabilityUpdateUser(1)
-            av.setAvailabilityStartDate(DT.now())
-            av.setVolunteer(v)
-            av.save()
-            l = DbLocation.objects.filter(locationName="Church Hall").first()
-            if l: 
-                loc = Location(l)
-            eri = EventRecurrence(DbEventRecurrence())
-            eri.setCreateUser(1)
-            eri.setUpdateUser(1)
-            eri.setIntervalAmount(1)
-            dt = DT.strptime('2028-07-04', "%Y-%m-%d")
-            eri.setEndDate(dt)
-            dt = DT.strptime('2022-07-04', "%Y-%m-%d")
-            eri.setStartDate(dt)
-            eri.setTypeID(4)
-            eri.save()
-            ev = ScheduleEvent(DbScheduleEvent())
-            ev.setOrganization(org)
-            ev.setEventName("KofC Meeting")
-            ev.setEventDuration(1500)
-            dt = DT.strptime('2026-07-04', "%Y-%m-%d")
-            ev.setEventDate(dt)
-            ev.setEventStartTime("17:30:00")
-            ev.setEventCreateUser(1)
-            ev.setEventUpdateUser(1)
-            ev.setLocation(loc)
-            ev.setRecurrence(eri)
-            ev.save()
+                loc = of.getNewLocation(locName,1,org)
+        eri = EventRecurrence(DbEventRecurrence())
+        eri.setCreateUser(1)
+        eri.setUpdateUser(1)
+        eri.setIntervalAmount(1)
+        dt = DT.strptime('2026-06-01', "%Y-%m-%d")
+        eri.setEndDate(dt)
+        dt = DT.strptime('2026-05-01', "%Y-%m-%d")
+        eri.setStartDate(dt)
+        eri.setRecurrenceType(of.getRecurrenceType(5))
+        eri.save()
+        ev = ScheduleEvent(DbScheduleEvent())
+        ev.setOrganization(org)
+        ev.setEventName("July 4 Fireworks")
+        ev.setEventDuration(90)
+        dt = DT.strptime('2026-07-04', "%Y-%m-%d")
+        ev.setEventDate(dt)
+        ev.setEventStartTime("21:00:00")
+        ev.setEventCreateUser(1)
+        ev.setEventUpdateUser(1)
+        ev.setLocation(loc)
+        ev.setRecurrence(eri)
+        ev.save()
+        j = Job(DbJob())
+        j.setJobCreateUser(1)
+        j.setJobUpdateUser(1)
+        j.setSkill(s)
+        j.setEventID(ev.getID())
+        j.save()
+        ev.addJob(j)
+        ejr = EventJoinToResource(DbEventJoinToResource())
+        ejr.setResourceID(res.getResourceID())
+        ejr.setEventID(ev.getEventID())
+        ejr.setCreateUser(1)
+        ejr.setUpdateUser(1)
+        ejr.save()
+        ev.addResourceJoin(ejr)
+        ev.addResource(res)
+        ev.save()
+        hi4 = of.getNewHousehold('Murville', 'hurd',1,org)
+        v = of.getNewVolunteer(hi4, 1, org, 'Murville', 'Hurd')
+        vsi = VolunteerSkill(DbVolunteerSkill())
+        vsi.setVsCreateUser(1)
+        vsi.setVsUpdateUser(1)
+        vsi.setSkill(s)
+        vsi.setExpert(True)
+        vsi.save()
+        #print('\nloader v1 ' + str(v.myDb.volunteerCreateUser))
+        v.save()
+        #print('\nloader v2 ' + str(v.myDb.volunteerCreateUser))
+        v.addSkill(vsi)
+        #print('\nloader v3 ' + str(v.myDb.volunteerCreateUser))
+        v.save()
+        #print('\nloader v4 ' + str(v.myDb.volunteerCreateUser))
+        ep = EventPreference(DbEventPreference())
+        ep.setEvent(ev)
+        ep.setVolunteer(v)
+        ep.setPreferenceCreateUser(1)
+        ep.setPreferenceUpdateUser(1)
+        #print('\nloader v5 ' + str(v.myDb.volunteerCreateUser))
+        ep.save()
+        #print('\nloader v6 ' + str(v.myDb.volunteerCreateUser))
+        av = Availability(DbAvailability())
+        av.setVolunteer(v)
+        av.setAvailabilityCreateUser(1)
+        av.setAvailabilityUpdateUser(1)
+        av.setAvailabilityStartDate(DT.now())
+        av.save()
+        #print('\nloader v7 ' + str(v.myDb.volunteerCreateUser))
+        v.save()
+        #print('\nloader v8 ' + str(v.myDb.volunteerCreateUser))
+        l = DbLocation.objects.filter(locationName="Church Hall").first()
+        if l: 
+            loc = Location(l)
+        eri = EventRecurrence(DbEventRecurrence())
+        eri.setCreateUser(1)
+        eri.setUpdateUser(1)
+        eri.setIntervalAmount(1)
+        dt = DT.strptime('2028-07-04', "%Y-%m-%d")
+        eri.setEndDate(dt)
+        dt = DT.strptime('2022-07-04', "%Y-%m-%d")
+        eri.setStartDate(dt)
+        ert = of.getRecurrenceType(4)
+        eri.setRecurrenceType(ert)
+        eri.save()
+        ev = ScheduleEvent(DbScheduleEvent())
+        ev.setOrganization(org)
+        ev.setEventName("KofC Meeting")
+        ev.setEventDuration(1500)
+        dt = DT.strptime('2026-07-04', "%Y-%m-%d")
+        ev.setEventDate(dt)
+        ev.setEventStartTime("17:30:00")
+        ev.setEventCreateUser(1)
+        ev.setEventUpdateUser(1)
+        ev.setLocation(loc)
+        ev.setRecurrence(eri)
+        ev.save()

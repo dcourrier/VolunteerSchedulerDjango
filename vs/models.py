@@ -202,6 +202,11 @@ class DbAvailability(models.Model):
     availabilityCreateUser = models.IntegerField()
     availabilityUpdateUser = models.IntegerField()
     deleteFlag = models.BooleanField(default=False)
+    volunteer = models.ForeignKey('DbVolunteer', 
+                                     on_delete=models.CASCADE,
+                                     null=True,
+                                     blank=True,
+                                     related_name='availabilities')
 
     def __str__(self):
         return ""
@@ -400,11 +405,7 @@ class DbVolunteer(models.Model):
                                   blank=True)
     activities = models.ManyToManyField(DbActivity,
                                         related_name='volunteers',
-                                        blank=True) 
-    availability = models.OneToOneField(DbAvailability,
-                                    on_delete=models.SET_NULL, 
-                                    null=True, 
-                                    blank=True)                              
+                                        blank=True)                        
     def __str__(self):
         return str(self.volunteerFirstName) + ' ' + str(self.volunteerLastName)
     

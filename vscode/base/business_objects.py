@@ -2959,6 +2959,8 @@ class WorkAddress(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
             # print(\n + str(name) +  =  ) print(type(a))
+        if self.address:
+            self.myDb.address_id = self.address.getAddressID()
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -3691,7 +3693,7 @@ class Location(BusinessObject):
         
         self.locationID = IntegerAttribute("locationID")
         self.locationName = StringAttribute("locationName")
-        self.locationOrganizationID = IntegerAttribute("locationOrganizationID")
+        self.organizationID = IntegerAttribute("organizationID")
         self.locationCreateUser = IntegerAttribute("locationCreateUser")
         self.locationUpdateUser = IntegerAttribute("locationUpdateUser")
         self.locationCreateDate = DateAttribute("locationCreateDate")
@@ -3713,10 +3715,10 @@ class Location(BusinessObject):
             self.locationName.setHasMaximumLength(True)
             self.locationName.setMaximumLength(Location.NAME_LENGTH)
 
-            self.locationOrganizationID.allowInvalID = False
-            self.locationOrganizationID.setNullAllowed(True)
-            self.locationOrganizationID.setHasMinimum(True)
-            self.locationOrganizationID.setMinimum(0)
+            self.organizationID.allowInvalID = False
+            self.organizationID.setNullAllowed(True)
+            self.organizationID.setHasMinimum(True)
+            self.organizationID.setMinimum(0)
         except InvalidAttributeValueException as e:
             super().handleExveption(e)
         self.myDb = myDb
@@ -3784,23 +3786,26 @@ class Location(BusinessObject):
     def getName(self):
         return self.getLocationName()
     
-    def getLocationOrganizationID(self):
-        return self.locationOrganizationID.getValue()
+    def getOrganizationID(self):
+        return self.organizationID.getValue()
 
-    def setLocationOrganizationID(self, uid):
-        self.locationOrganizationID.setValue(uid)
+    def setOrganizationID(self, uid):
+        self.organizationID.setValue(uid)
    
     def setOrganization(self, oi):
         self.organization = oi
-        if not oi or not oi.getOrganizationID(): 
-            oid = None
+        if isinstance(oi,DbOrganization):
+            oid = oi.location_id
         else:
-            oid = oi.getOrganizationID()
-        try:
-            self.setLocationOrganizationID(oid)
-        except:
-            logger.opt(exception=True).debug('setLocationOrganizationID(oid)')
-            # super().handleException(t)
+            if not oi or not oi.getOrganizationID(): 
+                oid = None
+            else:
+                oid = oi.getOrganizationID()
+            try:
+                self.setOrganizationID(oid)
+            except:
+                logger.opt(exception=True).debug('setLocationOrganizationID(oid)')
+                # super().handleException(t)
  
     def getOrganization(self):
         return self.organization
@@ -3910,15 +3915,14 @@ class Location(BusinessObject):
     def toDb(self):
         #print(self.myDb.__class__.__name__)
         if not self.myDb or not isinstance(self.myDb, DbLocation):
-            #print('Location toDb resetting myDb')
             self.myDb = DbLocation() 
         for name, att in self.__dict__.items():
             a = att
             if isinstance(att, Attribute):
                 a = att.value
             self.myDb.__dict__[name] = a
+        #print('Location toDb() ' + str(self.organization.getOrganizationID()))
         if self.organization:
-            self.myDb.organization = self.organization.myDb
             self.myDb.organization_id = self.organization.getOrganizationID()
         # print(\n + str(name) +  =  ) print(type(a))
     
@@ -3940,7 +3944,7 @@ class Location(BusinessObject):
         if dbOrg:
             o = Organization(self.myDb.organization)
             self.setOrganization(o)
-            self.locationOrganizationID.value = self.organization.organizationID.value
+            self.organizationID.value = self.organization.organizationID.value
          
             # print(name)print(a)   
             # print(str(self.myDb.__dict__))
@@ -3949,12 +3953,8 @@ class Location(BusinessObject):
         BusinessObject.validateAttributes(atts)
         
     def save(self):
-        if self.locationID.value:
-            self.toDb()
-            self.myDb.save()
-        else:
-            self.toDb()
-            self.myDb.save()       
+        self.toDb()
+        self.myDb.save()       
         self.fromDb()
   
     def remove(self):
@@ -5192,6 +5192,8 @@ class EventJoinToResource(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
             # print(\n + str(name) +  =  ) print(type(a))
+        self.myDb.event_id = self.eventID.value
+        self.myDb.resource_id = self.resourceID.value
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -6100,7 +6102,7 @@ class ProjectResourceAvailability(ABC):
         return True
         
 
-class ProjectResource(Resource):
+class ProjectResource(BusinessObject):
 
     def __init__(self, myDb=None,org=None):
         self.reusable = BooleanAttribute('reusable')
@@ -6138,7 +6140,7 @@ class ProjectResource(Resource):
         self.resourceOrganizationID.allowInvalID = False
         self.resourceOrganizationID.setNullAllowed(False)
         self.resourceOrganizationID.setHasMinimum(True)
-        self.resourceOrganizationID.setMinimum(ProjectResource.COUNT_MINIMUM)
+        self.resourceOrganizationID.setMinimum(1)
         
         self.name.allowInvalID = False
         self.name.setNullAllowed(False)
@@ -6146,7 +6148,7 @@ class ProjectResource(Resource):
         self.name.setNullStringAllowed(False)
         self.name.setMixedCase(True)
         self.name.setHasMaximumLength(True)
-        self.name.setMaximumLength(ProjectResource.NAME_MAXIMUM_LENGTH)
+        self.name.setMaximumLength(255)
     
         self.reusable.value = False
         
@@ -6755,9 +6757,16 @@ class Availability(BusinessObject):
                 self.availabilityCreateDate,
                 self.availabilityUpdateDate)
         
+        self.volunteer = None
         self.myDb = myDb
         if myDb:
             self.fromDb()
+            
+    def setVolunteer(self, vol):
+        self.volunteer = vol
+        
+    def getVolunteer(self):
+        return self.volunteer
 
     def getDisplayString(self):
         return self.toString()
@@ -6917,6 +6926,8 @@ class Availability(BusinessObject):
             if isinstance(att, Attribute):
                 a = att.value
             self.myDb.__dict__[name] = a
+        if self.volunteer:
+            self.myDb.volunteer_id = self.volunteer.getVolunteerID()
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -6931,6 +6942,9 @@ class Availability(BusinessObject):
                 else:
                     myAtt = att
                 self.__dict__[name] = myAtt
+        if self.myDb.volunteer:
+            vol = Volunteer(myDb=self.myDb.volunteer)
+            self.setVolunteer(vol)
 
     def validate(self):
         result = True
@@ -6984,7 +6998,6 @@ class Availability(BusinessObject):
 class Volunteer(BusinessObject):
     
     def __init__(self, household=None, organization=None, myDb=None):
-        
         super().__init__()
         self.volunteerID = IntegerAttribute("volunteerID")
         self.volunteerFirstName = StringAttribute("volunteerFirstName")
@@ -7002,10 +7015,7 @@ class Volunteer(BusinessObject):
         self.login = None
         self.skills = []
         self.activities = []
-        self.availability = None
-        self.myDb=myDb
-        if myDb:
-            self.fromDb()
+        self.availabilities = []
         super().__init__()
         super().setIdProperties(self.volunteerID)
         super().setTrackingAttributes(self.volunteerCreateUser,
@@ -7034,6 +7044,10 @@ class Volunteer(BusinessObject):
         
         self.staff.allowInvalID = False
         self.staff.setValue(False)
+        self.myDb=myDb
+        if myDb:
+            self.fromDb()
+        
     def isSameState(self, impl):
         result = super().isSameBaseState(self, impl)
         
@@ -7151,6 +7165,18 @@ class Volunteer(BusinessObject):
                         result = False
                         break
         return result
+    
+    def getAvailabilities(self):
+        return self.availabilities
+    
+    def setAvailabilities(self,av):
+        self.availabilities = av
+        
+    def addAvailability(self, av):
+        self.availabilities.append(av)
+        
+    def removeAvailability(self, av):
+        self.availabilities.remove(av)
     
     def getCost(self):
         return self.cost.getValue()
@@ -7469,32 +7495,55 @@ class Volunteer(BusinessObject):
     
     def toDb(self):
         if not self.myDb:
+            #print('volunteer myDb missing')
             self.myDb = DbVolunteer()
+        '''print('volunteer toDb 0: ' + str(self.myDb.__dict__))
+        for key,val in self.__dict__.items():
+            if val:
+                if isinstance(val, Attribute):
+                    val = val.value
+                try:
+                    print(str(key) + ' ' + str(val))
+                except Exception as e:
+                    print('puked on key ' + str(key))
+            else:
+                print(str(key) + ' None')
+        print('volunteer toDb 0.5: ' + str(self.myDb.__dict__))'''
+        name = None
         for name, att in self.__dict__.items():
-            a = att
-            if isinstance(att, Attribute):
-                a = att.value
-            self.myDb.__dict__[name] = a
+            try:
+                if att:
+                    a = att
+                    if isinstance(att, Attribute):
+                        a = att.value
+                    self.myDb.__dict__[name] = a
+            except Exception as e:
+                print('Failed to get item from Volunteer dict for key: ' \
+                      + str(name) + ' ' + str(e))
+        #self.myDb.save() #make sure there is an id before messing w/ many-to-many
         #if self.household:
         #    self.myDb.household = self.household.myDb
         if self.address:
-            self.myDb.address = self.address.myDb
+            self.myDb.address_id = self.address.getAddressID()
         if self.workAddress:
-            self.myDb.workAddress = self.workAddress.myDb
+            self.myDb.workAddress_id = self.workAddress.getWorkAddressID()
         if self.login:
-            self.myDb.login = self.login.myDb
+            self.myDb.login_id = self.login.getLoginID()
         if self.organization:
-            self.myDb.organization = self.organization.myDb
-        if self.skills and len(self.skills) > 0: 
+            self.myDb.organization_id = self.organization.getOrganizationID()
+        if not self.myDb.volunteerCreateUser:
+            self.myDb.volunteerCreateUser = self.getVolunteerCreateUser()
+            self.myDb.volunteerUpdateUser = self.getVolunteerUpdateUser()
+        #print('volunteer toDb 1: ' + str(self.myDb.volunteerCreateUser))
+        if self.myDb.volunteerID and self.skills and len(self.skills) > 0: 
             self.myDb.skills.clear()
             for skill in self.skills:
-                self.myDb.skills.append(skill.myDb)
-        if self.activities and len(self.activities) > 0:
+                self.myDb.skills.add(skill.myDb)
+        #print('volunteer toDb 2: ' + str(self.myDb.volunteerCreateUser))
+        if self.myDb.volunteerID and self.activities and len(self.activities) > 0:
             self.myDb.activities.clear()
             for a in self.activities:
                 self.myDb.activities.add(a.myDb)
-        if self.availability:
-            self.myDb.availability = self.availability.myDb
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -7510,30 +7559,31 @@ class Volunteer(BusinessObject):
                     myAtt = att
                 self.__dict__[name] = myAtt
         if self.getVolunteerID() and self.myDb.household: #.exists():
-            self.household = Household(self.myDb.household)
+            self.household = Household(myDb=self.myDb.household)
         if self.getVolunteerID():
             add = self.myDb.addresses.all().first()
             if add:
-                self.address = Address(add)
+                self.address = Address(myDb=add)
         wadd = None
         if self.getVolunteerID():
             wadd = self.myDb.workaddresses.all().first()
         if wadd:
-            self.workAddress = WorkAddress(wadd)
+            self.workAddress = WorkAddress(myDb=wadd)
         if self.getVolunteerID() and self.myDb.login and self.myDb.login.exists():
             self.login = Login(self.myDb.login)
         if self.getVolunteerID() and self.myDb.organization:
-            self.organization = Organization(self.myDb.organization)
+            self.organization = Organization(myDb=self.myDb.organization)
         if self.getVolunteerID() and self.myDb.skills.exists():
             self.skills.clear()
             for skill in self.myDb.skills.all():
-                self.skiladdend(VolunteerSkill(skill))
+                self.skills.append(VolunteerSkill(myDb=skill))
         if self.getVolunteerID() and self.myDb.activities.exists():
             self.activities.clear()
             for a in self.myDb.activities.all():
-                self.activities.append(Activity(a))
-        if self.getVolunteerID() and self.myDb.availability:
-            self.availability = Availability(self.myDb.availability)
+                self.activities.append(Activity(myDb=a))
+        '''if self.getVolunteerID():
+            of = ObjectFactory()
+            self.availabilities = of.getAvailabilities(self)'''
 
     def validate(self):
         result = True
@@ -8328,9 +8378,11 @@ class Relationship(BusinessObject):
     
     def setVolunteerOne(self, newVolunteerOne):
         self.volunteerOne = newVolunteerOne
+        self.myDb.volunteerOne_id = newVolunteerOne.getVolunteerID()
 
     def setVolunteerTwo(self, newVolunteerTwo):
         self.volunteerTwo = newVolunteerTwo
+        self.myDb.volunteerTwo_id = newVolunteerTwo.getVolunteerID()
 
     def getVolunteerTwo(self):
         return self.volunteerTwo
@@ -8435,16 +8487,14 @@ class Relationship(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
         if self.volunteerOne:
-            self.myDb.volunteeOne = self.volunteerOne.myDb
-            self.volunteerOne_ID =  self.volunteerOne.getVolunteerID()
+            self.myDb.volunteerOne_id =  self.volunteerOne.getVolunteerID()
         if self.volunteerTwo:
-            self.myDb.volunteeTwo = self.volunteerTwo
-            self.volunteerTwo_ID =  self.volunteerTwo.volunteerID
+            self.myDb.volunteerTwo_id =  self.volunteerTwo.getVolunteerID()
         if self.relationshipType:
-            self.myDb.relationshipType = self.relationshipType.myDb
+            self.myDb.relationshipType_id = self.relationshipType.getRelationshipTypeID()
     
     def fromDb(self):
-        for name, att in self.myDb.__dict__.items():
+        for name, att in self.myDb.__dict__.items(): 
             if isinstance(att, bytes):
                 att = att.decode()
             myAtt = self.__dict__.get(name)
@@ -8463,6 +8513,7 @@ class Relationship(BusinessObject):
         if self.getRelationshipID():
             if self.myDb.relationshipType_id:
                 self.relationshipType = RelationshipType(self.myDb.relationshipType)
+        #print('relationship.myDb.volunteerOne_id ' + str(self.myDb.volunteerOne_id))
 
     def validate(self):
         result = True
@@ -8751,6 +8802,7 @@ class ScheduleEvent(BusinessObject):
         self.location = None
         self.recurrence = None
         self.resources = []
+        self.resourceJoins = []
         self.jobs = []
         self.schedule = None
         super().__init__()
@@ -8991,6 +9043,20 @@ class ScheduleEvent(BusinessObject):
     def removeResource(self, resource):
         if resource and self.resources.contains(resource):
             self.resources.remove(resource)
+        
+    def setResourceJoins(self, resources):
+        self.resourceJoins = resources
+        
+    def getResourceJoins(self):
+        return self.resourceJoins
+    
+    def addResourceJoin(self, resource):
+        if resource:
+            self.resourceJoins.append(resource)
+        
+    def removeResourceJoin(self, resource):
+        if resource and self.resourceJoins.contains(resource):
+            self.resourceJoins.remove(resource)
                  
     def getUnassignedJobs(self):
         result = []
@@ -9497,7 +9563,7 @@ class Schedule(BusinessObject):
 
 class VolunteerSkill(BusinessObject):
 
-    def __init__(self, myDb=None, volunteer=None, skill=None):
+    def __init__(self, myDb=None, vol=None, skill=None):
         self.volunteerSkillID = IntegerAttribute("volunteerSkillID")
         self.vsExpert = BooleanAttribute("vsExpert")
         self.vsLastAssignment = DateAttribute("vsLastAssignment")
@@ -9506,8 +9572,8 @@ class VolunteerSkill(BusinessObject):
         self.vsUpdateUser = IntegerAttribute("vsUpdateUser")
         self.vsCreateDate = DateAttribute("vsCreateDate")
         self.vsUpdateDate = DateAttribute("vsUpdateDate")
-        self.volunteer = volunteer
         self.skill = skill
+        self.volunteer = vol
         self.myDb = myDb
         if myDb:
             self.fromDb()
@@ -9590,19 +9656,18 @@ class VolunteerSkill(BusinessObject):
     
     def __str__(self):
         return self.getDisplayString()
+    
+    def getVolunteer(self):
+        return self.volunteer
+    
+    def setVolunteer(self, vol):
+        self.volunteer=vol
 
     def getSkill(self):
         return self.skill
     
     def setSkill(self, skill):
         self.skill = skill
-
-    def getVolunteer(self):
-        return self.volunteer
-    
-    def setVolunteer(self, volunteer):
-        self.volunteer = volunteer
-
     def isExpert(self):
         return self.vsExpert.getValue()
     
@@ -9726,10 +9791,8 @@ class VolunteerSkill(BusinessObject):
             if isinstance(att, Attribute):
                 a = att.value
             self.myDb.__dict__[name] = a
-        if self.volunteer:
-            self.myDb.volunteer = self.volunteer.myDb
         if self.skill:
-            self.myDb.skill = self.skill.myDb
+            self.myDb.skill_id = self.skill.getSkillID()
         
     def fromDb(self):
         of = ObjectFactory()
@@ -9745,15 +9808,6 @@ class VolunteerSkill(BusinessObject):
                 else:
                     myAtt = att
                 self.__dict__[name] = myAtt
-        if self.myDb.volunteer:
-            #print('got vol ' + str(self.myDb.volunteer))
-            self.volunteer = Volunteer(self.myDb.volunteer)
-            if not self.volunteer.myDb:
-                self.volunteer.myDb = self.myDb.volunteer
-        elif self.myDb.volunteer_id:
-            #print('got volunteer_id')
-            self.volunteer = of.getVolunteer(self.myDb.volunteer_id)
-        #print(self.volunteer.myDb)
         if self.myDb.skill:
             self.skill = Skill(self.myDb.skill)
 
@@ -10132,9 +10186,9 @@ class EventPreference(BusinessObject):
             self.myDb.__dict__[name] = a
     
         if self.volunteer:
-            self.myDb.volunteer = self.volunteer.myDb
+            self.myDb.volunteer_id = self.volunteer.getVolunteerID()
         if self.event:
-            self.myDb.event = self.event.myDb
+            self.myDb.event_id = self.event.getEventID()
             
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -10150,7 +10204,7 @@ class EventPreference(BusinessObject):
                     myAtt = att
                 self.__dict__[name] = myAtt
         if self.myDb.volunteer_id:
-            self.setVolunteer(Volunteer(self.myDb.volunteer))
+            self.setVolunteer(Volunteer(myDb=self.myDb.volunteer))
         if self.myDb.event_id:
             self.setEvent(ScheduleEvent(self.myDb.event))
 
@@ -10606,6 +10660,22 @@ class ObjectFactory(VSBase):
             dbo.save()
         return Project(dbo)
     
+    def getAvailabilities(self, vol=None, dbo=False):
+        result = []
+        if vol:
+            dbs = DbAvailability.objects.exclude(deleteFlag=True)\
+            .filter(volunteer_id=vol.getVolunteerID())\
+            .order_by("-availabilityCreateDate")
+        else:
+            dbs = DbAvailability.objects.exclude(deleteFlag=True)\
+            .order_by("-availabilityCreateDate")
+        if dbo:
+            result = dbs
+        else:
+            for db in dbs:
+                result.append(Availability(db))
+        return result  
+    
     def getProjects(self,org=None,team=None,parent=None,dbo=False,children=True):
         result = []
         dbs = []
@@ -10858,6 +10928,7 @@ class ObjectFactory(VSBase):
     
     def getNewLocation(self, name, uid, org):
         orgid = self.getOrgid(org)
+        #print('of.getNewlocation ' + str(orgid))
         dbo = DbLocation.objects.create(
                         locationName=name,
                         locationCreateUser=uid,
@@ -11551,12 +11622,6 @@ class ObjectFactory(VSBase):
         else:
             raise MissingArgumentException("You mudt specify eithetman ID oa an organization")
         return result
-    
-    def getAvailabilities(self):
-        result = []
-        for dbo in DbAvailability.objects.exclude(deleteFlag=True):
-            result.append(Availability(dbo))
-        return result
 
     def getActivities(self,task=None, org=None, dbo=False):
         result = []
@@ -11731,22 +11796,25 @@ class ObjectFactory(VSBase):
             for db in dbos:
                 result.append(Task(db))
     
-    def getNewVolunteer(self,  h, uid, org, fName=None, lName=None):
+    def getNewVolunteer(self,  h, uid, org, fName=None, lName=None,dbo=False):
         orgid = self.getOrgid(org)
-        dbo = DbVolunteer.objects.create(
+        db = DbVolunteer.objects.create(
             volunteerCreateUser=uid,
             volunteerUpdateUser=uid,
             household_id=h.getHouseholdID(),
             organization_id=orgid)
         if fName:
-            dbo.volunteerFirstName = fName
+            db.volunteerFirstName = fName
         if lName:
-            dbo.volunteerLastName = lName
-        if org or fName or lName:
-            dbo.save()
-        #print(dbo)
-        result = Volunteer(myDb=dbo)
-        #print(result)
+            db.volunteerLastName = lName
+        if fName or lName:
+            db.save()
+        #print(db)
+        if dbo:
+            result = db
+        else:
+            result = Volunteer(myDb=db)
+        #print('getNewVolunteer ' + str(result.myDb.__dict__))
         return result
 
     def getVolunteers(self,org=None,household=None,skill=None,dbo=False):
@@ -12595,11 +12663,14 @@ class ObjectFactory(VSBase):
         result.save()
         return result
 
-    def getRecurrenceType(self, oid):
+    def getRecurrenceType(self, oid,dbo=False):
         result = None
-        dbo = DbRecurrenceType.objects.exclude(deleteFlag=True).filter(pk=oid).first()
-        if dbo:
-            result = RecurrenceType(dbo)
+        db = DbRecurrenceType.objects.exclude(deleteFlag=True).filter(pk=oid).first()
+        if db:
+            if dbo:
+                result = db
+            else:
+                result = RecurrenceType(db)
         return result
 
     def getDeletedRecurrenceType(self, oid):
