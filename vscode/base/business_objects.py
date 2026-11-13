@@ -6358,6 +6358,7 @@ class Household(BusinessObject):
     LAST_NAME_LENGTH = 255
     
     def __init__(self, myDb=None, address=None, org=None, uid=None):
+        super().__init__()
         self.householdID = IntegerAttribute("householdID")
         self.householdAddressID = IntegerAttribute("householdAddressID")
         self.householdOrganizationID = IntegerAttribute("householdOrganizationID")
@@ -6370,7 +6371,7 @@ class Household(BusinessObject):
         if address:
             self.setAddress(address)
         else:
-            add = Address(DbAddress())
+            add = Address(myDb=DbAddress())
             self.setAddress(add)
         if uid:
             add.setAddressCreateUser(uid)
@@ -6385,7 +6386,6 @@ class Household(BusinessObject):
         self.setAddress(add)
         if org:
             self.setOrganization(org)
-        super().__init__()
         super().setIdProperties(self.householdID)
         super().setTrackingAttributes(self.householdCreateUser,
                 self.householdUpdateUser,
@@ -6657,10 +6657,10 @@ class Household(BusinessObject):
             if isinstance(att, Attribute):
                 a = att.value
             self.myDb.__dict__[name] = a
-        if self.address and not self.myDb.address:
-            self.myDb.address = self.address.myDb 
-        if self.organization and not self.myDb.organization:
-            self.myDb.organization = self.organization.myDb
+        if self.address:
+            self.myDb.address_id = self.address.getAddressID() 
+        if self.organization:
+            self.myDb.organization_id = self.organization.getOrganizationID()
     
     def fromDb(self):
         for name, att in self.myDb.__dict__.items():
@@ -6677,11 +6677,11 @@ class Household(BusinessObject):
                 self.__dict__[name] = myAtt
             
         if hasattr(self.myDb,'address'):
-            self.setAddress(Address(self.myDb.address))
+            self.setAddress(Address(myDb=self.myDb.address))
         else:
-            self.setAddress(Address(DbAddress()))
+            self.setAddress(Address(myDb=DbAddress()))
         if hasattr(self.myDb,'organization'):
-            self.setOrganization(Organization(self.myDb.organization))
+            self.setOrganization(Organization(myDb=self.myDb.organization))
             
     def validate(self):
         if self.address:
@@ -6707,8 +6707,10 @@ class Household(BusinessObject):
             add = ObjectFactory().getNewAddress(self.getAddressUpdateUser())
             self.setAddress(add)
         uid = self.myDb.householdUpdateUser
-        if not uid:
+        if not uid or not self.myDb.householdCreateUser:
             uid = 1
+            self.myDb.householdCreateUser = uid 
+            self.myDb.householdUpdateUser = uid 
         if not add.getAddressCreateUser():
             add.setAddressCreateUser(uid)
         if not add.getAddressUpdateUser():
@@ -7521,8 +7523,8 @@ class Volunteer(BusinessObject):
                 print('Failed to get item from Volunteer dict for key: ' \
                       + str(name) + ' ' + str(e))
         #self.myDb.save() #make sure there is an id before messing w/ many-to-many
-        #if self.household:
-        #    self.myDb.household = self.household.myDb
+        if self.household:
+            self.myDb.household_id = self.household.getHouseholdID()
         if self.address:
             self.myDb.address_id = self.address.getAddressID()
         if self.workAddress:
@@ -7787,7 +7789,10 @@ class Job(BusinessObject):
         self.skill = newSkill
         oid = 0 
         if newSkill:
-            oid = newSkill.getSkillID()
+            if isinstance(newSkill, DbSkill):
+                oid = newSkill.skillID
+            else:
+                oid = newSkill.getSkillID()
         self.setJobSkillID(oid)
 
     def getSkill(self):
@@ -7946,7 +7951,10 @@ class Job(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
         if self.skill:
-            self.myDb.skill = self.skill.myDb
+            if isinstance(self.skill, DbSkill):
+                self.myDbSkill = self.skill
+            else:
+                self.myDb.skill = self.skill.myDb
     
     def fromDb(self):
         of = ObjectFactory()
@@ -9105,17 +9113,15 @@ class ScheduleEvent(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
         if self.organization:
-            self.myDb.organization = self.organization.myDb
-            self.myDb.organization_ID = self.organization.myDb.organizationID
+            self.myDb.organization_ID = self.organization.getOrganizationID()
         if self.location:
-            self.myDb.location = self.location.myDb
-            self.myDb.location_ID = self.location.myDb.locationID
+            if isinstance(self.location, DbLocation):
+                self.location = Location(myDb=self.location)                
+            self.myDb.location_ID = self.location.getLocationID()
         if self.recurrence:
-            self.myDb.recurrence = self.recurrence.myDb
-            self.myDb.recurrence_ID = self.recurrence.myDb.recurrenceID
+            self.myDb.recurrence_ID = self.recurrence.getRecurrenceID()
         if self.schedule:
-            self.myDb.schedule = self.schedule.myDb
-            self.myDb.schedule_ID = self.schedule.myDb.scheduleID
+            self.myDb.schedule_ID = self.schedule.getScheduleID()
         if self.eventID.value:
             self.myDb.resources.clear()
             if self.resources:
@@ -9792,7 +9798,10 @@ class VolunteerSkill(BusinessObject):
                 a = att.value
             self.myDb.__dict__[name] = a
         if self.skill:
-            self.myDb.skill_id = self.skill.getSkillID()
+            if isinstance(self.skill, DbSkill):
+                self.myDb.skill_id = self.skill.skillID
+            else:
+                self.myDb.skill_id = self.skill.getSkillID()
         
     def fromDb(self):
         of = ObjectFactory()
@@ -11067,7 +11076,7 @@ class ObjectFactory(VSBase):
         .filter(organization_id=orgid)
         #print(evts)
         for evt in evts:
-            #print(str(evt.recurrence_id))
+            print(str(evt.recurrence_id))
             if evt.recurrence_id:
                 er = evt.recurrence
                 #print(str(er))
@@ -11458,17 +11467,12 @@ class ObjectFactory(VSBase):
             pass
         return result
     
-    def getNewEventRecurrence(self, uid, typeID=None, interval=1):
+    def getNewEventRecurrence(self, uid, typeID, interval=1):
         dbo = DbEventRecurrence.objects.create(recurrenceCreateUser=uid,
                                                recurrenceUpdateUser=uid,
+                                               recurrenceType_id=typeID,
                                                intervalAmount=interval)
         result = EventRecurrence(dbo)
-        if typeID:
-            t = self.getRecurrenceType(typeID)
-            if t:
-                result.setRecurrenceType(t)
-                dbo.recurrenceType_ID = typeID
-                dbo.save()
         return result
     
     def getEventPreference(self, vol=None, oid=None):

@@ -1,5 +1,5 @@
 from datetime import datetime as DT
-from vs.models  import DbConfigurableProperty,DbConfigurationSet,\
+from vs.models import DbConfigurableProperty,DbConfigurationSet,\
 DbSecurityGroup,DbPrivilege,DbProjectStatus,DbRecurrenceType,\
 DbRelationshipType,DbScheduleStatus,DbSkillRelationshipType,DbStateCode,\
 DbTaskStatus, DbPassword
@@ -57,7 +57,10 @@ class LoaderManager(object):
             for sg in oi.securityGroups.all():
                 li.securityGroups.add(sg)
             li.save()
-        loader  = LoginSecurityGroupLoader()
+        loader = LoginSecurityGroupLoader()
+        loader.load()
+        #loader = TestDataLoader()
+        #loader.load()
         
 class LoginSecurityGroupLoader:
 
@@ -65,7 +68,7 @@ class LoginSecurityGroupLoader:
         for org in DbOrganization.objects.all():
             for li in DbLogin.objects.all():
                 if li.organization.organizationID == org.organizationID:
-                    for sg in org.securityGroups:
+                    for sg in org.securityGroups.all():
                         li.securityGroups.add(sg)
                     li.save()
 
@@ -1440,7 +1443,7 @@ class TestDataLoader(VSBase):
         DbAvailability,DbEventRecurrence
         of = ObjectFactory()
         org = of.getOrganization(name='Volunteer Scheduler') 
-        pwd = Password(DbPassword())
+        pwd = Password(myDb=DbPassword())
         pwd.setPassword("gronk")
         pwd.setPasswordCreateUser(1)
         pwd.setPasswordUpdateUser(1)
@@ -1455,7 +1458,7 @@ class TestDataLoader(VSBase):
         h = DbHousehold.objects.filter(householdFirstName="Tom")\
         .filter(householdLastName="Jones").first()
         if not h:
-            hi1 = Household(DbHousehold())
+            hi1 = Household(myDb=DbHousehold())
             hi1.setAddress(add)
             hi1.setOrganization(org)
             hi1.setAddressLineTwo("Address Line Two")
@@ -1484,12 +1487,12 @@ class TestDataLoader(VSBase):
             v.setVolunteerCreateUser(1)
             v.setVolunteerUpdateUser(1)
             v.save()
-        add = Address(DbAddress())
+        add = Address(myDb=DbAddress())
         add.setAddressCreateUser(1)
         add.setAddressUpdateUser(1)
         add.setStreet("Will Smith")
         add.save()
-        hi2 = Household(DbHousehold())
+        hi2 = Household(myDb=DbHousehold())
         hi2.address= add
         hi2.setOrganization(org)
         hi2.setHouseholdFirstName("Will")
@@ -1505,12 +1508,12 @@ class TestDataLoader(VSBase):
         v.setVolunteerCreateUser(1)
         v.setVolunteerUpdateUser(1)
         v.save()
-        add = Address(DbAddress())
+        add = Address(myDb=DbAddress())
         add.setStreet("Booker T. Washington")
         add.setAddressCreateUser(1)
         add.setAddressUpdateUser(1)
         add.save()
-        hi3 = Household(DbHousehold())
+        hi3 = Household(myDb=DbHousehold())
         hi3.address = add
         hi3.setOrganization(org)
         hi3.setHouseholdFirstName("Booker T.")
@@ -1526,11 +1529,11 @@ class TestDataLoader(VSBase):
         v.setVolunteerCreateUser(1)
         v.setVolunteerUpdateUser(1)
         v.save()
-        r = Relationship(DbRelationship())
+        r = Relationship(myDb=DbRelationship())
         r.setRelationshipType(of.getRelationshipType(3))
         v = Volunteer(myDb=DbVolunteer())
         v.setHousehold(hi3)
-        add = Address(DbAddress())
+        add = Address(myDb=DbAddress())
         add.setAddressCreateUser(1)
         add.setAddressUpdateUser(1)
         add.setAddressLineTwo("George Washington")
@@ -1542,8 +1545,8 @@ class TestDataLoader(VSBase):
         v.setVolunteerUpdateUser(1)
         v.setOrganization(org)
         v.save()
-        wa = WorkAddress(DbWorkAddress())
-        add = Address(DbAddress())
+        wa = WorkAddress(myDb=DbWorkAddress())
+        add = Address(myDb=DbAddress())
         add.setAddressCreateUser(1)
         add.setAddressUpdateUser(1)
         add.save()
@@ -1559,14 +1562,7 @@ class TestDataLoader(VSBase):
         #print('\n v1 ' + str(v.getVolunteerID()))
         r.setVolunteerOne(v)
         #print('r v1 ' + str(r.myDb.volunteerOne_id))
-        v2 = Volunteer(myDb=DbVolunteer())
-        v2.setHousehold(hi1)
-        v2.setOrganization(org)
-        v2.setVolunteerFirstName("Mrs")
-        v2.setVolunteerLastName("Jones")
-        v2.setVolunteerCreateUser(1)
-        v2.setVolunteerUpdateUser(1)
-        v2.save()
+        v2 = of.getNewVolunteer(hi3,1,org,'Mrs Velda','Jones')
         r.setVolunteerTwo(v2)
         r.setRelationshipCreateUser(1)
         r.setRelationshipUpdateUser(1)
@@ -1597,7 +1593,7 @@ class TestDataLoader(VSBase):
         ]
         res = None
         for name in resourceNames:
-            res = Resource(DbResource())
+            res = Resource(myDb=DbResource())
             res.setOrganization(org)
             res.setCount(1)
             res.setName(name)
@@ -1643,14 +1639,14 @@ class TestDataLoader(VSBase):
         s = DbSkill.objects.filter(skillName="Pastor").first()
         if not s:
             for skillName in skillNames:
-                s = Skill(DbSkill())
+                s = Skill(myDb=DbSkill())
                 s.setOrganization(org)
                 s.setSkillName(skillName)
                 s.setSkillCreateUser(1)
                 s.setSkillUpdateUser(1)
                 s.save()
-        l = DbLocation.objects.filter(locationName='Church').first()
-        if not l:
+        loc = DbLocation.objects.filter(locationName='Church').first()
+        if not loc:
             locationNames = [
                 "Church",
                 "Church Hall",
@@ -1658,12 +1654,11 @@ class TestDataLoader(VSBase):
                 "Joe's Bar and Grill",
                 "Piggy's Pen"
             ]
-            loc = None
             if not org.getOrganizationID(): #kluge
                 org = of.getOrganization(name='Volunteer Scheduler') 
             for locName in locationNames:
                 loc = of.getNewLocation(locName,1,org)
-        eri = EventRecurrence(DbEventRecurrence())
+        eri = EventRecurrence(myDb=DbEventRecurrence())
         eri.setCreateUser(1)
         eri.setUpdateUser(1)
         eri.setIntervalAmount(1)
@@ -1673,7 +1668,7 @@ class TestDataLoader(VSBase):
         eri.setStartDate(dt)
         eri.setRecurrenceType(of.getRecurrenceType(5))
         eri.save()
-        ev = ScheduleEvent(DbScheduleEvent())
+        ev = ScheduleEvent(myDb=DbScheduleEvent())
         ev.setOrganization(org)
         ev.setEventName("July 4 Fireworks")
         ev.setEventDuration(90)
@@ -1685,14 +1680,14 @@ class TestDataLoader(VSBase):
         ev.setLocation(loc)
         ev.setRecurrence(eri)
         ev.save()
-        j = Job(DbJob())
+        j = Job(myDb=DbJob())
         j.setJobCreateUser(1)
         j.setJobUpdateUser(1)
         j.setSkill(s)
         j.setEventID(ev.getID())
         j.save()
         ev.addJob(j)
-        ejr = EventJoinToResource(DbEventJoinToResource())
+        ejr = EventJoinToResource(myDb=DbEventJoinToResource())
         ejr.setResourceID(res.getResourceID())
         ejr.setEventID(ev.getEventID())
         ejr.setCreateUser(1)
@@ -1701,7 +1696,13 @@ class TestDataLoader(VSBase):
         ev.addResourceJoin(ejr)
         ev.addResource(res)
         ev.save()
-        hi4 = of.getNewHousehold('Murville', 'hurd',1,org)
+        dbh = DbHousehold()
+        hi4 = Household(myDb=dbh,org=org,uid=1)
+        hi4.setHouseholdFirstName('Murville')
+        hi4.setHouseholdLastName('Hurd')
+        hi4.setHouseholdCreateUser(1)
+        hi4.setHouseholdUpdateUser(1)
+        hi4.save()
         v = of.getNewVolunteer(hi4, 1, org, 'Murville', 'Hurd')
         vsi = VolunteerSkill(DbVolunteerSkill())
         vsi.setVsCreateUser(1)
@@ -1716,7 +1717,7 @@ class TestDataLoader(VSBase):
         #print('\nloader v3 ' + str(v.myDb.volunteerCreateUser))
         v.save()
         #print('\nloader v4 ' + str(v.myDb.volunteerCreateUser))
-        ep = EventPreference(DbEventPreference())
+        ep = EventPreference(myDb=DbEventPreference())
         ep.setEvent(ev)
         ep.setVolunteer(v)
         ep.setPreferenceCreateUser(1)
@@ -1724,7 +1725,7 @@ class TestDataLoader(VSBase):
         #print('\nloader v5 ' + str(v.myDb.volunteerCreateUser))
         ep.save()
         #print('\nloader v6 ' + str(v.myDb.volunteerCreateUser))
-        av = Availability(DbAvailability())
+        av = Availability(myDb=DbAvailability())
         av.setVolunteer(v)
         av.setAvailabilityCreateUser(1)
         av.setAvailabilityUpdateUser(1)
@@ -1736,7 +1737,7 @@ class TestDataLoader(VSBase):
         l = DbLocation.objects.filter(locationName="Church Hall").first()
         if l: 
             loc = Location(l)
-        eri = EventRecurrence(DbEventRecurrence())
+        eri = EventRecurrence(myDb=DbEventRecurrence())
         eri.setCreateUser(1)
         eri.setUpdateUser(1)
         eri.setIntervalAmount(1)
@@ -1747,7 +1748,7 @@ class TestDataLoader(VSBase):
         ert = of.getRecurrenceType(4)
         eri.setRecurrenceType(ert)
         eri.save()
-        ev = ScheduleEvent(DbScheduleEvent())
+        ev = ScheduleEvent(myDb=DbScheduleEvent())
         ev.setOrganization(org)
         ev.setEventName("KofC Meeting")
         ev.setEventDuration(1500)

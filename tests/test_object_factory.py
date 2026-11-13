@@ -2121,7 +2121,7 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             #org.save()
-            er = of.getNewEventRecurrence(1)
+            er = of.getNewEventRecurrence(1,1,1)
             result = of.getEventRecurrence(er.getRecurrenceID())
         except Exception as e:
             err = e
@@ -2138,7 +2138,7 @@ class ObjectFactoryTests(VSTestBase):
         try:
             org = of.createOrganization(name, 1)
             #org.save()
-            of.getNewEventRecurrence(1)
+            of.getNewEventRecurrence(1,1,1)
             result = of.getEventRecurrences()
         except Exception as e:
             err = e
@@ -3260,6 +3260,10 @@ class ObjectFactoryTests(VSTestBase):
             er = of.getNewEventRecurrence(1,1,1)
             evt.setRecurrence(er)
             evt.save()
+            mdb = evt.myDb
+            mdb.organization_id = org.getOrganizationID()
+            mdb.recurrence_id = er.getRecurrenceID()
+            mdb.save()
             result = of.getRecurringEvents(org)
         except Exception as e:
             err = e
