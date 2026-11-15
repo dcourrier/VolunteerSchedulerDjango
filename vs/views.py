@@ -395,6 +395,39 @@ class AssignResourceView(View):
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
  
+ 
+class AssignVolunteerToTeamView(View):
+
+    def get(self, request, *args, **kwargs):
+        # print('AddLocationView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        sd = SessionData()
+        sd.err = False
+        sd.errorMessage = None
+        bean = TeamEditBean(request)
+        teamID = request.GET.get('teamID')
+        volunteerID = request.GET.get('id')
+        try:
+            vol = bean.of.getVolunteer(oid=volunteerID, dbo=True)
+            print('AssignVolunteerToTeamView teamID = ' + str(teamID))
+            team = bean.of.getTeam(oid=teamID, dbo=True)
+            team.volunteers.add(vol)
+            team.save()
+            return redirect('/vs/teamEdit?id=' + str(teamID))
+        except Exception as err:
+            bean.handleException(err) 
+            context = bean.setup()         
+            context['err'] = True
+            context['errMsg'] = str(err)
+            tgt = 'vs/teamEdit.html'
+            return render(request, tgt, context)
+    
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+ 
+     
    
 class AssignTeamView(View):
 
@@ -814,7 +847,37 @@ class ReleaseResourceView(View):
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
  
-            
+   
+class RemoveVolunteerFromTeamView(View):
+
+    def get(self, request, *args, **kwargs):
+        # print('AddLocationView post')
+        hBean = HomeBean(request)
+        if hBean.isVolunteerUser():
+            return render(request, 'vs/volunteerHome')
+        sd = SessionData()
+        sd.err = False
+        sd.errorMessage = None
+        bean = TeamEditBean(request)
+        volID = request.GET.get('id')
+        teamID = request.GET.get('teamID')
+        try:
+            team = bean.of.getTeam(oid=teamID, dbo=True)
+            vol = bean.of.getVolunteer(oid=volID,dbo=True)
+            team.volunteers.remove(vol)
+            team.save()
+            return redirect('/vs/teamEdit?id=' + str(teamID))
+        except Exception as err:
+            bean.handleException(err) 
+            context = bean.setup()         
+            context['err'] = True
+            context['errMsg'] = str(err)
+            tgt = 'vs/teamEdit.html'
+            return render(request, tgt, context)
+    
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+                 
 class ResourceEditView(View):
     
     def post(self, request, *args, **kwargs):

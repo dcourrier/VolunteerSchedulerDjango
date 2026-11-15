@@ -16,7 +16,7 @@ function loaded() {
 <form id="form1" action='taskUpdate' method='post' autocomplete='on'>
 {% csrf_token %}
 <input type="hidden" id="oid" name="oid" value="{{oid}}"/>
-<table cellpadding="5" class="centered">
+<table class="centered">
 	<tr>
 	    <td>
 	        <label for="sequence">Sequence number:</label>
@@ -237,7 +237,7 @@ function loaded() {
 	  <!-- Modal content -->
 	  <div class="modal-content">
 	    <p id='modalMessage'>Enter a value between 1 and ZZZ</p>
-	    <table align='center'>
+	    <table class='centered'>
 	    <tr>
 		    <td>
 		    	<input type='number'

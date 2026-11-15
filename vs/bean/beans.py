@@ -1357,15 +1357,15 @@ class  SessionDataBean(VSBaseBean):
             sb = '<div '
             sb += style
             sb += '>\n'
-            sb +=  "<table valign='top' class='listTable' border=1>"
-            sb += "<th align='center' class='autoscroll'"
+            sb +=  "<table class='listTable'>"
+            sb += "<th class='autoscroll'"
             if columnCount > 1:
                 sb += " colspan='"
                 sb += str(columnCount)
                 sb += "'"
-            sb += "><h3>"            
+            sb += ">"            
             sb += str(title)
-            sb += "</h3></th>\n"
+            sb += "</th>\n"
             sb += "<tr>"
             #print('style ' + str(style))
             for vsp in items: 
@@ -3715,17 +3715,36 @@ class TeamEditBean(DefaultBean):
         request = self.sessionData.request
         org = self.sessionData.organization
         orgid = self.of.getOrgid(org)
-        oid = request.GET.get('id')
+        tid = request.GET.get('id')
         #print('TeamEditBean setup ' + str(self.sessionData.projectID))
-        if not oid:
-            oid = self.sessionData.oid 
-        team = self.of.getTeam(oid=oid)
-        self.sessionData.oid = oid
-        result['oid'] = oid
+        team = self.of.getTeam(oid=tid)
         result['name'] = team.getTeamName()
         result['orgID'] = orgid
         result['projectID'] = self.sessionData.projectID
+        result['availableVols'] = self.getAvailableVolsTable(team)
+        result['assignedVols'] = self.getAssignedVolsTable(team)
         return result
+    
+    def getAvailableVolsTable(self, team):
+        vols = self.of.getAvailableVolunteers(team,dbo=True)
+        return self.multiColumnTableRows2 (
+                                title='Available Volunteers',
+                                size=5,
+                                height=400,
+                                style='class="autoscroll400"',
+                                items=vols,
+                                dest='/vs/assignVolunteerToTeam?teamID=' + str(team.getTeamID())) 
+        return ''
+    
+    def getAssignedVolsTable(self, team):
+        vols = self.of.getAssignedVolunteers(team)
+        return self.multiColumnTableRows2 (
+                                title='Assigned Volunteers',
+                                size=5,
+                                height=400,
+                                style='class="autoscroll400"',
+                                items=vols,
+                                dest='/vs/removeVolunteerFromTeam?teamID=' + str(team.getTeamID())) 
      
     def submit(self):
         request = self.sessionData.request

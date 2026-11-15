@@ -6050,7 +6050,7 @@ class Team(BusinessObject):
         dbVols = self.myDb.volunteers
         if dbVols:
             for dbv in dbVols.all():
-                self.volunteers.appent(Volunteer(dbv))
+                self.volunteers.append(Volunteer(dbv))
                 
     def validate(self):
         atts = self.getAttributeList()
@@ -7493,7 +7493,7 @@ class Volunteer(BusinessObject):
         return self.staff.getValue()
         
     def __str__(self):
-        return self.getDisplayString()
+        return (self.getVolunteerFirstName()) + '' +str(self.getVolunteerLastName())
     
     def toDb(self):
         if not self.myDb:
@@ -11820,6 +11820,24 @@ class ObjectFactory(VSBase):
             result = Volunteer(myDb=db)
         #print('getNewVolunteer ' + str(result.myDb.__dict__))
         return result
+    
+    def getAssignedVolunteers(self, team):
+        if isinstance(team,Team):
+            team = team.myDb
+        return list(team.volunteers.exclude(deleteFlag=True))
+    
+    def getAvailableVolunteers(self, team, dbo=False):
+        result = []
+        if isinstance(team,Team):
+            team = team.myDb
+        dbs = DbVolunteer.objects.exclude(deleteFlag=True)
+        for db in dbs:
+            if not db.teams.all():
+                if dbo:
+                    result.append(db)
+                else:
+                    result.append(Volunteer(myDb=db))  
+        return result
 
     def getVolunteers(self,org=None,household=None,skill=None,dbo=False):
         #print('getVolunteers() org=' + str(org))
@@ -12104,23 +12122,27 @@ class ObjectFactory(VSBase):
                                       organization_id=orgid)
         return dbo
     
-    def getVolunteer(self,oid=None,first=None,last=None,org=None,login=None):
+    def getVolunteer(self,oid=None,first=None,last=None,org=None,login=None,dbo=None):
         result = None
+        db = None
         if oid:
             try:
-                dbo = DbVolunteer.objects.exclude(deleteFlag=True).filter(pk=oid).first()
-                result = Volunteer(dbo) 
+                db = DbVolunteer.objects.exclude(deleteFlag=True).filter(pk=oid).first()
             except:
                 pass
         elif login:
-            result = Volunteer(login.myDb.volunteer)
+            lid = login.getLoginID
+            db = DbVolunteer.objects.exclude(deleteFlag=True)\
+            .filter(login__loginID=lid)
         elif first and last and org:
-            dbo = DbVolunteer.objects.exclude(deleteFlag=True)\
+            db = DbVolunteer.objects.exclude(deleteFlag=True)\
             .filter(volunteerFirstName=first).filter(volunteerlarstName=last)\
             .filter(organization__organizationID=org.organizationID).first()
-            result = Volunteer(dbo)
         else:
             raise MissingArgumentException('you must specify either oID or login, or first,lsst, and org ') 
+        result = db
+        if not dbo:
+            result = Volunteer(db) 
         return result
     
     def getDeletedVolunteer(self,first=None,last=None,org=None,oid=None):

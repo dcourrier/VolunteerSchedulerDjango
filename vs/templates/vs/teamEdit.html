@@ -1,5 +1,6 @@
 {% load VSAuthorizer %}
-{% cotton basicLayout title='Team Edit' help='/vs/help?teamEdit'%}
+{% load static %}
+{% cotton basicLayout title=Team Edit help='/vs/help?teamEdit'%}
 <script type="text/javascript">
 	function loaded() {}
 </script>
@@ -23,12 +24,12 @@
                 	<input type="submit" 
                 	class="reset-style"
                 	name="action" 
-                	value="Save"/>&nbsp
+                	value="Save"/>&nbsp;
 {% VSAuthorizer2 _type=DELETE_TEAM %}
 					<input type="submit" 
 					class="reset-style"
 					name="action" 
-					value="Delete"/>&nbsp
+					value="Delete"/>&nbsp;
 {% VSAuthorizer2_end %}
                     <button 
 	                    type="button" 
@@ -38,5 +39,11 @@
                 </td></tr>
     </table>
 </form>
+<br/>
+<table class='centered'><tr><td>
+{{ availableVols|safe }}
+</td><td>
+{{ assignedVols|safe }}
+</td></tr></table>
 {% VSAuthorizer_end %}   
 {% endcotton %}

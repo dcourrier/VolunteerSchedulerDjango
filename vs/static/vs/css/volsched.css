@@ -215,6 +215,10 @@ span.errorMessage {
 
 table.max {
     width: 100%;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.title {
@@ -232,6 +236,10 @@ table.main {
     border-left-width: 5px;
     border-bottom-width: 5px;
     border-top-width: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.centered {
@@ -239,12 +247,28 @@ table.centered {
     background-repeat: repeat;
     overflow: auto;
     margin: 0 auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.centeredMax {
     background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
     background-repeat: repeat;
     width: 100%;
+    border-right-style: inset;
+    border-left-style: inset;
+    border-bottom-style: inset;
+    border-top-style: inset;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+    border-right-color: #000000;
+    border-left-color: #000000;
+    border-bottom-color: #000000;
+    border-top-color: #000000;
     padding-top: 5px;
     padding-right: 5px;
     padding-bottom: 5px;
@@ -260,16 +284,20 @@ table.listTable {
     border-left-style: inset;
     border-bottom-style: inset;
     border-top-style: inset;
-    border-right-width: 1px;
-    border-left-width: 1px;
-    border-bottom-width: 1px;
-    border-top-width: 1px;
+    border-right-width: 2px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
     border-right-color: #000000;
     border-left-color: #000000;
     border-bottom-color: #000000;
     border-top-color: #000000;
     overflow: auto;
     margin: 0 auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.listTableMax {
@@ -290,6 +318,10 @@ table.listTableMax {
     width: 100%;
     overflow: auto;
     margin: 0 auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.listTableNotMaxWidth {
@@ -310,6 +342,10 @@ table.listTableNotMaxWidth {
     overflow: auto;
     margin-left:auto;
     margin-right:auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 table.helpMenuTable {
@@ -327,6 +363,10 @@ table.helpMenuTable {
     margin-bottom: 10px;
     margin-top: 10px;
     width: 75%;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
 }
 
 th.listTable {
@@ -388,8 +428,8 @@ th.listTableImage {
     border-top-color: #000000;
     background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
     font-size: 14px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     background-repeat: repeat;
 }
 
@@ -557,10 +597,34 @@ td.menu {
 }
 
 th.autoscroll {
-    background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
-     position: sticky;
-     top: 0;
-     z-index: 1;
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	height: 15px;
+	line-height: 1;
+	padding: 2px 8px;
+	background-image: url(http://laptop1/images/volsched/WhiteUpholstery.jpg);
+	background-repeat: repeat;
+/*	border-right-style: inset;
+	border-left-style: inset;
+	border-bottom-style: inset;
+	border-top-style: inset;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-bottom-width: 1px;
+	border-top-width: 1px;
+	border-right-color: #000000;
+	border-left-color: #000000;
+	border-bottom-color: #000000;
+	border-top-color: #000000;
+*/	font-weight: bolder;
+	font-size: 14px;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	text-align: center;
+	vertical-align: middle;
 }
 
 tr.centered {
