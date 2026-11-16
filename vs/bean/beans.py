@@ -2407,8 +2407,9 @@ class ProjectEditBean(DefaultBean):
         request = self.sessionData.request
         org = self.sessionData.organization
         cameFromProjectEdit = request.GET.get('cameFromProjectEdit')
+        oid = request.GET.get("id")
         if not oid:
-            oid = request.GET.get("id")
+            oid = self.sessionData.projectID
         if not oid:
             raise MissingParameterException('id')
         self.sessionData.projectID=oid
