@@ -286,6 +286,17 @@ class VSBase(ABC):
     
     def __init__(self):
         pass
+    
+    def printDict(self):
+        if self.myDb:
+            for key,value in self.myDb.__dict__.items():
+                try:
+                    if value:
+                        print(str(key) + ':' + str(value))
+                    else:
+                        print(str(key) + ': None')
+                except:
+                    'puked on key: ' + str(key)
 
     def stringToBool(self,val):
         truthMapping = {

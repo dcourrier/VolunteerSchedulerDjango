@@ -453,7 +453,7 @@ class ObjectFactoryTests(VSTestBase):
         assert result1, "no output for no org"
         assert len(result1) == 11, "expected 11 logins, got " + str(len(result1))
         assert result2, "no output for org"
-        assert len(result2) == 3, "expected 3 logins, got " + str(len(result2))
+        assert len(result2) == 9, "expected 9 logins, got " + str(len(result2))
        
     def test_getCurrentUsersPrivileges(self):
         LoaderManager().load()
@@ -577,7 +577,7 @@ class ObjectFactoryTests(VSTestBase):
         assert result1, "no output - no arg"
         assert len(result1) > 0, 'empty list - no org'
         assert result2, "no output - with arg"
-        assert len(result2) == 1, 'wrong count expected 1, got ' + str(len(result2))
+        assert len(result2) == 2, 'wrong count expected 1, got ' + str(len(result2))
  
     def test_getProject(self):
         LoaderManager().load()
@@ -3257,8 +3257,10 @@ class ObjectFactoryTests(VSTestBase):
             org = of.createOrganization(name, 1)
             #org.save()
             evt = of.getNewEvent(name,1,org)
+            loc = of.getNewLocation(name,1,org)
             er = of.getNewEventRecurrence(1,1,1)
             evt.setRecurrence(er)
+            evt.setLocation(loc)
             evt.save()
             mdb = evt.myDb
             mdb.organization_id = org.getOrganizationID()

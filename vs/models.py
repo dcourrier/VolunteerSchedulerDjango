@@ -101,6 +101,8 @@ class DbOrganization(models.Model):
         return False
             
     def __str__(self):
+        if not self.organizationName:
+            return 'no name org'
         return str(self.organizationName)
         
 class DbSecurityGroup(models.Model):
@@ -559,9 +561,6 @@ class DbJob(models.Model):
     jobUpdateDate = models.DateField(auto_now=True)
     optional = models.BooleanField(default=False)
     deleteFlag = models.BooleanField(default=False)
-    jobAssignmentID = models.IntegerField( null=True, blank=True)
-    jobEventID = models.IntegerField(null=True, blank=True)
-    jobSkillID = models.IntegerField(null=True, blank=True)
     count = models.IntegerField(default=1)
     skill = models.ForeignKey(DbSkill, 
                                      on_delete=models.CASCADE,
@@ -840,9 +839,13 @@ class DbScheduleEvent(models.Model):
                 ' eventName ' + str(self.eventName)
     
 class DbEventJoinToResource(models.Model):
-    event = models.ForeignKey(DbScheduleEvent, on_delete=models.CASCADE)
-    resource = models.ForeignKey(DbResource, on_delete=models.CASCADE)
-    count = models.IntegerField(null=True,blank=True)
+    event = models.ForeignKey(DbScheduleEvent, 
+                                on_delete=models.CASCADE,
+                                related_name='eventJoins')
+    resource = models.ForeignKey(DbResource, 
+                                 on_delete=models.CASCADE,
+                                 related_name='eventJoins')
+    used = models.IntegerField(null=True,blank=True)
     createUser = models.IntegerField(default=1)
     updateUser = models.IntegerField(default=1)
     createDate = models.DateField(auto_now_add=True)
@@ -872,7 +875,7 @@ class DbRelationship(models.Model):
                                     on_delete=models.CASCADE,
                                     null=True,
                                     blank=True,
-                                    related_name='rrelationships')
+                                    related_name='relationships')
 
     def __str__(self):
         result = "DbRelationship { relationshipID: " + str(self.relationshipID)
