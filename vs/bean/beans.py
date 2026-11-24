@@ -1833,7 +1833,7 @@ class HomeBean(DefaultBean):
 
     def getHouseholdsTable(self):
         return super().multiColumnTableRows("Households",
-                5,
+                8,
                 125,
                 self.getHouseholds(),
                 "/vs/householdDetails.html" +  "?cameFromHome=True",
@@ -1841,7 +1841,7 @@ class HomeBean(DefaultBean):
     
     def getVolunteersTable(self):
         return super().multiColumnTableRows("Volunteers",
-                5,
+                8,
                 125,
                 self.getVolunteers(),
                 "/vs/volunteerDetails.html" + "?cameFromHome=True",

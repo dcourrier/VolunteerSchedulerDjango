@@ -1,23 +1,11 @@
-{% csrf_token %}
-<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      
-      >
-
-    <body>
-        <ui:composition template="./../template/default.xhtml">
-            <ui:define name="content">
-                <script>
-                    function loaded() {
-                        setHeader("Utilities")
-                    }
-                </script>
-                <h:outputText value="#{AuthorizerclearVolunteerBean()}"/>
-                <table>
-                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_LOGINS)}">
+{% load VSAuthorizer %}
+{% cotton basicLayout title=Utilitues help='/vs/help?utilities'%}
+script type="text/javascript">
+	function loaded() {}
+</script>
+{% VSAuthorizer _type=ADD_SKILL %}
+    <table cellpadding="5" align="center">
+        <th colspan="2"><h3>Add Skill</h3></th>
                         <tr><td>
                                 <h:outputLink
                                     id="loginListLink"
