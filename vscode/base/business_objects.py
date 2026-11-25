@@ -12305,12 +12305,13 @@ class ObjectFactory(VSBase):
             raise InvalidArgumentException('you must specify either oID or first,last and org')
         return result
     
-    def getSkill(self, oid=None, name=None, org=None ):
+    def getSkill(self, oid=None, name=None, org=None, dbo=False):
         result = None 
+        db = None
         if oid:
             dbs = DbSkill.objects.filter(pk=oid).first()
             if dbs:
-                result = Skill(dbs)
+                db = dbs
         elif name and org:
             dbos = DbSkill.objects.exclude(deleteFlag=True)\
             .filter(organization__organizationID=org.organizationID)\
@@ -12319,9 +12320,12 @@ class ObjectFactory(VSBase):
             if cnt > 1:
                 raise NotUniqueException('received ' + str(cnt) + ' Skill objects from the database')
             if cnt == 1:
-                result = Skill(dbos.first())
+                db = dbos.first()
         else:
-            raise MissingArgumentException('you must specify oid or name and org')    
+            raise MissingArgumentException('you must specify oid or name and org')
+        result = db
+        if db and not dbo:
+            result = Skill(db)    
         return result
     
     def getSkills(self, org, dbo=False):

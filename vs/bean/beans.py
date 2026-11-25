@@ -3080,9 +3080,11 @@ class SkillEditBean(DefaultBean):
         #print('SkillEditBean setup ' + str(oid))
         if not oid:
             oid = self.sessionData.oid 
-        skill = self.of.getTask(oid=oid,dbo=True)
+        skill = self.of.getSkill(oid=oid,dbo=True)
         result['oid'] = oid
         result['orgID'] = orgid
+        result['name']=skill.skillName
+        result['NameMaxLength']=255
         return result
     
     def getTaskStatusSelect(self,task):
