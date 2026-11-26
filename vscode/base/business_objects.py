@@ -1290,9 +1290,7 @@ class SecurityUtils(ABC):
         if login:
             result = SecurityUtils.isAdmin(login)
             if not result:
-                result = SecurityUtils.isAdmin(login)
-                if not result:
-                    result = AuthorizationManager.isAuthorized(_type, login)
+                result = AuthorizationManager.isAuthorized(_type, login)
         return result
     
     @staticmethod
@@ -9550,13 +9548,12 @@ class Schedule(BusinessObject):
         #print('after EventRejecter() ' + self.__class__.__name__)
         self.flagDeleted()
         #print('after flagDeleted() ' + self.__class__.__name__)
-        '''key = self.getScheduleStatus().getScheduleStatisKey()
+        key = self.getScheduleStatus().getScheduleStatisKey()
         if key == ScheduleStatus.ACCEPTED:
             for sei in self.events:
-                sei.setEventUpdateUser(loginId)
+                sei.setEventUpdateUser(loginID)
                 sei.delete()
-        why?
-        '''
+        
     def toDb(self):
         for name, att in self.__dict__.items():
             a = att
@@ -9632,8 +9629,6 @@ class Schedule(BusinessObject):
         self.fromDb()
         #print('after fromDb() ' + self.__class__.__name__)
   
-    def remove(self):
-            self.myDb.delete()
               
     def flagDeleted(self):
         #print('enter flagDeleted() ' + self.__class__.__name__)

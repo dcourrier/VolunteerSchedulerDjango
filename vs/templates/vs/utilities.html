@@ -1,62 +1,58 @@
 {% load VSAuthorizer %}
 {% cotton basicLayout title=Utilitues help='/vs/help?utilities'%}
-script type="text/javascript">
+<script type="text/javascript">
 	function loaded() {}
 </script>
-{% VSAuthorizer _type=ADD_SKILL %}
     <table cellpadding="5" align="center">
-        <th colspan="2"><h3>Add Skill</h3></th>
-                        <tr><td>
-                                <h:outputLink
-                                    id="loginListLink"
-                                    class="mainMenu" 
-                                    value="loginList.xhtml">
-                                    Maintain Logins
-                                </h:outputLink>
-                            </td></tr>
-                    {% endif %}
-                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_CONFIGURABLE_PROPERTIES)}">
-                        <tr><td>
-                                <h:outputLink
-                                    id="configurabeOptionsListLink"
-                                    class="mainMenu" 
-                                    value="configurableOptionsList.xhtml">
-                                    Manage Configurable Options
-                                </h:outputLink>
-                            </td></tr>
-                    {% endif %}
-                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_SECURITY_GROUPS)}">
-                        <tr><td>
-                                <h:outputLink
-                                    id="securityGroupListLink"
-                                    class="mainMenu" 
-                                    value="securityGroupList.xhtml">
-                                    Maintain Security Groups
-                                </h:outputLink>
-                            </td></tr>
-                    {% endif %}
-                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VIEW_PRIVILEGES)}">
-                        <tr><td>
-                                <h:outputLink
-                                    id="privilegeListLink"
-                                    class="mainMenu" 
-                                    value="privilegeList.xhtml">
-                                    View Privileges
-                                </h:outputLink>
-                            </td></tr>
-                    {% endif %}
-                    {% if test="#{Authorizerauthorize(AuthorizerRESOURCE_VALIDATE_RELATIONSHIP)}">
-                        <tr><td>
-                                <h:outputLink
-                                    id="relationshipValidationLink"
-                                    class="mainMenu" 
-                                    value="relationshipValidation.xhtml">
-                                    Validate Relationships
-                                </h:outputLink>
-                            </td></tr>
-                    {% endif %}
-                </table>
-            </ui:define>
-        </ui:composition>
-    </body>
-</html>
+        <th colspan="2"><h3>Utilities</h3></th>
+{% VSAuthorizer _type=VIEW_LOGINS %}
+         <tr><td>
+             <a href='/vs/logins'
+                 id="loginListLink"
+                 class="mainMenu">
+                 Maintain Logins
+             </a>
+          </td></tr>
+{% VSAuthorizer_end %}
+{% VSAuthorizer _type=VIEW_CONFIGURABLE_PROPERTIES %}
+	       <tr><td>
+               <a
+                   id="configurabeOptionsListLink"
+                   class="mainMenu" 
+                   href="/vs/configurableProperties">
+                   Manage Configurable Options
+               </a>
+           </td></tr>
+{% VSAuthorizer_end %}
+{% VSAuthorizer _type=VIEW_SECURITY_GROUPS %}
+           <tr><td>
+                   <a
+                       id="securityGroupListLink"
+                       class="mainMenu" 
+                       href="/vs/securityGroups">
+                       Maintain Security Groups
+                   </a>
+               </td></tr>
+{% VSAuthorizer_end %}
+{% VSAuthorizer _type=VIEW_SECURITY_GROUP_PRIVILEGE %}
+                <tr><td>
+                    <a
+                        id="privilegeListLink"
+                        class="mainMenu" 
+                        href="/vs/privileges">
+                        View Privileges
+                    </a>
+                </td></tr>
+{% VSAuthorizer_end %}
+{% VSAuthorizer _type=VALIDATE_RELATIONSHIP %}
+                 <tr><td>
+                     <a
+                         id="relationshipValidationLink"
+                         class="mainMenu" 
+                         href="/vs/validateRelationships">
+                         Validate Relationships
+                     </a>
+                 </td></tr>
+{% VSAuthorizer_end %}
+                </table>  
+{% endcotton %}

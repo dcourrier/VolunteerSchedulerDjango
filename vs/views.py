@@ -1134,6 +1134,16 @@ class UnassignTeamView(View):
     
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
+      
+                    
+class UtilitiesView(View):
+
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return  render(request, "vs/utilities.html", context)
+     
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
      
       
 class VolunteersView(View):
